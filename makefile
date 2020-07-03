@@ -7,3 +7,7 @@ mypy:
 test: mypy
 	flake8 sgen test
 	pytest test
+
+.PHONY: doc
+doc:
+	cd book && pdflatex book.tex

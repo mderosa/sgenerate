@@ -1,1 +1,7 @@
 *~
+*.aux
+*.idx
+*.log
+*.pdf
+*.thm
+*.toc

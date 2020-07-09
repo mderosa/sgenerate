@@ -1,0 +1,9 @@
+Let \quad c & = & Cancellation \\
+
+&& | \Delta t \cdot p.liquid.premium(p.policy, p.exposure, p) \\
+GrossCommission & = & \sum_{p \in Perils} & reinstatements.liquid.commission(p.policy, p.exposure, p, c) \\
+                &   & | \Delta t \cdot p.liquid.commission(p.policy, p.exposure, p) \\
+GrossTax & = & \sum_{p \in Perils} \sum_{tx \in Taxes} & reinstatements.liquid.tax_{tx}(p'.policy, p'.exposure, p', c) \\
+         &   & |tx.liquid.tax(p'.policy, p'.exposure, p') \\
+GrossFee & = & \sum_{f \in Fees} & reinstatements.liquid.fee_f(policy', policyholder', c) \\
+         &   & | f.liquid.fee(policy', policyholder', c)

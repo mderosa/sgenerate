@@ -1,0 +1,112 @@
+\tlatex
+\setboolean{shading}{true}
+\@x{}\moduleLeftDash\@xx{ {\MODULE} CancellationCtx1}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Integers ,\, Policy}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ In this specification I only model cancellations and renewals processes, but
+ I can not
+ ignore the effects of other concurrent endorsement or renewals that may
+ happen during
+ those processes. I model possible endorsements and renewals with the constant
+ \ensuremath{EndorsementOrRenewal} which represents such a modification, in
+ the accepted state.
+\end{cpar}%
+\end{lcom}%
+\@x{ {\CONSTANTS} EndorsementOrRenewal}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+The no config values indicates that a there is no cancellation configuration
+ on the system and at that legacy cancellation logic should be called.
+\end{cpar}%
+\end{lcom}%
+\@x{ NoConfig \.{\defeq} {\CHOOSE} x \.{:} x \.{\notin} {\BOOLEAN}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+A reinstatement is type of modification. A reinstatement starts at some time
+ and reactivates a policy upto one of its previous end timestamps. A
+ reinstatement has
+ two specialized attributes one, specified in configuration, is the
+ \ensuremath{auto\_reinstate}: boolean
+ variable. If this variable is true for a reinstatement a payment recieved on
+ a finalized
+ reinstatement should cause the reinstatement to be issued. The second
+ attribute is a
+ \ensuremath{deadline\_ts} which is the last time at which the reinstatement
+ can be issued.
+\end{cpar}%
+\end{lcom}%
+\@x{ Reinstatements \.{\defeq} [}%
+\@x{\@s{16.4} type \.{:} \{\@w{Reinstatement} \} ,\,}%
+\@x{\@s{16.4} state \.{:} ModificationState ,\,}%
+\@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} auto\_reinstate \.{:} {\BOOLEAN} ,\,}%
+\@x{\@s{16.4} deadline\_ts \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ Its possible that different behaviors can be defined for different
+ cancelation reasons,
+ using liquid scripting. Inside \ensuremath{Java} \ensuremath{API} code, the
+ cancellation reason, Lapsed, is used
+ to mark cancellations that happen in the automated Grace-Lapse routines.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+\ensuremath{CancellationReasons \.{\defeq} \{\@w{Lapse},\, \@w{OtherReason}\}
+}%
+\end{cpar}%
+\end{lcom}%
+\@x{ CancellationReasons \.{\defeq} \{\@w{OtherReason} \}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+A cancellation is also a special type of modification. It is different from
+ standard modifications in that it does not have a
+ \ensuremath{end\_timestamp}. Though not modeled
+ in this specification cancellations should record their cancellation reason.
+\end{cpar}%
+\end{lcom}%
+\@x{ Cancellations \.{\defeq} [}%
+\@x{\@s{16.4} type \.{:} \{\@w{Cancellation} \} ,\,}%
+\@x{\@s{16.4} state \.{:} ModificationState ,\,}%
+\@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{}%
+\@xx{}%
+\@x{ Invoice \.{\defeq} [}%
+\@x{\@s{16.4} settlement\_type \.{:} {\BOOLEAN} ,\,}%
+\@x{\@s{16.4} settlement\_status \.{:} {\BOOLEAN}}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
+\@x{}\bottombar\@xx{}%
+\setboolean{shading}{false}
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{\.{\,\backslash\,}}* Modification History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Mon}
+ \ensuremath{Jun} 29 17:59:33 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified Sun \ensuremath{Jun} 28
+ 12:33:00 \ensuremath{PDT} 2020 by \ensuremath{marco
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* \ensuremath{Created} Sat \ensuremath{Jun} 27
+ 21:12:19 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\end{lcom}%

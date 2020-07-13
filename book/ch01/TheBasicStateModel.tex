@@ -1,0 +1,88 @@
+
+\begin{figure}[b]
+  \begin{tikzpicture}[->,>=stealth']
+
+    \filldraw
+    (-3,-0.5) circle node[align=left, below](tl){} --
+    (-2,-0.5) circle node[align=left, below](tltext){Creation\\ Endorsement\\ Reinstatement \\ Renewal} --
+    (2,-0.5) circle node[align=left, below](tm){} --
+    (3,-0.5) circle node[align=left, below](tmtext){Cancellation} --
+    (7,-0.5) circle node[align=left, below](tr){} --
+    (7,-7) circle node[align=left, below] (br) {} --
+    (2, -7) circle node[align=left, below] (bm) {} --
+    (-3, -7) circle node[align=left, below] (bl) {} --
+    (-3,-0.5) circle node[align=left, below] (end) {};
+
+    \draw[-, dotted] (tm) -- (bm);
+
+  \node[circle,
+    fill=black,
+    xshift=-0.5cm
+  ](BeginA) {};
+
+  \node[state,
+    below of=BeginA,
+    node distance=2cm
+  ](DraftedA) {
+    \begin{tabular}{l}
+      \textbf{Drafted}
+    \end{tabular}
+  };
+
+  \node[state,
+    below of=DraftedA,
+    node distance=2cm
+  ] (AcceptedA) {
+    \begin{tabular}{l}
+      \textbf{Accepted}
+    \end{tabular}
+  };
+
+  \node[state,
+    below of=AcceptedA,
+    node distance=2cm
+  ] (IssuedA) {
+    \begin{tabular}{l}
+      \textbf{Issued}
+    \end{tabular}
+  };
+
+  \node[circle,
+    fill=black,
+    right of=BeginA,
+    node distance=5cm
+  ](BeginB) {};
+
+  \node[state,
+    below of=BeginB,
+    node distance=2cm
+  ](DraftedB) {
+    \begin{tabular}{l}
+      \textbf{Drafted}
+    \end{tabular}
+  };
+
+  \node[state,
+    below of=DraftedB,
+    node distance=2cm
+  ] (IssuedB) {
+    \begin{tabular}{l}
+      \textbf{Issued}
+    \end{tabular}
+  };  
+
+
+  
+  \path
+  (BeginA) edge[bend left=20] node[anchor=left,right]{$onCreate$} (DraftedA)
+  (DraftedA) edge[bend left=20] node[anchor=left,right]{$onAccept$} (AcceptedA)
+  (AcceptedA) edge[bend left=20] node[anchor=right,left]{$onDiscard$} (DraftedA)
+  (AcceptedA) edge[bend left=20] node[anchor=left,right]{$onIssue$} (IssuedA)
+  (BeginB) edge[bend left=20] node[anchor=left,right]{$onCreate$} (DraftedB)
+  (DraftedB) edge[bend left=20] node[anchor=left,right]{$onIssue$} (IssuedB);
+  
+\end{tikzpicture}
+\caption{the Socotra $Modification$ state model}
+\label{fig:2}
+\end{figure}
+

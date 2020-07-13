@@ -1,0 +1,48 @@
+%%%%%%%%%%%%%%%%%%%%% chapter.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% sample chapter
+%
+% Use this file as a template for your own input.
+%
+%%%%%%%%%%%%%%%%%%%%%%%% Springer-Verlag %%%%%%%%%%%%%%%%%%%%%%%%%%
+%\motto{Use the template \emph{chapter.tex} to style the various elements of your chapter content.}
+\chapter{Cancellation and Renewal}
+\label{intro} % Always give a unique label
+% use \chaptermark{}
+% to alter or adjust the chapter heading in the running head
+
+\abstract{During the course of a policy's lifetime it may be necessary to cancel a policy because invoices have not been paid or for other
+  business specific reasons. These same policies may then need to be restored to their state before the cancellation. The cancellation and
+  renewal module in the Socotra system handles these policy changes. \newline\indent
+  The module has two distinct components which will be discussed below.
+  There is an API component which customers use to trigger cancellations or reinstatements. There is also an automated system which can cancel
+  a policy or reinstate it when propositions on the policy state become true.
+}
+
+\section{Overview}
+\label{sec:02:1}
+In our discussion of policies so far we dealt with the modifications
+\begin{equation*}
+  \{Creation, Endorsement, Renewal\}
+\end{equation*}
+. To this set we now
+add the modifications
+\begin{equation*}
+  \{Cancellation, Reinstatement\}
+\end{equation*}
+. These new modifications are similiar to modifications we already
+know, with slight differences. Reinstatements are different in that they have two unique fields, described below, and Cancellations
+are different in that their state lifecycle only has the two events onCreate and onIssue. Below is the general context in which
+we can start to model the cancellation and renewal module.
+
+\import{ch02/}{CancellationCtx1-sa.tex}
+
+With the new modifications modeled we can now lay out actions on our policy in the usual state centric way. Cancellations with have
+onCreate and onIssue events that they respond to. And Reinstatements respond to onCreate, onAccept and onIssue events. 
+
+\import{ch02/}{CancellationMch1-sa.tex}
+
+\section{Liquid Calculations}
+\label{sec:02:2}
+
+\import{ch02/}{CancellationCalculations-sa.tex}

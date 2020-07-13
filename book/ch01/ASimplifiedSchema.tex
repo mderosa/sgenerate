@@ -1,0 +1,140 @@
+
+\begin{figure}[b]
+\begin{tikzpicture}[->,>=stealth']
+
+  \node[state, text width=2cm] (Product) {
+    \begin{tabular}{l}
+      \textbf{Product}
+    \end{tabular}
+  };
+
+  \node[state,    	% layout (defined above)
+    text width=4cm, 	% max text width
+    right of=Product, 	% Position is to the right of Product
+    node distance=6.5cm,  % distance to Product
+    anchor=center       % posistion relative to the center of the 'box'
+  ] (ProductConfig) {
+    \begin{tabular}{l}
+      \textbf{ProductConfig}
+    \end{tabular}
+  };
+
+  \node[state,    	% layout (defined above)
+    text width=4cm, 	% max text width
+    xshift=1cm,
+    below of=ProductConfig, 	% Position is to the right of Product
+    node distance=1.4cm,
+    anchor=center       % posistion relative to the center of the 'box'
+  ] (ProductExposureConfig) {
+    \begin{tabular}{l}
+      \textbf{ProductExposureConfig}
+    \end{tabular}
+  };
+
+  \node[state,    	% layout (defined above)
+    text width=4cm, 	% max text width
+    xshift=1cm,
+    below of=ProductExposureConfig, 	% Position is to the right of Product
+    node distance=1.4cm,
+    anchor=center       % posistion relative to the center of the 'box'
+  ] (ProductPerilConfig) {
+    \begin{tabular}{l}
+      \textbf{ProductPerilConfig}
+    \end{tabular}
+  };
+
+  \node[state,    	% layout (defined above)
+    text width=2cm,
+    below of=Product,
+    node distance=4.5cm,  % distance to Product
+    anchor=center
+  ] (Policy) {
+    \begin{tabular}{l}
+      \textbf{Policy}
+    \end{tabular}
+  };
+
+  \node[state,
+    text width=4cm,
+    right of=Policy,
+    node distance=5.5cm,
+    anchor=center
+  ] (PolicyCharacteristics) {
+    \begin{tabular}{l}
+      \textbf{PolicyCharacteristics}
+    \end{tabular}
+  };
+
+  \node[state,
+    text width=5cm,
+    xshift=1cm,
+    below of=PolicyCharacteristics,
+    node distance=1.5cm,
+    anchor=center
+  ] (PolicyExposureCharacteristics) {
+    \begin{tabular}{l}
+      \textbf{PolicyExposureCharacteristics}
+    \end{tabular}
+  };
+
+  \node[state,
+    text width=4cm,
+    xshift=1cm,
+    below of=PolicyExposureCharacteristics,
+    node distance=1.5cm,
+    anchor=center
+  ] (PolicyPerilCharacteristics) {
+    \begin{tabular}{l}
+      \textbf{PolicyPerilCharacteristics}
+    \end{tabular}
+  };
+
+  \node[state,
+    xshift=0.5cm,
+    below of=Policy,
+    node distance=4cm,
+    anchor=center
+  ] (Modifications) {
+    \begin{tabular}{l}
+      \textbf{Modifications}\\
+      \parbox{3cm}{
+        \begin{IEEEeqnarray*}{Cl}
+          =& Creation \\
+          |& Endorsement \\
+          |& Renewal \\
+          |& Cancellation \\
+          |& Reinstatement
+        \end{IEEEeqnarray*}
+      }\\[4em]
+    \end{tabular}
+  };
+
+  \path (ProductConfig) edge node[anchor=south,above]{$defines\;attributes\;of$} (Product)
+  (ProductExposureConfig) edge[bend left=20] node[anchor=left,right]{$subgroup$} (ProductConfig)
+  (ProductPerilConfig) edge[bend left=20] node[anchor=left,right]{$subgroup$} (ProductExposureConfig)
+  (Policy)             edge[bend right=20] node[anchor=north,below]{$current$} (PolicyCharacteristics)
+  (Policy) edge node[anchor=left,right]{$has\;associated$} (Product)
+  (Policy) edge node[anchor=left,right]{$versioned\;to$} (ProductConfig)
+  (PolicyCharacteristics) edge[bend right=20] node[anchor=south,above]{$stores\;values\;of$} (Policy)
+  (PolicyExposureCharacteristics) edge[bend left=20] node[anchor=left,right]{$subgroup$} (PolicyCharacteristics)
+  (PolicyPerilCharacteristics) edge[bend left=20] node[anchor=left,right]{$subgroup$} (PolicyExposureCharacteristics)
+  (Modifications) edge node[anchor=left,right]{$audit\;history\;of$} (Policy);
+
+\end{tikzpicture}
+\caption{A simple, summary of the Socotra object model}
+\label{fig:1}
+\end{figure}
+
+The Socotra object model is built around the concepts of products and policies. A $Product$ at its
+simplest is a set of $(Fields, Type)$ tuples. These $(Field, Type)$ tuples define the data that are 
+valid attributes of an instance of a $Product$. A $Policy$ is then an instance of this $Product$ definition.
+For each $(Field, Type)$ in the $Product$ definition, there will be a corresponding $(Field, Value)$ in the
+Policy instance. Both of these sets, the $(Field, Type)$ set and the $(Field, Value)$ set, are then
+grouped for organization into $Exposure$s and $Peril$s, as shown in Figure 1.1. Note that $(Field, Type)$ elements
+are called configuration elements and $(Field, Value)$ elements are called $Characteristics$.
+
+Another concept in the Socotra object model is that policies are formed by a series of modifications. A
+policy starts empty. Its first issued $Modification$ is a creation $Modification$ and further modifications
+can follow from there in any logical order. A $Policy$ in total can best be thought of as a summary state,
+which is part of the $Policy$, plus detail state consisting of an ordered list of its issued modifications.
+

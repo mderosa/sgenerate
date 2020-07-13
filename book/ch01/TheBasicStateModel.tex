@@ -4,25 +4,24 @@
 
     \filldraw
     (-3,-0.5) circle node[align=left, below](tl){} --
-    (-2,-0.5) circle node[align=left, below](tltext){Creation\\ Endorsement\\ Reinstatement \\ Renewal} --
-    (2,-0.5) circle node[align=left, below](tm){} --
-    (3,-0.5) circle node[align=left, below](tmtext){Cancellation} --
-    (7,-0.5) circle node[align=left, below](tr){} --
-    (7,-7) circle node[align=left, below] (br) {} --
-    (2, -7) circle node[align=left, below] (bm) {} --
+    (-2,-0.5) circle node[align=left, below](tltext){Creation*\\ Endorsement*\\ Reinstatement* \\ Renewal*} --
+    (3,-0.5) circle node[align=left, below](tm){} --
+    (4,-0.5) circle node[align=left, below](tmtext){Cancellation*} --
+    (9,-0.5) circle node[align=left, below](tr){} --
+    (9,-7) circle node[align=left, below] (br) {} --
+    (3, -7) circle node[align=left, below] (bm) {} --
     (-3, -7) circle node[align=left, below] (bl) {} --
     (-3,-0.5) circle node[align=left, below] (end) {};
 
     \draw[-, dotted] (tm) -- (bm);
 
   \node[circle,
-    fill=black,
-    xshift=-0.5cm
+    fill=black
   ](BeginA) {};
 
   \node[state,
     below of=BeginA,
-    node distance=2cm
+    node distance=2.25cm
   ](DraftedA) {
     \begin{tabular}{l}
       \textbf{Drafted}
@@ -50,12 +49,12 @@
   \node[circle,
     fill=black,
     right of=BeginA,
-    node distance=5cm
+    node distance=6cm
   ](BeginB) {};
 
   \node[state,
     below of=BeginB,
-    node distance=2cm
+    node distance=2.25cm
   ](DraftedB) {
     \begin{tabular}{l}
       \textbf{Drafted}
@@ -75,8 +74,10 @@
   
   \path
   (BeginA) edge[bend left=20] node[anchor=left,right]{$onCreate$} (DraftedA)
+  (DraftedA) edge[loop right] node[anchor=left,right]{$onQuote$}(DraftedA)
+  (DraftedA) edge[loop left] node[anchor=right,left]{$onUpdate$}(DraftedA)
   (DraftedA) edge[bend left=20] node[anchor=left,right]{$onAccept$} (AcceptedA)
-  (AcceptedA) edge[bend left=20] node[anchor=right,left]{$onDiscard$} (DraftedA)
+  (AcceptedA) edge[bend left=20] node[anchor=right,left]{$onInvalidate$} (DraftedA)
   (AcceptedA) edge[bend left=20] node[anchor=left,right]{$onIssue$} (IssuedA)
   (BeginB) edge[bend left=20] node[anchor=left,right]{$onCreate$} (DraftedB)
   (DraftedB) edge[bend left=20] node[anchor=left,right]{$onIssue$} (IssuedB);
@@ -86,3 +87,44 @@
 \label{fig:2}
 \end{figure}
 
+\begin{figure}[b]
+  \begin{tikzpicture}[->,>=stealth']
+
+    \filldraw
+    (-3,0) circle node[align=left, below](tl){} --
+    (8,0) circle node[align=left, below](tr){} --
+    (8,-6) circle node[align=left, below] (br) {} --
+    (-3, -6) circle node[align=left, below] (bl) {} --
+    (-3,0) circle node[align=left, below] (end) {};
+
+    \node[state,
+      text width=2cm,
+      yshift=-3cm,
+      xshift=-0.25cm,
+      anchor=center
+    ] (OffRisk) {
+      \begin{tabular}{l}
+        \textbf{OffRisk}
+      \end{tabular}
+    };
+
+    \node[state,    	% layout (defined above)
+      text width=2cm, 	% max text width
+      right of=OffRisk, 	% Position is to the right of Product
+      node distance=5cm,  % distance to Product
+      anchor=center       % posistion relative to the center of the 'box'
+    ] (OnRisk) {
+      \begin{tabular}{l}
+        \textbf{OnRisk}
+      \end{tabular}
+    };
+
+    \path
+    (OffRisk) edge[bend left=60] node[anchor=south,above]{$onIssue[Create]$} (OnRisk)
+    (OnRisk) edge[loop above] node[anchor=south, above] {$onIssue[Endorse | Renew | Cancel | Reinstate]$} (OnRisk)
+    (OnRisk) edge[bend left=60] node[anchor=north,below]{$onIssue[Cancel]$} (OffRisk);
+    
+  \end{tikzpicture}
+  \caption{the Socotra $Policy$ state model}
+  \label{fig:3}
+\end{figure}    

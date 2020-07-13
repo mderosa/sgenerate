@@ -3,7 +3,7 @@
 \usepackage[retainorgcmds]{IEEEtrantools}
 
 \begin{document}
-\subsection{Calculations for onIssue(mod) $ mod \in {Create, Renew}$}
+\subsection{Calculations for onIssue $ mod \in {Create, Renew}$}
 Given a peril centric Socotra data model object
 \begin{equation*}
 Let \; obj_{peril} = (peril.policy, \; peril.exposure, \; peril)
@@ -26,7 +26,7 @@ GrossTax & = & \sum_{p \in Perils} \sum_{tx \in Taxes} tx.liquid.tax(obj'_p) \\
 GrossFee & = & \sum_{f \in Fees} f.liquid.fee(policy', policyholder')
 \end{IEEEeqnarray*}
 
-\subsection{Calculations for onIssue(mod) $mod \in {Cancel}$}
+\subsection{Calculations for onIssue $mod \in {Cancel}$}
 On cancellation issue events, the calculations are similar to the above; however, any calculations
 of a peril premium, commission, tax, or fee which is made in the policy's cancellations.liquid file
 takes precedent over a calculation from the peril, tax, or fee specific liquid file.
@@ -49,7 +49,7 @@ GrossFee & = & \sum_{f \in Fees} & cancellations.liquid.fee_f(obj'.p, fees^{old}
 The term $fees^{old}$ signifies the fees prior to the cancellation event and is supplied for use in
 GrossFee related calculations.
 
-\subsection{Calculations for onIssue(mod) $mod \in {Reinstate}$}
+\subsection{Calculations for onIssue $mod \in {Reinstate}$}
 Lastly the reinstatement is similar to the cancellation case in that calculations provided in a
 reinstatements.liquid take precedence over calculations from a peril, tax, or fee specific liquid files.
 \begin{IEEEeqnarray*}{rCll}

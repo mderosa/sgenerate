@@ -126,15 +126,15 @@
 \end{figure}
 
 The Socotra object model is built around the concepts of products and policies. A $Product$ at its
-simplest is a set of $(Fields, Type)$ tuples. These $(Field, Type)$ tuples define the data that are 
-valid attributes of an instance of a $Product$. A $Policy$ is then an instance of this $Product$ definition.
-For each $(Field, Type)$ in the $Product$ definition, there will be a corresponding $(Field, Value)$ in the
+simplest is a set of $(Field, Type)$ tuples. These $(Field, Type)$ tuples define the data that are
+valid attributes of an instance of a $Product$. A $Policy$ is then an instance of this $Product$ definition where,
+for each $(Field, Type)$ in the $Product$ definition, there will be a corresponding $(Field, Value)$ in the
 Policy instance. Both of these sets, the $(Field, Type)$ set and the $(Field, Value)$ set, are then
 grouped for organization into $Exposure$s and $Peril$s, as shown in Figure 1.1. Note that $(Field, Type)$ elements
 are called configuration elements and $(Field, Value)$ elements are called $Characteristics$.
 
 Another concept in the Socotra object model is that policies are formed by a series of modifications. A
 policy starts empty. Its first issued $Modification$ is a creation $Modification$ and further modifications
-can follow from there in any logical order. A $Policy$ in total can best be thought of as a summary state,
-which is part of the $Policy$, plus detail state consisting of an ordered list of its issued modifications.
-
+can follow from there in any logical order. A $Policy$ can best be thought of as having two parts, a summary state
+which is part of the $Policy$ proper, plus a detail state consisting of all issued modifications in their
+time order.

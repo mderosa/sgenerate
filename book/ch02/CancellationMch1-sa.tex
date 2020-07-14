@@ -10,18 +10,17 @@
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  Here, I model the state by separating it into a \ensuremath{Policy} state and
- a Modification Set
+ a \ensuremath{Modification} Set
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- state. Within the Modification Set, each Modification follows a stand alone,
- independent
+ state. Within the \ensuremath{Modification} Set, each
+ \ensuremath{Modification} follows a stand alone, independent
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  state machine which in greatest generality is . \ensuremath{\.{\rightarrow}
  Created \.{\rightarrow}} Accepted \ensuremath{\.{\rightarrow}
- Issued \.{\,|\,}} Invalidated \ensuremath{\.{\rightarrow}} . A
- \ensuremath{Policy} only listens to \ensuremath{Issued} events, and rolls
- forward its
+ Issued \.{\,|\,} Invalidated \.{\rightarrow}} . A \ensuremath{Policy} only
+ listens to \ensuremath{Issued} events, and rolls forward its
  state on those events.
  In the system all modifications are retained but for this
  abstractions only issued modifications are recorded. This omission reduces
@@ -89,7 +88,7 @@ Cancellations and reinstatements, like endorsements and renewals, are recorded
  \@x{\@s{36.79} \.{\land} pending \.{\notin} \{ NoModification ,\,
  EndorsementOrRenewal \} \.{\implies}}%
 \@x{\@s{181.66} pending . state \.{=}\@w{Finalized}}%
-\@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{Cancelled} \.{\implies} (}%
+\@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{OffRisk} \.{\implies} (}%
 \@x{\@s{56.11} pending \.{\neq} EndorsementOrRenewal}%
  \@x{\@s{56.11} \.{\land} policy . original\_start\_ts \.{=} policy .
  effective\_end\_ts )}%
@@ -103,9 +102,9 @@ Cancellations and reinstatements, like endorsements and renewals, are recorded
 \@x{\@s{16.4} \.{\IN} \.{\land} prevMod \.{\neq} NoModification \.{\implies}}%
  \@x{\@s{56.11} prevMod . start\_timestamp \.{\geq} policy .
  original\_start\_ts}%
- \@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{Cancelled} \.{\implies}
+ \@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{OffRisk} \.{\implies}
  prevMod \.{\in} Cancellations}%
- \@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{Cancelled} \.{\implies}
+ \@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{OffRisk} \.{\implies}
  pending\@s{3.62} \.{\in} Reinstatements \.{\cup} \{ NoModification \}}%
  \@x{\@s{36.79} \.{\land} \A\, idx \.{\in} 1 \.{\dotdot} Len ( mods ) \.{:}
  mods [ idx ] \.{\in} Cancellations \.{\implies}}%
@@ -208,7 +207,7 @@ Cancellations and reinstatements, like endorsements and renewals, are recorded
  \@x{\@s{36.79} \.{\land} {\CASE} policy . original\_start\_ts \.{=} mod .
  start\_timestamp \.{\rightarrow}}%
 \@x{\@s{56.11} \.{\land}\@s{6.66} policy \.{'} \.{=} [ policy {\EXCEPT}}%
-\@x{\@s{156.45} {\bang} . state \.{=}\@w{Cancelled} ,\,}%
+\@x{\@s{156.45} {\bang} . state \.{=}\@w{OffRisk} ,\,}%
 \@x{\@s{156.45} {\bang} . pending\_modification \.{=} NoModification ,\,}%
 \@x{\@s{156.45} {\bang} . effective\_end\_ts \.{=} mod . start\_timestamp ]}%
 \@x{\@s{47.91} {\Box} {\OTHER} \.{\rightarrow}}%
@@ -253,7 +252,7 @@ Cancellations and reinstatements, like endorsements and renewals, are recorded
 \@x{ legacyReinstatement ( mod ) \.{\defeq}}%
 \@x{\@s{16.4} \.{\land}\@w{Lapse} \.{\notin} CancellationReasons}%
 \@x{\@s{16.4} \.{\land} step \.{<} policyMaxTs}%
-\@x{\@s{16.4} \.{\land} policy . state \.{=}\@w{Canceled}}%
+\@x{\@s{16.4} \.{\land} policy . state \.{=}\@w{OffRisk}}%
  \@x{\@s{16.4} \.{\land} mod . type \.{=}\@w{Reinstatement} \.{\land} mod .
  state \.{=}\@w{Created}}%
  \@x{\@s{16.4} \.{\land} mod . start\_timestamp \.{<} policy .
@@ -262,7 +261,7 @@ Cancellations and reinstatements, like endorsements and renewals, are recorded
  start\_timestamp}%
 \@x{\@s{16.4} \.{\land} mod . deadline\_ts \.{\geq} step}%
  \@x{\@s{16.4} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} . state
- \.{=}\@w{Issued} ,\,}%
+ \.{=}\@w{OnRisk} ,\,}%
 \@x{\@s{139.79} {\bang} . pending\_modification \.{=} NoModification ]}%
  \@x{\@s{16.4} \.{\land} mods \.{'} \.{=} Append ( mods ,\, [ mod {\EXCEPT}
  {\bang} . state \.{=}\@w{Issued} ] )}%
@@ -529,16 +528,16 @@ Issue; Cancel; Reinstate; \ensuremath{\.{=}} Issue
 \setboolean{shading}{false}
 \begin{lcom}{0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-\ensuremath{\.{\,\backslash\,}}* Modification History
+\ensuremath{\.{\,\backslash\,}}* \ensuremath{Modification} History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Mon}
+ \ensuremath{Jul} 13 19:14:11 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+}%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
  \ensuremath{Jul} 08 19:38:24 \ensuremath{PDT} 2020 by \ensuremath{marco
-}%
-\end{cpar}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
- \ensuremath{Jul} 02 22:05:54 \ensuremath{PDT} 2020 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%

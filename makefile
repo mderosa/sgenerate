@@ -11,6 +11,7 @@ test: mypy
 .PHONY: doc
 doc: export PYTHONPATH=./
 doc:
+	cp ../../workspace/specsfinancial/Policy.toolbox/Policy.tex book/ch01/Policy.tex
 	cp ../../workspace/specsfinancial/CancellationCtx1.toolbox/CancellationCtx1.tex book/ch02/CancellationCtx1.tex
 	cp ../../workspace/specsfinancial/CancellationMch1.toolbox/CancellationMch1.tex book/ch02/CancellationMch1.tex
 	python bin/docgen.py

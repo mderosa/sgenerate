@@ -1,4 +1,24 @@
 
+At Socotra we like to draw large complex state machines depicting the lifecycle of a $Policy$. There is really no need
+for such extravagances, though, as the system can be succinctly and accurately described using the
+standard notation of hierarchical state diagrams. Figure 2 shows a state machine for a set of modifications. The vertical
+dotted line indicates that each $Modification$ in the set is operating in parallel with other modifications in the set. The
+$*$ appended to each $Modification$ type indicates that there can be zero or many modifications of any type. In the
+specifications ahead we often abstract further on this idea of many modifications by letting a policies initial
+modification set consist of the universe of all $Drafted$ modifications. Surprisingly this allows us to reduce the
+state space in our developments without loss of generality.
+
+Lastly in Figure 3 we have a hierarchical state machine for a $Policy$. This diagram is probably
+a bit surprising if one is used to thinking casually about policies. Yet on reflection you will
+find that it is quite correct and it brings out two important points.
+\begin{itemize}
+\item It is a bit sloppy to describe a $Policy$ as being in the $Accepted$ or some other state.
+  Most of the time when we do that we should be talking about modifications.
+\item The state changes of significance for policies happen on $onIssue$ events. We can put this statement in
+  a real world context by saying equivalently that the state changes of significance are those that
+  correspond to both sides signing off on the contractual terms.
+\end{itemize}
+
 \begin{figure}[b]
   \begin{tikzpicture}[->,>=stealth']
 
@@ -15,76 +35,78 @@
 
     \draw[-, dotted] (tm) -- (bm);
 
-  \node[circle,
-    fill=black
-  ](BeginA) {};
+    \node[circle,
+      fill=black
+    ](BeginA) {};
 
-  \node[state,
-    below of=BeginA,
-    node distance=2.25cm
-  ](DraftedA) {
-    \begin{tabular}{l}
-      \textbf{Drafted}
-    \end{tabular}
-  };
+    \node[state,
+      below of=BeginA,
+      node distance=2.25cm
+    ](DraftedA) {
+      \begin{tabular}{l}
+        \textbf{Drafted}
+      \end{tabular}
+    };
 
-  \node[state,
-    below of=DraftedA,
-    node distance=2cm
-  ] (AcceptedA) {
-    \begin{tabular}{l}
-      \textbf{Accepted}
-    \end{tabular}
-  };
+    \node[state,
+      below of=DraftedA,
+      node distance=2cm
+    ] (AcceptedA) {
+      \begin{tabular}{l}
+        \textbf{Accepted}
+      \end{tabular}
+    };
 
-  \node[state,
-    below of=AcceptedA,
-    node distance=2cm
-  ] (IssuedA) {
-    \begin{tabular}{l}
-      \textbf{Issued}
-    \end{tabular}
-  };
+    \node[state,
+      below of=AcceptedA,
+      node distance=2cm
+    ] (IssuedA) {
+      \begin{tabular}{l}
+        \textbf{Issued}
+      \end{tabular}
+    };
 
-  \node[circle,
-    fill=black,
-    right of=BeginA,
-    node distance=6cm
-  ](BeginB) {};
+    \node[circle,
+      fill=black,
+      right of=BeginA,
+      node distance=6cm
+    ](BeginB) {};
 
-  \node[state,
-    below of=BeginB,
-    node distance=2.25cm
-  ](DraftedB) {
-    \begin{tabular}{l}
-      \textbf{Drafted}
-    \end{tabular}
-  };
+    \node[state,
+      below of=BeginB,
+      node distance=2.25cm
+    ](DraftedB) {
+      \begin{tabular}{l}
+        \textbf{Drafted}
+      \end{tabular}
+    };
 
-  \node[state,
-    below of=DraftedB,
-    node distance=2cm
-  ] (IssuedB) {
-    \begin{tabular}{l}
-      \textbf{Issued}
-    \end{tabular}
-  };  
+    \node[state,
+      below of=DraftedB,
+      node distance=2cm
+    ] (IssuedB) {
+      \begin{tabular}{l}
+        \textbf{Issued}
+      \end{tabular}
+    };  
 
-
+    \path
+    (BeginA) edge[bend left=20] node[anchor=left,right]{$onCreate$} (DraftedA)
+    (DraftedA) edge[loop right] node[anchor=left,right]{$onQuote$}(DraftedA)
+    (DraftedA) edge[loop left] node[anchor=right,left]{$onUpdate$}(DraftedA)
+    (DraftedA) edge[bend left=20] node[anchor=left,right]{$onAccept$} (AcceptedA)
+    (AcceptedA) edge[bend left=20] node[anchor=right,left]{$onInvalidate$} (DraftedA)
+    (AcceptedA) edge[bend left=20] node[anchor=left,right]{$onIssue$} (IssuedA)
+    (BeginB) edge[bend left=20] node[anchor=left,right]{$onCreate$} (DraftedB)
+    (DraftedB) edge[bend left=20] node[anchor=left,right]{$onIssue$} (IssuedB);
   
-  \path
-  (BeginA) edge[bend left=20] node[anchor=left,right]{$onCreate$} (DraftedA)
-  (DraftedA) edge[loop right] node[anchor=left,right]{$onQuote$}(DraftedA)
-  (DraftedA) edge[loop left] node[anchor=right,left]{$onUpdate$}(DraftedA)
-  (DraftedA) edge[bend left=20] node[anchor=left,right]{$onAccept$} (AcceptedA)
-  (AcceptedA) edge[bend left=20] node[anchor=right,left]{$onInvalidate$} (DraftedA)
-  (AcceptedA) edge[bend left=20] node[anchor=left,right]{$onIssue$} (IssuedA)
-  (BeginB) edge[bend left=20] node[anchor=left,right]{$onCreate$} (DraftedB)
-  (DraftedB) edge[bend left=20] node[anchor=left,right]{$onIssue$} (IssuedB);
-  
-\end{tikzpicture}
-\caption{the Socotra $Modification$ state model}
-\label{fig:2}
+  \end{tikzpicture}
+  \caption{
+    The Socotra $Modification$ state model. Any number of modifications can exist
+    concurrently in the modifications set. Each modification transitions between
+    its states, isolated from the effects of other modifications.
+  }
+  \label{fig:2}
 \end{figure}
 
 \begin{figure}[b]
@@ -96,6 +118,7 @@
     (8,-6) circle node[align=left, below] (br) {} --
     (-3, -6) circle node[align=left, below] (bl) {} --
     (-3,0) circle node[align=left, below] (end) {};
+
 
     \node[state,
       text width=2cm,
@@ -119,12 +142,23 @@
       \end{tabular}
     };
 
+    \node[circle,
+      fill=black,
+      above of=OffRisk,
+      xshift=-2cm
+    ](Begin) {};
+
     \path
     (OffRisk) edge[bend left=60] node[anchor=south,above]{$onIssue[Create]$} (OnRisk)
     (OnRisk) edge[loop above] node[anchor=south, above] {$onIssue[Endorse | Renew | Cancel | Reinstate]$} (OnRisk)
-    (OnRisk) edge[bend left=60] node[anchor=north,below]{$onIssue[Cancel]$} (OffRisk);
+    (OnRisk) edge[bend left=60] node[anchor=north,below]{$onIssue[Cancel]$} (OffRisk)
+    (Begin) edge[bend left=30] (OffRisk)
+    ;
     
   \end{tikzpicture}
-  \caption{the Socotra $Policy$ state model}
+  \caption{
+    The Socotra $Policy$ state model. A $Policy$ starts out as $OffRisk$ and its effective
+    state changes whenever an $onIssue$ event fires.
+  }
   \label{fig:3}
 \end{figure}    

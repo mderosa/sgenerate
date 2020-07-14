@@ -939,529 +939,120 @@
 \begin{document}
 \tlatex
 \setboolean{shading}{true}
-\@x{}\moduleLeftDash\@xx{ {\MODULE} CancellationMch1}\moduleRightDash\@xx{}%
-\@x{ {\EXTENDS} CancellationCtx1 ,\, Policy ,\, Sequences}%
+\@x{}\moduleLeftDash\@xx{ {\MODULE} Policy}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Integers ,\, Product ,\, PolicyCtx}%
 \@pvspace{8.0pt}%
- \@x{ {\CONSTANTS} policyTi ,\, policyTf ,\, reinstatementExpireDays ,\,
- Documents}%
+\@x{ {\CONSTANT} NoModification}%
 \@pvspace{8.0pt}%
-\@x{ {\VARIABLES} policy ,\, step ,\, mods ,\, term}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- Here, I model the state by separating it into a \ensuremath{Policy} state and
- a \ensuremath{Modification} Set
-\end{cpar}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- state. Within the \ensuremath{Modification} Set, each
- \ensuremath{Modification} follows a stand alone, independent
-\end{cpar}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- state machine which in greatest generality is . \ensuremath{\.{\rightarrow}
- Created \.{\rightarrow}} Accepted \ensuremath{\.{\rightarrow}
- Issued \.{\,|\,} Invalidated \.{\rightarrow}} . A \ensuremath{Policy} only
- listens to \ensuremath{Issued} events, and rolls forward its
- state on those events.
- In the system all modifications are retained but for this
- abstractions only issued modifications are recorded. This omission reduces
- the state
- space, but it also suggests an important insight, that modifications in the
- \ensuremath{Created
-} state have little processing significance.
+ Socotra has several ways of generating invoices. When a modification is
+ accepted,
+ once a month, and, for premium reporting, on client request. For sufficient
+ variety
+ I have defined a incomplete set of the billing policy below.
 \end{cpar}%
 \end{lcom}%
-\@x{}\midbar\@xx{}%
-\@x{}%
-\@y{\@s{0}%
- Functions
+ \@x{ BillingPolicy \.{\defeq} \{\@w{BySystemOnFinalize}
+ ,\,\@w{ByClientOnRequest} \}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ It is useful to see policies has having just two states. They start off in
+ the \ensuremath{OffRisk
+ } state and transition to \ensuremath{OnRisk} with their first issued
+ modifications. Policies can
+ also transition back to \ensuremath{OffRisk} when they are fully cancelled.
+\end{cpar}%
+\end{lcom}%
+\@x{ PolicyState \.{\defeq} \{\@w{OnRisk} ,\,\@w{OffRisk} \}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+The linear lifecycle of a \ensuremath{Modification} from start to issue is:
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+(a) Created - Drafted
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+(b) Accepted - \ensuremath{Finalized
 }%
-\@xx{}%
-\@x{ prevMod \.{\defeq} \.{\LET} last \.{\defeq} Len ( mods )}%
- \@x{\@s{56.61} \.{\IN} {\IF} last \.{=} 0 \.{\THEN} NoModification \.{\ELSE}
- mods [ last ]}%
-\@pvspace{8.0pt}%
-\@x{ pendingReinstatementExpired ( p ) \.{\defeq}}%
-\@x{\@s{16.4} \.{\LET} pending \.{\defeq} p . pending\_modification}%
- \@x{\@s{16.4} \.{\IN} pending \.{\in} Reinstatements \.{\land} pending .
- deadline\_ts \.{<} step}%
-\@pvspace{8.0pt}%
-\@x{}%
-\@y{\@s{0}%
- Just a semantic addition to signify when we must invalidate a accepted
- modifications
-}%
-\@xx{}%
-\@x{ invalidate ( mod ) \.{\defeq} {\TRUE}}%
-\@pvspace{8.0pt}%
-\@x{}\midbar\@xx{}%
-\@x{}%
-\@y{\@s{0}%
- Invariants
-}%
-\@xx{}%
-\begin{lcom}{7.5}%
+\end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-Cancellations and reinstatements, like endorsements and renewals, are recorded
- as they are created in a history of policy modifications. Some of those
- modifications
- will take effect, by being issued, others will never be issued. In all
- cases, though,
- modifications retain an identity to which documents and invoices can be
- attached. The
- characteristic of the above modifications, which gives them a group
- commonality, is
- that they can operate to change liability of the parties to the contract
+ (c) Issued. These are the common states that are usually discussed at
+ \ensuremath{Socotr} along with
+ their synonyms.
 \end{cpar}%
 \end{lcom}%
-\@x{ InvType \.{\defeq}}%
-\@x{\@s{16.4} \.{\LET} pending \.{\defeq} policy . pending\_modification}%
- \@x{\@s{16.4} \.{\IN} \.{\land} pending \.{\in} {\UNION} \{ Reinstatements
- ,\,}%
-\@x{\@s{131.90} Cancellations ,\,}%
-\@x{\@s{131.90} \{ NoModification ,\, EndorsementOrRenewal \}}%
-\@x{\@s{131.90} \}}%
-\@x{\@s{36.79} \.{\land} policy . state \.{\in} PolicyState}%
+ \@x{ ModificationState \.{\defeq} \{\@w{Created} ,\,\@w{Finalized}
+ ,\,\@w{Issued} ,\,\@w{Expired} ,\,\@w{Invalidated} \}}%
 \@pvspace{8.0pt}%
-\@x{ InvPolicy \.{\defeq}}%
-\@x{\@s{16.4} \.{\LET} pending \.{\defeq} policy . pending\_modification}%
-\@x{\@s{16.4} \.{\IN} \.{\land} policy . original\_start\_ts \.{=} policyTi}%
- \@x{\@s{36.79} \.{\land} pending \.{\notin} \{ NoModification ,\,
- EndorsementOrRenewal \} \.{\implies}}%
-\@x{\@s{181.66} pending . state \.{=}\@w{Finalized}}%
-\@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{OffRisk} \.{\implies} (}%
-\@x{\@s{56.11} pending \.{\neq} EndorsementOrRenewal}%
- \@x{\@s{56.11} \.{\land} policy . original\_start\_ts \.{=} policy .
- effective\_end\_ts )}%
-\@x{\@s{36.79} \.{\land} (\@s{4.31} \.{\land} pending \.{\in} Reinstatements}%
- \@x{\@s{52.01} \.{\land} pending . auto\_reinstate ) \.{\implies} pending .
- deadline\_ts \.{+} 1 \.{\geq} step}%
-\@pvspace{8.0pt}%
-\@x{ InvMods \.{\defeq}}%
- \@x{\@s{16.4} \.{\LET}\@s{0.86} pending \.{\defeq} policy .
- pending\_modification}%
-\@x{\@s{16.4} \.{\IN} \.{\land} prevMod \.{\neq} NoModification \.{\implies}}%
- \@x{\@s{56.11} prevMod . start\_timestamp \.{\geq} policy .
- original\_start\_ts}%
- \@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{OffRisk} \.{\implies}
- prevMod \.{\in} Cancellations}%
- \@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{OffRisk} \.{\implies}
- pending\@s{3.62} \.{\in} Reinstatements \.{\cup} \{ NoModification \}}%
- \@x{\@s{36.79} \.{\land} \A\, idx \.{\in} 1 \.{\dotdot} Len ( mods ) \.{:}
- mods [ idx ] \.{\in} Cancellations \.{\implies}}%
- \@x{\@s{67.43} ( mods [ idx ] . start\_timestamp \.{<} mods [ idx ] .
- end\_timestamp )}%
- \@x{\@s{36.79} \.{\land} \A\, idx \.{\in} 2 \.{\dotdot} Len ( mods ) \.{:}
- mods [ idx ] \.{\in} Reinstatements \.{\implies}}%
- \@x{\@s{67.43} ( \.{\land} mods [ idx\@s{0.21} \.{-} 1 ] \.{\in}
- Cancellations}%
- \@x{\@s{71.53} \.{\land} mods [ idx \.{-} 1 ] . end\_timestamp \.{=} mods [
- idx ] . end\_timestamp )}%
-\@pvspace{8.0pt}%
-\@x{}\midbar\@xx{}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- As long as a policy is \ensuremath{OnRisk}, not fully canceled, endorsements
- or renewals for the
- policy may transition into an accepted state, creating a pending modification
-\end{cpar}%
-\end{lcom}%
-\@x{ acceptGeneric \.{\defeq}}%
-\@x{\@s{16.4} \.{\land} step \.{<} policyMaxTs}%
- \@x{\@s{16.4} \.{\land} policy . state \.{=}\@w{OnRisk} \.{\land} policy .
- pending\_modification \.{=} NoModification}%
- \@x{\@s{16.4} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} .
- pending\_modification \.{=} EndorsementOrRenewal ]}%
-\@x{\@s{16.4} \.{\land} step \.{'} \.{=} step \.{+} 1}%
-\@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} mods ,\, term {\rangle}}%
+\@x{ TimeRange \.{\defeq} policyMinTs \.{\dotdot} policyMaxTs}%
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- A cancellation can be created on any policy that is \ensuremath{OnRisk}. The
- start date specified by
- the cancellation should be within the coverage time span of the policy.
- Note that for the specification, we do not have cancellation create events
- result in
- additions to the modifications set. This addition would ordinarily happen in
- a concrete
- implementation, however, we elide the effect here as maintaining basic
- policy state along
- with a list of just issued modifications is sufficient to validate
- consistency. The fact
- that this approach is sufficient, is an important insight into the minor
- significance of
- states other than Accepted and \ensuremath{Issued}.
+ There are more modification types than are listed below. Consider this listed
+ just
+ a sample of commonly discussed modification
 \end{cpar}%
 \end{lcom}%
-\@x{ createCancellation ( mod ) \.{\defeq}}%
-\@x{\@s{16.4} \.{\land} step \.{<} policyMaxTs}%
-\@x{\@s{16.4} \.{\land} policy . state \.{=}\@w{OnRisk}}%
- \@x{\@s{16.4} \.{\land} mod . type \.{=}\@w{Cancellation} \.{\land} mod .
- state \.{=}\@w{Created}}%
- \@x{\@s{16.4} \.{\land} mod . start\_timestamp \.{<} policy .
- effective\_end\_ts}%
- \@x{\@s{16.4} \.{\land} mod . start\_timestamp \.{\geq} policy .
- original\_start\_ts}%
- \@x{\@s{16.4} \.{\land} {\lnot} pendingReinstatementExpired ( policy
- )\@s{16.4}}%
-\@y{\@s{0}%
- assumed
-}%
-\@xx{}%
-\@x{\@s{16.4} \.{\land} step \.{'} \.{=} step \.{+} 1}%
- \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} policy ,\, mods ,\, term
- {\rangle}}%
+ \@x{ ModificationType \.{\defeq} \{\@w{Endorsement} ,\,\@w{Renewal}
+ ,\,\@w{Cancellation} \}}%
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- A cancellation can be issued whenever its policy is \ensuremath{OnRisk}.
- Further a cancellation can be
- issued regardless of any current, pending modifications on its policy. The
- only
- restriction is that the cancellation date must be within the time span of
- the policy. If
- any endorsement or renewals are pending then those must be invalidated.
+ Modifcation all have the basic structure below. It is often convinient to
+ think of
+ them as an elaborated time interval and the action of applying a
+ modification to
+ a policy is in some respects a kind of interval addition.
 \end{cpar}%
 \end{lcom}%
-\@x{ issueCancellation ( mod ) \.{\defeq}}%
-\@x{\@s{16.4} \.{\LET} pending \.{\defeq} policy . pending\_modification}%
-\@x{\@s{16.4} \.{\IN} \.{\land} step \.{<} policyMaxTs}%
-\@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{OnRisk}}%
- \@x{\@s{36.79} \.{\land} mod . type \.{=}\@w{Cancellation} \.{\land} mod .
- state \.{=}\@w{Created}}%
- \@x{\@s{36.79} \.{\land} mod . end\_timestamp \.{=} policy .
- effective\_end\_ts\@s{8.2}}%
-\@y{\@s{0}%
- assumed
-}%
-\@xx{}%
- \@x{\@s{36.79} \.{\land} policy . original\_start\_ts \.{\leq} mod .
- start\_timestamp}%
- \@x{\@s{36.79} \.{\land} policy . effective\_end\_ts \.{>} mod .
- start\_timestamp}%
-\@x{\@s{36.79}}%
-\@y{\@s{0}%
- actions
-}%
-\@xx{}%
-\@x{\@s{36.79} \.{\land} invalidate ( pending )}%
- \@x{\@s{36.79} \.{\land} {\CASE} policy . original\_start\_ts \.{=} mod .
- start\_timestamp \.{\rightarrow}}%
-\@x{\@s{56.11} \.{\land}\@s{6.66} policy \.{'} \.{=} [ policy {\EXCEPT}}%
-\@x{\@s{156.45} {\bang} . state \.{=}\@w{OffRisk} ,\,}%
-\@x{\@s{156.45} {\bang} . pending\_modification \.{=} NoModification ,\,}%
-\@x{\@s{156.45} {\bang} . effective\_end\_ts \.{=} mod . start\_timestamp ]}%
-\@x{\@s{47.91} {\Box} {\OTHER} \.{\rightarrow}}%
-\@x{\@s{56.11} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT}}%
-\@x{\@s{149.78} {\bang} . pending\_modification \.{=} NoModification ,\,}%
-\@x{\@s{149.78} {\bang} . effective\_end\_ts \.{=} mod . start\_timestamp ]}%
- \@x{\@s{36.79} \.{\land} mods \.{'} \.{=} Append ( mods ,\, [ mod {\EXCEPT}
- {\bang} . state \.{=}\@w{Issued} ] )}%
-\@x{\@s{36.79} \.{\land} step \.{'}\@s{5.04} \.{=} step \.{+} 1}%
-\@x{\@s{36.79} \.{\land} {\UNCHANGED} {\langle} term {\rangle}}%
+\@x{ Modification \.{\defeq} [}%
+\@x{\@s{16.4} type \.{:} ModificationType ,\,}%
+\@x{\@s{16.4} state \.{:} ModificationState ,\,}%
+\@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
+\@x{\@s{16.4} ]}%
+\@pvspace{8.0pt}%
+\@x{ InvModification ( mod ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} mod . start\_timestamp \.{\leq} mod . end\_timestamp}%
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- The legacy lapse action acts similarly to the above cancellation method. It
- can be
- thought of as the sequential application of a cancellation create + issue.
- There is a
- switch in the new cancellation configuration to disable the
- \ensuremath{legacyLapse} action, possibly
- but not preferably, as shown in the first guard condition below
+ Surprisingly, policies are not a particularly important structure in our
+ specifications
+ they are convinient for holding summary information. Fields like
+ \ensuremath{revision\_start\_ts
+ } and \ensuremath{renewal\_start\_timestamp} are examples of such summary
+ information. They facilitate
+ specification tasks later on and in fact dont correspond to any structures
+ in our
+ software implementation.
+ On the other hand the \ensuremath{pending\_modification} field is used to
+ represent the fact that
+ a policy can have either no modifications in the accepted state or it can
+ have
+ one modification in the accepted state. This is an important constraint on
+ the
+ operation of our software at the moment. It is also exactly an specific case
+ of the
+ general concept of pessimistic locking used to achieve before and after
+ atomicity.
 \end{cpar}%
 \end{lcom}%
-\@x{ legacyLapse ( mod ) \.{\defeq}}%
-\@x{\@s{16.4} \.{\land}\@w{Lapse} \.{\notin} CancellationReasons}%
-\@x{\@s{16.4} \.{\land} issueCancellation ( mod )}%
-\@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- I have not included \ensuremath{legacyReinstatement} in the model, as one can
- see in the \ensuremath{Next} definition.
- Instead I just note that \ensuremath{legacyReinstatment} should equal the
- effect of consecutive draft,
- accept, issue operations in the new \ensuremath{API}, and so it is
- effectively already modeled.
- Because this function is defined as draft + accept + issue, the
- preconditions for this
- functions proper operation must be the conjunction of the guard conditions
- for draft,
- accept, and issue below.
-\end{cpar}%
-\end{lcom}%
-\@x{ legacyReinstatement ( mod ) \.{\defeq}}%
-\@x{\@s{16.4} \.{\land}\@w{Lapse} \.{\notin} CancellationReasons}%
-\@x{\@s{16.4} \.{\land} step \.{<} policyMaxTs}%
-\@x{\@s{16.4} \.{\land} policy . state \.{=}\@w{OffRisk}}%
- \@x{\@s{16.4} \.{\land} mod . type \.{=}\@w{Reinstatement} \.{\land} mod .
- state \.{=}\@w{Created}}%
- \@x{\@s{16.4} \.{\land} mod . start\_timestamp \.{<} policy .
- effective\_end\_ts}%
- \@x{\@s{16.4} \.{\land} mod . start\_timestamp \.{\geq} prevMod .
- start\_timestamp}%
-\@x{\@s{16.4} \.{\land} mod . deadline\_ts \.{\geq} step}%
- \@x{\@s{16.4} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} . state
- \.{=}\@w{OnRisk} ,\,}%
-\@x{\@s{139.79} {\bang} . pending\_modification \.{=} NoModification ]}%
- \@x{\@s{16.4} \.{\land} mods \.{'} \.{=} Append ( mods ,\, [ mod {\EXCEPT}
- {\bang} . state \.{=}\@w{Issued} ] )}%
-\@x{\@s{16.4} \.{\land} step \.{'}\@s{5.04} \.{=} step \.{+} 1}%
-\@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} term {\rangle}}%
-\@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- If a policy is in the canceled state then we can begin a draft reinstatement
- to reinstate
- it. The draft must specify an effective start date within the timespan
- truncated by the
- cancellation which preceded it. For the purposes of specification, updating
- a draft
- reinstatement is modeled as having the same processing effect as adding a
- new draft to
- the modification set.
- As with \ensuremath{createCancellation} we don\mbox{'}t model the addition
- to the modification set, though
- that would be part of the concrete implementation. Also the specification
- here, again,
- points out the relative insignificance of modifications in the draft state.
-\end{cpar}%
-\end{lcom}%
-\@x{ draftReinstatement ( mod ) \.{\defeq}}%
-\@x{\@s{16.4} \.{\LET} pending \.{\defeq} policy . pending\_modification}%
-\@x{\@s{16.4} \.{\IN} \.{\land} step \.{<} policyMaxTs}%
- \@x{\@s{36.79} \.{\land} mod . type \.{=}\@w{Reinstatement} \.{\land} mod .
- deadline\_ts \.{>} step}%
- \@x{\@s{36.79} \.{\land} mod . start\_timestamp \.{\geq} policy .
- effective\_end\_ts}%
-\@x{\@s{36.79} \.{\land} mod . deadline\_ts \.{+} 1\@s{4.63} \.{<} step}%
-\@x{\@s{36.79} \.{\land} prevMod \.{\in} Cancellations}%
- \@x{\@s{36.79} \.{\land} {\lnot} pendingReinstatementExpired ( policy
- )\@s{16.4}}%
-\@y{\@s{0}%
- assumed
-}%
-\@xx{}%
-\@x{\@s{36.79} \.{\land} step \.{'} \.{=} step \.{+} 1}%
- \@x{\@s{36.79} \.{\land} {\UNCHANGED} {\langle} policy ,\, mods ,\, term
- {\rangle}}%
-\@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- If a reinstatement exists past its \ensuremath{deadline\_ts} without being
- issued then it expires.
- At that point the reinstatement is removed as a pending modification, its
- documents are
- discarded, and its invoices are settled.
- Though not modeled here it is possible for a reinstatement in the draft
- state to expire.
- These can just be discarded.
-\end{cpar}%
-\end{lcom}%
-\@x{ expireReinstatement \.{\defeq}}%
-\@x{\@s{16.4} \.{\LET} pending \.{\defeq} policy . pending\_modification}%
-\@x{\@s{16.4} \.{\IN} \.{\land} step \.{<} policyMaxTs}%
-\@x{\@s{36.79} \.{\land} pendingReinstatementExpired ( policy )}%
-\@x{\@s{36.79} \.{\land} invalidate ( pending )}%
- \@x{\@s{36.79} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} .
- pending\_modification \.{=} NoModification ]}%
-\@x{\@s{36.79} \.{\land} step \.{'} \.{=} step \.{+} 1}%
-\@x{\@s{36.79} \.{\land} {\UNCHANGED} {\langle} mods ,\, term {\rangle}}%
-\@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- In order to accept a reinstatement the start date of the reinstatement must
- be within
- the time span truncated by the cancellation it follows. There must also be
- (1) no other
- accepted modifications pending and (2) (in this model) the most recently
- issued
- modification must be a \ensuremath{Cancellation}.
-\end{cpar}%
-\vshade{5.0}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- (1) means the reinstatement waits, like other modification operations, when
- it is blocked.
- Formally it participates in the system Draft \ensuremath{\.{\rightarrow}}
- Accept \ensuremath{\.{\rightarrow}} Issue workflow. Note that
- this behavior is unlike the \ensuremath{Cancellation} workflow, which does
- not block and is
- privileged to clear the global accept lock when it does its work.
-\end{cpar}%
-\vshade{5.0}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
-(2) is a bit more restrictive than what we want for the concrete
- implementation where we will only insist that a cancellation designated in
- the request
- exists and has not since been followed by a renewal
-\end{cpar}%
-\end{lcom}%
-\@x{ acceptReinstatement ( mod ) \.{\defeq}}%
-\@x{\@s{16.4} \.{\LET} pending \.{\defeq} policy . pending\_modification}%
-\@x{\@s{16.4} \.{\IN} \.{\land} step \.{<} policyMaxTs}%
-\@x{\@s{36.79} \.{\land} pending \.{=} NoModification}%
- \@x{\@s{36.79} \.{\land} mod . type \.{=}\@w{Reinstatement} \.{\land} mod .
- state \.{=}\@w{Created} \.{\land} mod . deadline\_ts \.{>} step}%
- \@x{\@s{36.79} \.{\land} mod . start\_timestamp \.{\geq} policy .
- effective\_end\_ts}%
-\@x{\@s{36.79} \.{\land} mod . start\_timestamp \.{<} mod . end\_timestamp}%
- \@x{\@s{36.79} \.{\land} prevMod \.{\in} Cancellations \.{\land} prevMod .
- end\_timestamp \.{=} mod . end\_timestamp}%
-\@x{\@s{36.79} \.{\land} policy \.{'}\@s{9.24} \.{=} [ policy {\EXCEPT}}%
- \@x{\@s{127.42} {\bang} . pending\_modification \.{=} [ mod {\EXCEPT} {\bang}
- . state \.{=}\@w{Finalized} ] ]}%
-\@x{\@s{36.79} \.{\land} step \.{'} \.{=} step \.{+} 1}%
-\@x{\@s{36.79} \.{\land} {\UNCHANGED} {\langle} mods ,\, term {\rangle}}%
-\@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- Issuing a reinstatement reactivates the policy restoring the end date and
- coverage as
- of the previous cancellation.
- Note that with cancellations and reinstatements it becomes possible to have
- gaps in a
- policies coverage. These gaps will be of some potential concern for financial
- calculations and claim coverage. Gaps will also factor into the timestamps
- on peril
- characteristic records in ways that will need to be defined and documented.
-\end{cpar}%
-\end{lcom}%
-\@x{ issueReinstatement \.{\defeq}}%
-\@x{\@s{16.4} \.{\LET} pending \.{\defeq} policy . pending\_modification}%
-\@x{\@s{16.4} \.{\IN} \.{\land} step \.{<} policyMaxTs}%
-\@x{\@s{36.79} \.{\land} pending \.{\in} Reinstatements}%
- \@x{\@s{36.79} \.{\land} {\lnot} pendingReinstatementExpired ( policy
- )\@s{16.4}}%
-\@y{\@s{0}%
- assumed
-}%
-\@xx{}%
- \@x{\@s{36.79} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} .
- state \.{=}\@w{OnRisk} ,\,}%
-\@x{\@s{160.19} {\bang} . pending\_modification \.{=} NoModification ]}%
- \@x{\@s{36.79} \.{\land} mods \.{'} \.{=} Append ( mods ,\, [ pending
- {\EXCEPT} {\bang} . state \.{=}\@w{Issued} ] )}%
-\@x{\@s{36.79} \.{\land} step \.{'}\@s{5.04} \.{=} step \.{+} 1}%
-\@x{\@s{36.79} \.{\land} {\UNCHANGED} {\langle} term {\rangle}}%
-\@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- When we invalidate a reinstatement we return the modification to the draft
- state. We
- discard all documents associated with the reinstatement and then settle any
- invoices.
-\end{cpar}%
-\end{lcom}%
-\@x{ invalidateReinstatement \.{\defeq}}%
-\@x{\@s{16.4} \.{\LET} pending \.{\defeq} policy . pending\_modification}%
-\@x{\@s{16.4} \.{\IN} \.{\land} step \.{<} policyMaxTs}%
- \@x{\@s{36.79} \.{\land} pending \.{\in} Reinstatements \.{\land} step
- \.{\leq} pending . deadline\_ts}%
-\@x{\@s{36.79} \.{\land} invalidate ( pending )}%
- \@x{\@s{36.79} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} .
- pending\_modification \.{=} NoModification ]}%
-\@x{\@s{36.79} \.{\land} step \.{'} \.{=} step \.{+} 1}%
-\@x{\@s{36.79} \.{\land} {\UNCHANGED} {\langle} mods ,\, term {\rangle}}%
-\@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
-If we receive a payment when we have a finalized reinstatement in the
- pending modifications set then the policy can be issued if
- \ensuremath{autoReinstate
-} is on.
- The operation below is just a placeholder to make the existence of the auto
- reinstate
- functionality. Implementing it would just repeat the
- \ensuremath{issueReinstatement} operation
- above.
-\end{cpar}%
-\end{lcom}%
-\@x{ payInvoiceReinstatement \.{\defeq}}%
-\@x{\@s{16.4} \.{\LET} mod \.{\defeq} policy . pending\_modification}%
-\@x{\@s{16.4} \.{\IN} \.{\land} step \.{<} policyMaxTs}%
-\@x{\@s{36.79} \.{\land} mod . auto\_reinstate \.{=} {\TRUE}}%
-\@x{\@s{36.79} \.{\land} issueReinstatement}%
-\@pvspace{8.0pt}%
-\@x{ doStep \.{\defeq}}%
-\@x{\@s{16.4} \.{\LET} mod \.{\defeq} policy . pending\_modification}%
-\@x{\@s{16.4} \.{\IN} \.{\land} step \.{<} policyMaxTs}%
- \@x{\@s{36.79} \.{\land} {\IF} ( \.{\land} mod \.{\notin} \{ NoModification
- ,\, EndorsementOrRenewal \}}%
-\@x{\@s{64.16} \.{\land} mod . type \.{=}\@w{Reinstatement}}%
-\@x{\@s{64.16} \.{\land} step \.{>} mod . deadline\_ts )}%
-\@x{\@s{47.91} \.{\THEN} expireReinstatement}%
-\@x{\@s{47.91} \.{\ELSE} \.{\land} step \.{'} \.{=} step \.{+} 1}%
- \@x{\@s{79.22} \.{\land} {\UNCHANGED} {\langle} policy ,\, term ,\, mods
- {\rangle}}%
-\@pvspace{8.0pt}%
-\@x{ doTerm \.{\defeq}}%
-\@x{\@s{16.4} \.{\land}\@s{6.86} step \.{=} policyMaxTs}%
-\@x{\@s{16.4} \.{\land}\@s{6.86} term \.{'} \.{=} {\TRUE}}%
- \@x{\@s{16.4} \.{\land}\@s{6.86} {\UNCHANGED} {\langle} policy ,\, step ,\,
- mods {\rangle}}%
-\@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- General observations: For cancellations I believe that if we issue a policy
- from \ensuremath{t1} to
- \ensuremath{t3} and then cancel back to some intermediate time
- \ensuremath{t2}, the effect, from the pov of an
- external observer of total payments, should be as if the policy was issued
- from \ensuremath{t1} to \ensuremath{t2}.
- Or, more generally, there are many sequences where the following will hold
-\end{cpar}%
-\vshade{5.0}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
-Issue; Cancel; Reinstate; \ensuremath{\.{=}} Issue
-\end{cpar}%
-\vshade{5.0}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- These sorts of relationship should be useful in checking the financial
- calculation
- routines to the extent they need to be checked.
-\end{cpar}%
-\end{lcom}%
-\@x{}\midbar\@xx{}%
-\@x{ Init \.{\defeq}}%
-\@x{\@s{16.4} \.{\land} step \.{=} 0}%
-\@x{\@s{16.4} \.{\land} policy \.{=} [}%
-\@x{\@s{31.61} original\_start\_ts \.{\mapsto} policyTi ,\,}%
-\@x{\@s{31.61} effective\_end\_ts \.{\mapsto} policyTf ,\,}%
-\@x{\@s{31.61} billing\_policy \.{\mapsto}\@w{BySystemOnFinalize} ,\,}%
-\@x{\@s{31.61} state \.{\mapsto}\@w{OnRisk} ,\,}%
- \@x{\@s{31.61} revision\_start\_timestamps \.{\mapsto} \{ {\langle} 0 ,\,
- policyTi {\rangle} \} ,\,}%
-\@x{\@s{31.61} renewal\_start\_timestamps \.{\mapsto} \{ \} ,\,}%
-\@x{\@s{31.61} pending\_modification \.{\mapsto} NoModification ]}%
-\@x{\@s{16.4} \.{\land} mods \.{=} {\langle} {\rangle}}%
-\@x{\@s{16.4} \.{\land} term\@s{1.71} \.{=} {\FALSE}}%
-\@pvspace{8.0pt}%
-\@x{ Next \.{\defeq}}%
-\@x{\@s{16.4} \.{\lor} acceptGeneric}%
- \@x{\@s{16.4} \.{\lor} \exists\, m \.{\in} Cancellations \.{:}
- createCancellation ( m )}%
- \@x{\@s{16.4} \.{\lor} \exists\, m \.{\in} Cancellations \.{:}
- issueCancellation ( m )}%
- \@x{\@s{16.4} \.{\lor} \exists\, m \.{\in} Cancellations \.{:} legacyLapse (
- m )}%
- \@x{\@s{16.4} \.{\lor} \exists\, m \.{\in} Reinstatements \.{:}
- draftReinstatement ( m )}%
- \@x{\@s{16.4} \.{\lor} \exists\, m \.{\in} Reinstatements \.{:}
- acceptReinstatement ( m )}%
-\@x{\@s{16.4} \.{\lor} expireReinstatement}%
-\@x{\@s{16.4} \.{\lor} issueReinstatement}%
-\@x{\@s{16.4}}%
-\@y{\@s{0}%
- \ensuremath{\.{\lor} \E\, m \.{\in} Reinstatements} :
- \ensuremath{legacyReinstatement(m)
-}}%
-\@xx{}%
-\@x{\@s{16.4} \.{\lor} invalidateReinstatement}%
-\@x{\@s{16.4} \.{\lor} doStep}%
-\@x{\@s{16.4} \.{\lor} doTerm}%
- \@x{\@s{16.4} \.{\lor} ( term \.{=} {\TRUE} \.{\land} {\UNCHANGED} {\langle}
- policy ,\, step ,\, mods ,\, term {\rangle} )}%
-\@pvspace{8.0pt}%
- \@x{ Spec \.{\defeq} Init \.{\land} {\Box} [ Next ]_{ {\langle} policy ,\,
- step ,\, mods ,\, term {\rangle}}}%
+\@x{ Policy \.{\defeq} [}%
+\@x{\@s{16.4} original\_start\_ts \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} effective\_end\_ts \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} billing\_policy \.{:} BillingPolicy ,\,}%
+\@x{\@s{16.4} state \.{:} PolicyState ,\,}%
+ \@x{\@s{16.4} revision\_start\_timestamps \.{:} {\SUBSET} ( ( 0 \.{\dotdot}
+ maxRevision ) \.{\times} TimeRange ) ,\,}%
+\@x{\@s{16.4} renewal\_start\_timestamps \.{:} {\SUBSET} ( TimeRange ) ,\,}%
+ \@x{\@s{16.4} pending\_modification \.{:} Modification \.{\cup} \{
+ NoModification \}}%
+\@x{\@s{16.4} ]}%
 \@pvspace{8.0pt}%
 \@x{}\bottombar\@xx{}%
 \setboolean{shading}{false}
@@ -1471,17 +1062,17 @@ Issue; Cancel; Reinstate; \ensuremath{\.{=}} Issue
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Mon}
- \ensuremath{Jul} 13 19:14:11 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+ \ensuremath{Jul} 13 20:22:48 \ensuremath{PDT} 2020 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
- \ensuremath{Jul} 08 19:38:24 \ensuremath{PDT} 2020 by \ensuremath{marco
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
+ \ensuremath{Mar} 05 13:20:45 \ensuremath{PST} 2020 by \ensuremath{marcderosa
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* \ensuremath{Created} Sat \ensuremath{Jun} 27
- 21:12:50 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* \ensuremath{Created} \ensuremath{Wed}
+ \ensuremath{Feb} 05 14:05:18 \ensuremath{PST} 2020 by \ensuremath{marcderosa
 }%
 \end{cpar}%
 \end{lcom}%

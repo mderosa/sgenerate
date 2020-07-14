@@ -19,8 +19,29 @@
 \label{sec:01:1}
 \import{ch01/}{TheSimplifiedSchema.tex}
 
-\section{The Basic State Model}
+\section{Fundamental Objects}
+Of the objects in the simplified schema products, policies and modifications are the most common topics
+of discussion. A $Product$ is merely a compound, tree structured definition object. It is mostly static,
+configuration date, not very computationally exciting. A $Policy$ and its $Modification$ set is much more
+interesting and dynamic. And at Socotra the two are used very much like the common functional list type
+\begin{equation*}
+  data \; List \; a = Nil | Cons \; a
+\end{equation*}
+To make the analogy more explicit, I can rewrite the above as
+\begin{equation*}
+  data \; Policy \; a = Init | Modification  \; a
+\end{equation*}
+The analogy is not quite exact but it brings out an important idea that the meat of what a $Policy$ is and
+how it behaves during computation is determined by the time ordered list of modifications that it is made up
+of.
+
+Below I have added some additional notes, to give a more detailed, but still simplified, understanding of
+the structure of policies and modifications.
 \label{sec:01:2}
+\import{ch01/}{Policy-sa.tex}
+
+\section{The Basic State Model}
+\label{sec:01:3}
 \import{ch01/}{TheBasicStateModel.tex}
 
 

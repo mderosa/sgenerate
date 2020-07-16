@@ -1,6 +1,5 @@
 
-## To run locally:
-### Front end development
+## Local Development (Front End)
 Install npm packages:
 `npm install`
 (You may have to restart VSCode after this to pick up the installed components)
@@ -16,7 +15,7 @@ Chances are you'll need to open the app in a browser that has CORS disabled (b/c
 
 build.sh is for production use only. It will throw errors if run locally.
 
-### Back end development
+## Local Development (Back End)
 If you have a standard backend setup and have setup the docker-dev admin account, via
 ```bash
 brew install jp jo

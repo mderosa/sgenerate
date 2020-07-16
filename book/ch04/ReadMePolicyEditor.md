@@ -1,5 +1,5 @@
-## To run locally:
-### Front end development
+
+## Local Development (Front End)
 Install npm packages:
 `npm install`
 (You may have to restart VSCode after this to pick up the installed components)
@@ -30,7 +30,7 @@ pw: socotra
 
 If you want to log in to the 'Administration' side of the app to manage users and external integrations, you'll need to use your tenant login (not alice.lee).
 
-### Back end development
+## Local Development (Back End)
 If you have a standard backend setup and have setup the docker-dev admin account, via
 ```bash
 brew install jq jo

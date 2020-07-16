@@ -113,14 +113,19 @@ The request should contain a json body of the form
 ex:
 ```json
 {
-	assets:{
-		config.json: {timezone: "America/Los_Angeles", currency: "USD", improvedRating: true}",
-		security/roles.json: {underwriter1: "Underwriter Level 1", underwriter2: "Underwriter Level 2"},
-		...
-	},
-	recreate: false
+    assets:{
+        config.json: {
+            timezone: "America/Los_Angeles",
+            currency: "USD",
+            improvedRating: true
+            },
+        security/roles.json: {
+        underwriter1: "Underwriter Level 1",
+        underwriter2: "Underwriter Level 2"
+        },
+    },
+    recreate: false
 }
-
 ```
 
 The response will be of the form

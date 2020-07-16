@@ -148,7 +148,7 @@
     (ConfigManager) edge node[anchor=south,above]{$sends *.zip \; to$} (LoadAssets)
     (LoadAssets) edge node[anchor=left,right]{$deploys \; products \; via$} (SocotraApi)
     (PolicyEditor) edge[bend left] node[anchor=south,above]{$uses \; public \; Api$} (SocotraApi)
-    (SocotraApi) edge[bend right=10] (Socol)
+    (SocotraApi) edge[bend right=10] node[anchor=south,above]{$requests \; script \; eval$} (Socol)
     (SocotraApi) edge[bend left=5] (MySql)
     (SocotraApi) edge[bend left=60] (Dynamo)
     (SocotraApi) edge[bend left=65] (Postgres)

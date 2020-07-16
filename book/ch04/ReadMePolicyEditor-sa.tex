@@ -1,0 +1,73 @@
+\hypertarget{to-run-locally}{%
+\subsection{To run locally:}\label{to-run-locally}}
+
+\hypertarget{front-end-development}{%
+\subsubsection{Front end development}\label{front-end-development}}
+
+Install npm packages: \texttt{npm\ install} (You may have to restart
+VSCode after this to pick up the installed components)
+
+Compile the app: \texttt{npm\ run\ build}
+
+Serve it locally via webpack-dev-server: \texttt{npm\ start}
+
+Before running locally, ensure the following environment variables are
+set appropriately:
+
+\begin{verbatim}
+API_URL=<url_of_backend i.e. api.develop.socotra.com>
+TENANT_HOSTNAME=<your_tenant_name i.e. johndoe-configeditor.co.develop.socotra.com>
+PORT=<this variable is optional. Specify port number to serve the app. i.e. 8080>
+\end{verbatim}
+
+Note: If you load the app in a browser and log in but experience weird
+errors, check the console. If there's weird errors (i.e. 'Uncaught
+Error: Expected to find root ID'), you may need to try loading the app
+in a CORS-disabled browser. On a Mac, run this command in a terminal to
+open a CORS-disabled version of Chrome:
+\texttt{open\ -n\ -a\ /Applications/Google\textbackslash{}\ Chrome.app/Contents/MacOS/Google\textbackslash{}\ Chrome\ -\/-args\ -\/-user-data-dir="/tmp/chrome\_dev\_test"\ -\/-disable-web-security}
+
+When you run the app, you can log in with the default username and
+password (Note: these credentials are only available in development.
+They're disabled in production):
+
+\begin{verbatim}
+username: alice.lee
+pw: socotra
+\end{verbatim}
+
+If you want to log in to the 'Administration' side of the app to manage
+users and external integrations, you'll need to use your tenant login
+(not alice.lee).
+
+\hypertarget{back-end-development}{%
+\subsubsection{Back end development}\label{back-end-development}}
+
+If you have a standard backend setup and have setup the docker-dev admin
+account, via
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{brew}\NormalTok{ install jq jo}
+\BuiltInTok{cd}\NormalTok{ ~/Code/socotra-stack/docker-dev}
+\FunctionTok{make}\NormalTok{ tenant}
+\end{Highlighting}
+\end{Shaded}
+
+You will be able to start stack-app-static on port 8081 with the command
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{make}\NormalTok{ run}
+\end{Highlighting}
+\end{Shaded}
+
+With stack-app-static running you should then be able to navigate to
+\href{http://docker-dev-configeditor.co.socotra.com:8081/}{http://docker-dev-configeditor.co.socotra.com:8081/}
+locally in a browser (assuming the line '127.0.0.1
+docker-dev-configeditor.co.socotra.com' in /etc/hosts) and login with
+the username/password alice.lee/socotra
+
+To run stack-app-static along with the entire complement of Config
+Manager, Load Assets, and the API refer to the README.md in the root of
+the stack-config-manager directory.

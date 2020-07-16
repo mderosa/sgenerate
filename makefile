@@ -28,6 +28,11 @@ doc:
 
 	cp ../socotra-stack/source/stack-python-client/README.md book/ch04/ReadMePythonClient.md
 	pandoc -f gfm -t latex -o book/ch04/ReadMePythonClient-sa.tex book/ch04/ReadMePythonClient.md
+	cp ../socotra-stack/source/stack-python-client/docs/UsingFromPythonCode.md book/ch04/PythonClientUsingFromPythonCode.md
+	pandoc -f gfm -t latex -o book/ch04/PythonClientUsingFromPythonCode-sa.tex book/ch04/PythonClientUsingFromPythonCode.md
+	cp ../socotra-stack/source/stack-python-client/docs/UsingTheUtilityPrograms.md book/ch04/PythonClientUsingTheUtilityPrograms.md
+	pandoc -f gfm -t latex -o book/ch04/PythonClientUsingTheUtilityPrograms-sa.tex book/ch04/PythonClientUsingTheUtilityPrograms.md
+
 	cp ../socotra-stack/source/stack-api-service/README.md book/ch04/ReadMeStackApiService.md
 	pandoc -f gfm -t latex -o book/ch04/ReadMeStackApiService-sa.tex book/ch04/ReadMeStackApiService.md
 	python bin/docgen.py

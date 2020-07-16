@@ -1,0 +1,162 @@
+
+\begin{figure}[b]
+  \begin{tikzpicture}[->,>=stealth']
+
+    \node[state] (ConfigManager) {
+      \begin{tabular}{l}
+        \textbf{Config Manager}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item Product Configuration Editor
+          \item[.] Edit and validate configuration files
+          \item[.] Import and deploy configurations as zip files
+          \end{itemize}
+        }\\[4em]
+        \textbf{Authentication}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] System Administrator
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      below of=ConfigManager,
+      node distance=5cm](PolicyEditor) {
+      \begin{tabular}{l}
+        \textbf{Policy Editor}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item Policy Management Tool
+          \item[.] Manage policyholders
+          \item[.] Create and update policies
+          \end{itemize}
+        }\\[4em]
+        \textbf{Authentication}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] Business User
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      right of=ConfigManager,
+      node distance=7cm](LoadAssets) {
+      \begin{tabular}{l}
+        \textbf{Load Assets}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item Configuration Processing Tool
+          \item[.] Validates individual config files
+          \item[.] Updates products using the Socotra API
+          \end{itemize}
+        }\\[4em]
+        \textbf{Authentication}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] System Administrator
+            with tenant association
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      below of=LoadAssets,
+      node distance=5.8cm](SocotraApi) {
+      \begin{tabular}{l}
+        \textbf{Socotra API}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item Insurance Operating System
+          \item[.] Manage products
+          \item[.] Manage policies
+          \end{itemize}
+        }\\[4em]
+        \textbf{Authentication}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] System Administrator
+            with tenant association
+          \item[.] Business User
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      below of=SocotraApi,
+      xshift=-7cm,
+      node distance=4cm](Socol) {
+      \begin{tabular}{l}
+        \textbf{Socol}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item Scripting processor
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      below of=SocotraApi,
+      xshift=-0.5cm,
+      node distance=4cm](MySql) {
+      \begin{tabular}{l}
+        \textbf{MySql}\\
+        \parbox{5.1cm}{
+          \begin{itemize}
+          \item[.] Stores product data
+          \item[.] Stores policyholder and policy data
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      below of=SocotraApi,
+      xshift=-3cm,
+      node distance=7.4cm](Postgres) {
+      \begin{tabular}{l}
+        \textbf{Postgres}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] Stores search data
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      below of=SocotraApi,
+      xshift=-2cm,
+      node distance=5.8cm](Dynamo) {
+      \begin{tabular}{l}
+        \textbf{Dynamo}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] Stores system auth data
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \path
+    (ConfigManager) edge node[anchor=south,above]{$sends *.zip \; to$} (LoadAssets)
+    (LoadAssets) edge node[anchor=left,right]{$deploys \; products \; via$} (SocotraApi)
+    (PolicyEditor) edge[bend left] node[anchor=south,above]{$uses \; public \; Api$} (SocotraApi)
+    (SocotraApi) edge[bend right=10] (Socol)
+    (SocotraApi) edge[bend left=5] (MySql)
+    (SocotraApi) edge[bend left=60] (Dynamo)
+    (SocotraApi) edge[bend left=65] (Postgres)
+    ;
+
+  \end{tikzpicture}
+  \caption{
+    The overall Socotra system
+  }
+  \label{fig:3}
+\end{figure}

@@ -987,16 +987,16 @@ A reinstatement is type of modification. A reinstatement starts at some time
 \@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
 \@x{ ]}%
 \@pvspace{8.0pt}%
-\begin{lcom}{0}%
-\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
  Its possible that different behaviors can be defined for different
  cancelation reasons,
  using liquid scripting. Inside \ensuremath{Java} \ensuremath{API} code, the
  cancellation reason, Lapsed, is used
- to mark cancellations that happen in the automated Grace-Lapse routines.
+ to mark cancellations that happen through the action of the automated
+ Grace-Lapse routines.
 \end{cpar}%
-\vshade{5.0}%
-\begin{cpar}{1}{F}{F}{0}{0}{}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
 \ensuremath{CancellationReasons \.{\defeq} \{\@w{Lapse},\, \@w{OtherReason}\}
 }%
 \end{cpar}%
@@ -1005,9 +1005,7 @@ A reinstatement is type of modification. A reinstatement starts at some time
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-A cancellation is also a special type of modification. It is different from
- standard modifications in that it does not have a
- \ensuremath{end\_timestamp}. Though not modeled
+A cancellation is also a special type of modification. Though not modeled
  in this specification cancellations should record their cancellation reason.
 \end{cpar}%
 \end{lcom}%
@@ -1019,14 +1017,6 @@ A cancellation is also a special type of modification. It is different from
 \@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
 \@x{ ]}%
 \@pvspace{8.0pt}%
-\@x{}%
-\@y{}%
-\@xx{}%
-\@x{ Invoice \.{\defeq} [}%
-\@x{\@s{16.4} settlement\_type \.{:} {\BOOLEAN} ,\,}%
-\@x{\@s{16.4} settlement\_status \.{:} {\BOOLEAN}}%
-\@x{ ]}%
-\@pvspace{8.0pt}%
 \@x{}\bottombar\@xx{}%
 \setboolean{shading}{false}
 \begin{lcom}{0}%
@@ -1034,13 +1024,13 @@ A cancellation is also a special type of modification. It is different from
 \ensuremath{\.{\,\backslash\,}}* Modification History
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Mon}
- \ensuremath{Jun} 29 17:59:33 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
+ \ensuremath{Jul} 16 16:33:53 \ensuremath{PDT} 2020 by \ensuremath{marco
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified Sun \ensuremath{Jun} 28
- 12:33:00 \ensuremath{PDT} 2020 by \ensuremath{marco
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Mon}
+ \ensuremath{Jun} 29 17:59:33 \ensuremath{PDT} 2020 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%

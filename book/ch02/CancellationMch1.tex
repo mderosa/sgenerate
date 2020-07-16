@@ -949,24 +949,23 @@
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  Here, I model the state by separating it into a \ensuremath{Policy} state and
- a \ensuremath{Modification} Set
+ a Modification Set
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- state. Within the \ensuremath{Modification} Set, each
- \ensuremath{Modification} follows a stand alone, independent
+ state. Within the Modification Set, each Modification follows a stand alone,
+ independent
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  state machine which in greatest generality is . \ensuremath{\.{\rightarrow}
  Created \.{\rightarrow}} Accepted \ensuremath{\.{\rightarrow}
- Issued \.{\,|\,} Invalidated \.{\rightarrow}} . A \ensuremath{Policy} only
- listens to \ensuremath{Issued} events, and rolls forward its
+ Issued \.{\,|\,}} Invalidated \ensuremath{\.{\rightarrow}} . A
+ \ensuremath{Policy} only listens to \ensuremath{Issued} events, and rolls
+ forward its
  state on those events.
  In the system all modifications are retained but for this
  abstractions only issued modifications are recorded. This omission reduces
  the state
- space, but it also suggests an important insight, that modifications in the
- \ensuremath{Created
-} state have little processing significance.
+ space without affecting correctness
 \end{cpar}%
 \end{lcom}%
 \@x{}\midbar\@xx{}%
@@ -986,7 +985,7 @@
 \@pvspace{8.0pt}%
 \@x{}%
 \@y{\@s{0}%
- Just a semantic addition to signify when we must invalidate a accepted
+ Just a semantic addition to signify when we must invalidate an accepted
  modifications
 }%
 \@xx{}%
@@ -1085,10 +1084,7 @@ Cancellations and reinstatements, like endorsements and renewals, are recorded
  implementation, however, we elide the effect here as maintaining basic
  policy state along
  with a list of just issued modifications is sufficient to validate
- consistency. The fact
- that this approach is sufficient, is an important insight into the minor
- significance of
- states other than Accepted and \ensuremath{Issued}.
+ consistency.
 \end{cpar}%
 \end{lcom}%
 \@x{ createCancellation ( mod ) \.{\defeq}}%
@@ -1220,9 +1216,7 @@ Cancellations and reinstatements, like endorsements and renewals, are recorded
  the modification set.
  As with \ensuremath{createCancellation} we don\mbox{'}t model the addition
  to the modification set, though
- that would be part of the concrete implementation. Also the specification
- here, again,
- points out the relative insignificance of modifications in the draft state.
+ that would be part of the concrete implementation.
 \end{cpar}%
 \end{lcom}%
 \@x{ draftReinstatement ( mod ) \.{\defeq}}%
@@ -1467,16 +1461,16 @@ Issue; Cancel; Reinstate; \ensuremath{\.{=}} Issue
 \setboolean{shading}{false}
 \begin{lcom}{0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-\ensuremath{\.{\,\backslash\,}}* \ensuremath{Modification} History
+\ensuremath{\.{\,\backslash\,}}* Modification History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
+ \ensuremath{Jul} 16 16:36:58 \ensuremath{PDT} 2020 by \ensuremath{marco
+}%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Mon}
  \ensuremath{Jul} 13 19:14:11 \ensuremath{PDT} 2020 by \ensuremath{ASUS
-}%
-\end{cpar}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
- \ensuremath{Jul} 08 19:38:24 \ensuremath{PDT} 2020 by \ensuremath{marco
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%

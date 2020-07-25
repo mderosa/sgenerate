@@ -1,82 +1,102 @@
-%%%%%%%%%%%%%%%%%%%%% appendix.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% sample appendix
-%
-% Use this file as a template for your own input.
-%
-%%%%%%%%%%%%%%%%%%%%%%%% Springer-Verlag %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \appendix
 \motto{All's well that ends well}
-\chapter{Appendix - Engineering Practices}
+\chapter{Appendix}
 \label{introA} % Always give a unique label
-% use \chaptermark{}
-% to alter or adjust the chapter heading in the running head
 
-Use the template \emph{appendix.tex} together with the Springer document class SVMono (monograph-type books) or SVMult (edited books) to style appendix of your book.
-
-
-\section{Section Heading}
+\section{Engineering Practices}
 \label{sec:A1}
-% Always give a unique label
-% and use \ref{<label>} for cross-references
-% and \cite{<label>} for bibliographic references
-% use \sectionmark{}
-% to alter or adjust the section heading in the running head
-Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text. Furtheron please use the \LaTeX\ automatism for all your cross-references and citations.
 
-
-\subsection{Subsection Heading}
+\subsection{Define the Problem}
 \label{sec:A2}
-Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text. Furtheron please use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:A1}.
+It should be axiomatic that if one cant define a problem, one cant solve it. It should be equally clear that if one defines a
+problem incorrectly, then regardless of the quality of the solution one provides, the solution provides no value in the context of
+the actual need.
+As obvious as the above statements are, you should not deceive yourself into thinking that the ability to define
+problems is natural, and even less that a problem, when it reaches your desk, has been correctly defined as stated. One should, in fact,
+assume just the opposite.
+In the course of your career, unless you are finding that 90 percent of the time your problems have to be reexamined and refined,
+then you surely you are not thinking carefully enough before you work.
 
-For multiline equations we recommend to use the \verb|eqnarray| environment.
-\begin{eqnarray}
-\vec{a}\times\vec{b}=\vec{c} \nonumber\\
-\vec{a}\times\vec{b}=\vec{c}
-\label{eq:A01}
-\end{eqnarray}
+Lets think through a current, discussion topic at Socotra, feature flags, to illustrate defining a problem. I don't happen to know what the
+resolution to the feature flag ``problem'' will be and perhaps that is good. You, the future reader with hindsight and proof of time, will
+all the better be able to evaluate the usefulness of the thoughts on problem definition that follow.
+
+Lets start with real life, feature flag problem statements that we can quickly disregard.
+\begin{description}
+\item[Problem] The current feature flag
+mechanism (with flags in database tables) is inelegant.
+\end{description}
+Like you, I am not sure what the official engineering definition of inelegant
+is. If it had an engineering definition, I am not convinced that such a label would be sufficient establish the existence of a
+problem. Inelegant is an aesthetic, emotional judgment, and while there is room for aesthetics in engineering, we should be on our
+guard. Feature flags presumably would fulfill a functional need and not an aesthetic, emotional need. Let's try again.
+
+\begin{description}
+\item[Problem] Lets investigate the Launch Darkly feature flag functionality to see how it could be used in our current systems.
+\end{description}
+This statement is an example of a
+solution disguised as a problem. As an engineer you should sensitize yourself to problems misclassified as solutions.
+``We should build new functionality as micro services'' or
+``We should use Amazon Lambda for X, Lambda is scalable and the future of software development'' are other examples. I am sure Launch Darkly is wonderful,
+as well as micro services and Amazon Lambda, and yet their wonderfulness does not mandate their use. As an engineer, when technical discussion 
+leads directly to technical implementation X or a technology Y, that is a tell that perhaps someone had a vague feeling about a
+problem and the source of that feeling was easiest for them to express as the absence of a technology, for instance ``MongoDB''. (And as the joke goes, now
+you have two problems).
+
+Since we achieved insufficient clarity with the above problem definitions let's metaphorically go back to the beginning and talk about feature
+flags. Feature flags are a soft deployment mechanism, which activate software functionality. Feature flags complement and add additional
+flexibility to physical deployment mechanisms. In any existing implementation, the flag consists of a name and associated data (Boolean,
+Enumerated...) stored in persistence somewhere. Is that elegant? We can list some of the common problems that feature flags solve. I took
+the following problems from the web site of a commercial service that sells a feature flag management product. I believe the list is complete.
+
+\begin{description}
+  \item[Problem 1] A mechanism is needed to rollout software incrementally (for example: 10\% of users, 20\% of users,\dots) while monitoring
+  metrics for errors or performance problems.
+  \item[Problem 2] A short lived mechanism is needed to enable subsets of users to see different site functionality, perhaps for the purpose of
+  running experiments.
+  \item[Problem 3] A mechanism is needed to reconfigure code and it is not practical or desirable to do this via physical deployments.
+\end{description}
+Briefly reflect on how the above problems apply to Socotra. And with that reflection done, let's define Socotra's
+problems.
+
+Since feature flags are just a deployment mechanism, let's not immediately bring feature flags into our problem definition exercise, as we might
+fool ourselves into
+talking about a solution. Instead lets talk about what needs Socotra has around deployment functionality. Here is one deployment problem I
+have witnessed at Socotra
+\begin{description}
+  \item[Problem] A mechanism is needed to rollout software incrementally (for example: organization \#1, a few days later organization \#2, \dots) while monitoring
+  metrics for errors or performance problems.
+\end{description}
+For the instance where the above problem came up, Devops could have made incremental physical deployments but since the rollout had
+more than one moving part it was conceptually simpler to put all the pieces in place and then flip a flag to bring everything live.
+A database table, \_env\_feaure, supplied the global, boolean feature flag to bring the new functionality live and that mechanism was
+simple and sufficient. There were no problems. That said, I can envision a more complex Socotra system where functionality might be
+deployed in independent components in pieces; where one flag to bring all component functionality live at once, would enable conceptually simple deployment;
+and where a flag in a database table would not be available to all the components. That would pose a deployment problem. We would probably
+want to be aware of that future problem and address it at the proper time according to our engineering judgment.
+
+In contrast, here is another common deployment problem I am aware of at Socotra
+\begin{description}
+  \item[Problem] Wonderful new functionality X has been developed and insurance companies are dying to start using it. Unfortunately insurance companies
+  cant readily use the new functionality because the new functionality requires that new fields or a new file be added to the product configuration. Even
+  though insurance companies have deployed new product configurations, all their existing policies are tied to the previous product revision. They have to wait for each
+  policy to be renewed, maybe a year, until they and their policyholders can all enjoy wonderful new functionality. It's very inconvenient for insurance
+  companies, their systems, and their policyholders to receive functionality in this manner.
+\end{description}
+This is a problem that is immanent once product versioning goes live. Today this problem  is more salient than any other deployment problem Socotra
+has and as engineers we should have immanent problems clear in our minds. Again, I am going to leave the solution to this problem to the reader,
+but we might observe that practical engineering, perhaps not elegance and certainly not Launch Darkly, will be involved in the solution. We might also observe
+that, exactly like feature flags, the deployment of configuration zip files is a type of soft deployment, which complements and adds additional
+flexibility to physical deployments mechanisms.
+
+I will leave the exercise there. There is more to say. There are tenant level flags and request level flags. But that belabors the point to make
+which is that
+one should get into the habit of turning over a problem statement in ones mind, formulating it from various angles and reducing it to
+essentials. In your career as an Engineer it is important that you be successful, and one of the keys skills that will guide you towards doing what should
+be done, and assist co-workers with business skill sets is the ability to clearly and correctly define what the problem is.
+
 
 \subsubsection{Subsubsection Heading}
-Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text. Furtheron please use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:A2}.
+more engineering notes here
 
-Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
-
-% For figures use
-%
-\begin{figure}[t]
-\sidecaption[t]
-%\centering
-% Use the relevant command for your figure-insertion program
-% to insert the figure file.
-% For example, with the option graphics use
-\includegraphics[scale=.65]{figure}
-%
-% If not, use
-%\picplace{5cm}{2cm} % Give the correct figure height and width in cm
-%
-\caption{Please write your figure caption here}
-\label{fig:A1}       % Give a unique label
-\end{figure}
-
-% For tables use
-%
-\begin{table}
-\caption{Please write your table caption here}
-\label{tab:A1}       % Give a unique label
-%
-% For LaTeX tables use
-%
-\begin{tabular}{p{2cm}p{2.4cm}p{2cm}p{4.9cm}}
-\hline\noalign{\smallskip}
-Classes & Subclass & Length & Action Mechanism  \\
-\noalign{\smallskip}\hline\noalign{\smallskip}
-Translation & mRNA$^a$  & 22 (19--25) & Translation repression, mRNA cleavage\\
-Translation & mRNA cleavage & 21 & mRNA cleavage\\
-Translation & mRNA  & 21--22 & mRNA cleavage\\
-Translation & mRNA  & 24--26 & Histone and DNA Modification\\
-\noalign{\smallskip}\hline\noalign{\smallskip}
-\end{tabular}
-$^a$ Table foot note (with superscript)
-\end{table}
-%

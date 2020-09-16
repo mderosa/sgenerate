@@ -2,7 +2,7 @@ from typing import List
 import sgen.content_ops as Op
 
 
-def mk_standalone_tex(path: str) -> List[str]:
+def mk_standalone_tex(path: str) -> None:
     assert path.endswith(".tex"), f"invalid tex file: {path}"
     with open(path, 'r') as hdl:
         lns = hdl.readlines()

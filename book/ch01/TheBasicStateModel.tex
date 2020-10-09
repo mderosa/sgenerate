@@ -13,10 +13,9 @@ a bit surprising if one is used to thinking casually about policies. Yet on exam
 find that it is correct and brings out two important points.
 \begin{itemize}
 \item It is a bit sloppy to describe a $Policy$ as being in the $Accepted$ or some other state.
-  Most of the time when we do that we should be talking about modifications.
-\item The state changes of significance for policies happen on $onIssue$ events. We can put this statement in
-  a real world context by saying equivalently that the state changes of significance are those that
-  correspond to both sides signing off on the contractual terms.
+  Most of the time when we do that we should be talking about modifications. 
+\item The state changes of significance for policies happen on $onIssue$ events. For an issuer and a purchaser
+  of an insurance insurance policy, the $onIssue$ event is the only one that changes real world liabilities.
 \end{itemize}
 
 \begin{figure}[b]
@@ -149,7 +148,7 @@ find that it is correct and brings out two important points.
     ](Begin) {};
 
     \path
-    (OffRisk) edge[bend left=60] node[anchor=south,above]{$onIssue[Create]$} (OnRisk)
+    (OffRisk) edge[bend left=60] node[anchor=south,above]{$onIssue[Create | Reinstate]$} (OnRisk)
     (OnRisk) edge[loop above] node[anchor=south, above] {$onIssue[Endorse | Renew | Cancel | Reinstate]$} (OnRisk)
     (OnRisk) edge[bend left=60] node[anchor=north,below]{$onIssue[Cancel]$} (OffRisk)
     (Begin) edge[bend left=30] (OffRisk)

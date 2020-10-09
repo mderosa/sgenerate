@@ -1,11 +1,24 @@
 
 \appendix
-\motto{All's well that ends well}
-\chapter{Appendix}
+\motto{Sin bravely.}
+\chapter{Extra stuff that I hope might help}
 \label{introA} % Always give a unique label
 
 \section{Engineering Practices}
 \label{sec:A1}
+Over the years of doing engineering, we all come away with different learnings and a view of the task shaped by our experiences.
+Below are some thoughts I have about engineering which have grow out of my experiences condensed into overall topics. Perhaps some
+of the topics will resonate with you and become part of your experience. The summary is below and details follow:
+\begin{enumerate}
+\item Define the problem. The problem you have isn't the problem you think you have.
+\item Build in minimal commits.
+\item If you don't completely understand what you have observed, then your understanding wrong.
+\item If code is not being used, then it doesn't work.
+\item There is no right way. There are only trade offs.
+\item Build you personal rule set.
+\item If you don't know what to do, then do something anyways.
+\item Theory and practice.
+\end{enumerate}
 
 \subsection{Define the Problem}
 \label{sec:A2}
@@ -16,29 +29,30 @@ As obvious as the above statements are, you should not deceive yourself into thi
 problems is natural, and even less that a problem, when it reaches your desk, has been correctly defined as stated. One should, in fact,
 assume just the opposite.
 In the course of your career, unless you are finding that 90 percent of the time your problems have to be reexamined and refined,
-then you surely you are not thinking carefully enough before you work.
+then it's probable you are not thinking carefully enough before you work.
 
-Lets think through a current, discussion topic at Socotra, feature flags, to illustrate defining a problem. I don't happen to know what the
+Let's think through a current, discussion topic at Socotra, feature flags, to illustrate defining a problem. I don't happen to know what the
 resolution to the feature flag ``problem'' will be and perhaps that is good. You, the future reader with hindsight and proof of time, will
 all the better be able to evaluate the usefulness of the thoughts on problem definition that follow.
 
-Lets start with real life, feature flag problem statements that we can quickly disregard.
+Lets start with a real life, feature flag problem statement that we can quickly disregard.
 \begin{description}
 \item[Problem] The current feature flag
 mechanism (with flags in database tables) is inelegant.
 \end{description}
-Like you, I am not sure what the official engineering definition of inelegant
-is. If it had an engineering definition, I am not convinced that such a label would be sufficient establish the existence of a
-problem. Inelegant is an aesthetic, emotional judgment, and while there is room for aesthetics in engineering, we should be on our
-guard. Feature flags presumably would fulfill a functional need and not an aesthetic, emotional need. Let's try again.
+Perhaps no one has made exactly this feature flag problem statement. But statements like this have been thrown about and, of course as
+developers, we love to disparage the technologically ugly with variants of this statement. Now, I am not sure what the official engineering
+definition of inelegant is. If it had an engineering definition, I am not convinced that such a label would be sufficient establish the
+existence of a problem. Inelegant is an aesthetic, emotional judgment, and while there is room for aesthetics in engineering, we should be
+on our guard. Feature flags presumably would fulfill a functional need and not an aesthetic, emotional need. Let's try again.
 
 \begin{description}
 \item[Problem] Lets investigate the Launch Darkly feature flag functionality to see how it could be used in our current systems.
 \end{description}
-This statement is an example of a
-solution disguised as a problem. As an engineer you should sensitize yourself to problems misclassified as solutions.
+This statement is an example of a solution with an assumed problem. The problems is there, but the solution is so obvious and perfect that
+we do not have to consider trivialities like problems. As an engineer you should sensitize yourself to solutions that eclipse their problems.
 ``We should build new functionality as micro services'' or
-``We should use Amazon Lambda for X, Lambda is scalable and the future of software development'' are other examples. I am sure Launch Darkly is wonderful,
+``We should use Amazon Lambda for X, because Lambda is scalable and the future of software development'' are other examples. I am sure Launch Darkly is wonderful,
 as well as micro services and Amazon Lambda, and yet their wonderfulness does not mandate their use. As an engineer, when technical discussion 
 leads directly to technical implementation X or a technology Y, that is a tell that perhaps someone had a vague feeling about a
 problem and the source of that feeling was easiest for them to express as the absence of a technology, for instance ``MongoDB''. (And as the joke goes, now
@@ -97,6 +111,82 @@ essentials. In your career as an Engineer it is important that you be successful
 be done, and assist co-workers with business skill sets is the ability to clearly and correctly define what the problem is.
 
 
-\subsubsection{Subsubsection Heading}
-more engineering notes here
+\subsubsection{Minimal Commits}
+I am often surprised, when I model a system with a computer checked tool, by how difficult it is to get the model correct. Usually the model
+is highly abstracted and simplified, a toy compared to the real thing. And yet the tools find corner cases that I would never have discovered even
+in the simplest of toys. The reason for the surprise is that as engineers, and more so for non engineers, we have only a passing feeling for the
+ability of state to multiply. Consider the simple, cancellation model in Chapter 2. How many states are there if the model steps through 8 time intervals?
+There are almost a million and the model checker takes half and hour to check them all of them.
 
+You are not impressed perhaps. We already know software is complex. This afternoon, I sat through an engineering discussion where an ongoing systems problem
+was brought up:
+``Its hard for me to predict the effects of my changes \dots'', because system bad. A few months ago I sat through a related engineering discussion about how
+difficult it is to estimate delivery dates for new and ongoing projects, because system bad. What we need is? \- to have better encapsulation, to move the system
+towards a micro-service architecture, to design with better architecture and patterns \dots or add your own favorite delusion. I am going to suggest an alternate theory for system
+bad based on my frustrations building simple, abstract mathematical models. You are a very limited human being in the face of what you have created, and you have
+to learn to work in a way that is appropriate to that reality.
+
+Now, you are an experienced engineer, and you have read all the books, and you have come through the toughest, largest projects there are. You already
+know what you are doing. And still there may be just more one practice that no one has ever told you and in fact its just the opposite of what the people who
+talk cleaner code, and micro-service architecture, and design patterns propagandize. The practice is: make minimal commits. If you have a bug, or if you have
+a feature to implement, or if you have a project to finish, find the smallest problem related to your bug, feature or project and define it precisely.
+Write code to solve just that problem, precisely. Commit. Repeat until you are done. Anything can be accomplished as a series of minimal commits.
+
+I know you will be tempted to disregard this practice. The minimum. That sounds so negligent. Why you may even desire to refactor. After all there were those
+books about clean code and patterns and stuff; the guys that wrote that book really know what they are doing, right? Well, I am not telling you to do the minimum. I am not telling
+you to not make systems better. What I am saying is you are limited. You didn't 100\% understand the ramifications of that ambitious bug fix you made today and,
+by the way, you didn't sleep well last night. That ambitious architecture idea you've been thinking on; two years from now you are going to look back and think
+it was foolish, because you have grown. I am saying if you are limited, a precise, rigorous practice will help you be successful, and I am afraid other engineers
+you meet in your career are not going to tell you. Minimal commits. Precisely define the minimal problem, write just that code, and commit. A lot of tasks
+become better executed, a lot of systems improve, and you will be more successful if you can just repeat that process.
+
+\subsection{If you don't completely understand what you have observed, then its wrong.}
+One of the traits of a good theory is that when you apply it to a phenomena you are investigating, then it explains all of the observations you have made, not 90\%
+of your observations, not 95\% of you observations, all of your observations. One of the traits of a bad theory is that it explains enough to
+satisfy you. The classic example of a bad theory is Ptolemy's geocentric model of the universe. It explained almost all heavenly observations and served as the basis
+for precise astronomical calculations. It was satisfactory enough. One just ignored the last few percent of observations that didn't make any sense. Now, stop for a
+second and imagine yourself believing the geocentric model of the universe. Are you mostly correct in your understanding of the universe or do you know
+essentially nothing about the universe?
+
+If you have lived long enough, you can dip into your memories of past, very reasonable, theories which did not quite pan out. When I was growing up, I had an Aunt
+who had a subscription to National Geographic, a very reputable magazine at the time. Sometime in the 70's I remember National Geographic running a whole magazine
+detailing the case for an impending famine in the US. Back in the 70's it was also assured knowledge that the world would run out of oil sometime in the early 1990s.
+In retrospect,
+National Geographic knew essentially nothing about famine. Assured knowledge knew essentially nothing about the availability of energy resources on the planet. And yet
+the theories accounted for most to the facts. How can that be? What you have to realize is that mismatches between observations and theories have to
+drop you confidence in your theory a lot. If you have 10 observations and your theory explains 9 of those observations. As much as you'd like to,
+you should not have 90\% confidence in your theory. You should have more like 50\% confidence. If you can explain 8 observations, you should have more like 25\%
+confidence in your theory. Put another way you need more explanatory power than you think before you know more than nothing.
+
+Now lets talk about theories in relation to computer systems at Socotra. I am going to recount a story from a few months ago. I was in Socotra's daily scrum and an engineer
+explained that he was working on a bug. He explained that he couldn't quite reproduce the error or detail how the error was coming about. But he was pretty confident
+that the ultimate cause had to be X and he had committed a solution Y. That is bad practice, and it is all to common among software engineers. Software engineering culture
+accepts and allows people to make the jump from ``this theory makes sense'' to ``my theory is correct''. This jump is not acceptable or allowed in any other
+engineering discipline. Unless you can reproduce, unless you can explain, unless you can account for all the observations, then you know nothing. You need to
+dig deeper, and you have no business committing solution Y, except to gain missing data.
+
+Above we talked about when a bug is properly understood and hopefully corrected. On a related note, and getting back to the title of this post, imagine you are writing
+code, building a system. Further, imagine that in one of the system executions you notice something curious. Possibly an error, but you cant reproduce it. And you are very busy;
+it's probably something one off. I am going to suggest that your understanding of your code is like a theory and you have an observation that contradicts the
+theory. With that one contradiction, you now need more explanitory power than you think to assume something one off happened. In fact, despite your
+best feelings of assurance, you have to assume, with assurance, that the code is wrong. And do work to generate an explanation.
+
+What I have written above might seem a bit strong. If it seems a bit strong then for your next few bugs fixes, start by listing all you theories. Maybe
+you will start off with 10 possible theories and you might well add new theories as you work through the bug. Note that you will generally have to toss
+away a lot of plausible theories before you finally find a root cause of your bug. Note also that the solution that you finally end with, will not generally be
+in the initial set of theories you started with. What I have written above might, on the other hand, seem obvious. If that is that case, then the next time
+you read the news just take note of topics of current concern and the related theories, sufficient for you to feel assuraces in your opinions. (Covid and Global
+Warming are on the front page of CNN as I write this.) Then come back to this paragraph in 15 years.
+
+\subsection{If code is not being used, then it doesn't work.}
+When building systems its common to have unused code: sub-systems that are finished, waiting to go live or code that is not
+executed on a regular basis. Any code that one expects to work must prove it works on a regular basis. If the code does not prove it works, you best assumption
+is that it does not.
+
+\subsection{There is no right way. There are only trade offs.}
+
+\subsection{Build you personal rule set.}
+
+\subsection{If you don't know what to do, then do something anyways.}
+
+\subsection{Theory and practice.}

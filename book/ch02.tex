@@ -1,22 +1,14 @@
-%%%%%%%%%%%%%%%%%%%%% chapter.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% sample chapter
-%
-% Use this file as a template for your own input.
-%
-%%%%%%%%%%%%%%%%%%%%%%%% Springer-Verlag %%%%%%%%%%%%%%%%%%%%%%%%%%
-%\motto{Use the template \emph{chapter.tex} to style the various elements of your chapter content.}
+\motto{Seek not to have things happen as you choose them, but rather choose them to happen as they do.}
 \chapter{Cancellation and Renewal}
 \label{intro} % Always give a unique label
 % use \chaptermark{}
 % to alter or adjust the chapter heading in the running head
 
 \abstract{During the course of a policy's lifetime it may be necessary to cancel a policy because invoices have not been paid or for other
-  business specific reasons. These same policies may then need to be restored to their state before the cancellation. The cancellation and
-  renewal module in the Socotra system handles these policy changes. \newline\indent
-  The module has two distinct components which will be discussed below.
-  There is an API component which customers use to trigger cancellations or reinstatements. There is also an automated system which can cancel
-  a policy or reinstate it when propositions on the policy state become true.
+  business reasons. These same policies may then need to be restored to their state before the cancellation. The cancellation and
+  renewal functionality in the Socotra system handles these policy changes. \newline\indent
+  The functionality operates through two distinct mechanism. The first is though API which customers use to trigger cancellations or reinstatements.
+  There is also a group of automated jobs which can cancel a policy or reinstate it when a policies state satisfies certain lifecycle conditions.
 }
 
 \section{Overview}

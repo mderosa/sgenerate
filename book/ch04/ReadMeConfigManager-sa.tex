@@ -1,3 +1,9 @@
+\hypertarget{overview}{%
+\subsection{Overview}\label{overview}}
+
+Config Manager allows user to create, modify, and deploy custom,
+insurance Products.
+
 \hypertarget{local-development-front-end}{%
 \subsection{Local Development (Front
 End)}\label{local-development-front-end}}
@@ -18,26 +24,9 @@ error). Run this command in a terminal to open a CORS-disabled version
 of Chrome:
 \texttt{open\ -n\ -a\ /Applications/Google\textbackslash{}\ Chrome.app/Contents/MacOS/Google\textbackslash{}\ Chrome\ -\/-args\ -\/-user-data-dir="/tmp/chrome\_dev\_test"\ -\/-disable-web-security}
 
-build.sh is for production use only. It will throw errors if run
-locally.
-
 \hypertarget{local-development-back-end}{%
 \subsection{Local Development (Back
 End)}\label{local-development-back-end}}
-
-If you have a standard backend setup and have setup the docker-dev admin
-account, via
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{brew}\NormalTok{ install jp jo}
-\BuiltInTok{cd}\NormalTok{ ~/Code/socotra-stack/docker-dev}
-\FunctionTok{make}\NormalTok{ tenant}
-\end{Highlighting}
-\end{Shaded}
-
-You will be able to run config manager locally along with Load Assets
-and the API with the following procedure:
 
 \begin{itemize}
 \tightlist
@@ -51,6 +40,8 @@ and the API with the following procedure:
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\ExtensionTok{nvm}\NormalTok{ use 8.9.4}
+\ExtensionTok{rvm}\NormalTok{ use ruby-2.6.3}
 \FunctionTok{make}\NormalTok{ run}
 \end{Highlighting}
 \end{Shaded}
@@ -76,6 +67,28 @@ When all three applications are running you should then be able to
 navigate to \href{http://localhost:9001}{http://localhost:9001} in any
 browser, login, and submit assets all within a local development
 environment.
+
+\hypertarget{build-and-deploy}{%
+\subsection{Build and deploy}\label{build-and-deploy}}
+
+The build of Config Manager is coordinated by the build.sh (python 2) or
+build3.sh (python 3) in the root of the project. The shell scripts
+bundle the application and deploy it to
+repo://source/stack-load-assets/assetload/static/configmanager. Once
+deployed Config Manager can then be accessed through a running
+load-assets application, at the path /studio/. So for example, running
+load-assets locally the access url would be
+\href{http://localhost:5000/studio/}{http://localhost:5000/studio/}
+
+Build and deploy using Python 3 with:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{rvm}\NormalTok{ use ruby-2.6.3}
+\ExtensionTok{nvm}\NormalTok{ use 8.9.4}
+\ExtensionTok{./build3.sh}
+\end{Highlighting}
+\end{Shaded}
 
 \hypertarget{directory-layout}{%
 \subsection{Directory Layout:}\label{directory-layout}}
@@ -135,115 +148,3 @@ environment.
 \item
   routes.tsx: Specifies the app's URL routes. Uses react-router
 \end{itemize}
-
-\hypertarget{trigger-action-component-design}{%
-\subsection{Trigger-Action component
-design}\label{trigger-action-component-design}}
-
-This app contains numerous instances where we render some
-user-interactable component (i.e. a button) and then when the user
-interacts with it (i.e. clicks it), the app will perform some action.
-
-The \textbf{Trigger} is the code for rendering the user-interactable
-component.
-
-The \textbf{Action} is the code for what happens when the user has
-activated the Trigger.
-
-\hypertarget{motivation}{%
-\subsubsection{Motivation}\label{motivation}}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  We often use the same trigger to do different actions. Ex: we use the
-  same 'Remove' button as a trigger to remove different configuration
-  items (i.e. we can remove products, exposures, perils, tables,
-  documents, etc). Where the button appears contextually determines what
-  item is being removed.
-\item
-  We use different triggers that end up performing the same action. Ex:
-  We can clone a product from the Add New Product Modal or from the
-  action menu on a specific product.
-\item
-  We sometimes want to chain actions together. We want an easy way to
-  reuse actions in this scenario without requiring a rendered trigger
-  for each action in the chain.
-\end{enumerate}
-
-\hypertarget{how-to-change-default-assets}{%
-\subsection{How to change default
-assets:}\label{how-to-change-default-assets}}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Find the file in \texttt{assets/default} that you want to change.
-\item
-  Run \texttt{python\ generate\_default\_editor\_assets.py} for TS code
-  gen.
-\item
-  Commit changes, and land them in \texttt{develop}. See: "more notes"
-  below.
-\end{enumerate}
-
-If you want to test the change (much harder) using a locally built
-image:
-
-\begin{itemize}
-\tightlist
-\item
-  Terminate containers w/
-  \texttt{make\ stop\ -C\ \$REPO\_ROOT/socotra-stack/docker-dev}
-\item
-  Run the \texttt{Rakefile} target named
-  \texttt{preenvironment:asset\_load\_server:build}
-\end{itemize}
-
-This copied the static files into the "load assets" project; rebuild the
-image:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{cd\ \$REPO\_ROOT/docker-loadassets;\ docker\ build\ .\ -t\ socotra/loadassets:master}
-\item
-  Restart containers w/
-  \texttt{make\ services\ -C\ \$REPO\_ROOT/socotra-stack/docker-dev}
-\end{itemize}
-
-On \texttt{http://localhost:5000/studio/}, the container will now have
-local changes.
-
-\hypertarget{more-notes}{%
-\subsection{More Notes}\label{more-notes}}
-
-Since the user's changes are saved in-browser, you may need to:
-
-\begin{verbatim}
-localStorage.clear()
-location.reload()
-\end{verbatim}
-
-If you have problems running \texttt{rake} try:
-
-\begin{verbatim}
-gem install httpclient java-properties vault
-export RUBYLIB="$REPO_ROOT/socotra-stack/rakelib/lib"
-\end{verbatim}
-
-If \texttt{node} or \texttt{npm} complains, did you remember to:
-
-\begin{verbatim}
-nvm install lts/carbon # and do you have XCode installed?
-export NPM_CONFIG_REGISTRY=https://registry.npmjs.org/
-\end{verbatim}
-
-Ask \#engineering after reading the scripts to troubleshoot problems:
-
-\begin{verbatim}
-cd $REPO_ROOT/socotra-stack && mkdir -p logs
-rake preenvironment:asset_load_server:build -n
-\end{verbatim}

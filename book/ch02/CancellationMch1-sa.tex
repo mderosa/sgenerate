@@ -11,22 +11,19 @@
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  Here, I model the state by separating it into a \ensuremath{Policy} state and
  a Modification Set
-\end{cpar}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- state. Within the Modification Set, each Modification follows a stand alone,
- independent
-\end{cpar}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- state machine which in greatest generality is . \ensuremath{\.{\rightarrow}
- Created \.{\rightarrow}} Accepted \ensuremath{\.{\rightarrow}
- Issued \.{\,|\,}} Invalidated \ensuremath{\.{\rightarrow}} . A
- \ensuremath{Policy} only listens to \ensuremath{Issued} events, and rolls
- forward its
- state on those events.
- In the system all modifications are retained but for this
- abstractions only issued modifications are recorded. This omission reduces
- the state
- space without affecting correctness
+ state. Observing just the state of the the Modification Set, each
+ Modification follows
+ a stand alone, independent state machine which in greatest generality is:
+ . \ensuremath{\.{\rightarrow} Created \.{\rightarrow}} Accepted
+ \ensuremath{\.{\rightarrow} Issued \.{\,|\,}} Invalidated
+ \ensuremath{\.{\rightarrow}} . Observing just policy state,
+ a \ensuremath{Policy} only listens to \ensuremath{Issued} events, and
+ updates its state on those events.
+ In the system all modifications are retained but for this abstraction only
+ issued
+ modifications are recorded. This omission reduces the state space without
+ loss of
+ generality.
 \end{cpar}%
 \end{lcom}%
 \@x{}\midbar\@xx{}%
@@ -44,12 +41,17 @@
  \@x{\@s{16.4} \.{\IN} pending \.{\in} Reinstatements \.{\land} pending .
  deadline\_ts \.{<} step}%
 \@pvspace{8.0pt}%
-\@x{}%
-\@y{\@s{0}%
- Just a semantic addition to signify when we must invalidate an accepted
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ Just a semantic addition for the reader. When this function appears in a
+ guard, the
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ reader should interpret it a a requirement to check and invalidate any
+ accepted
  modifications
-}%
-\@xx{}%
+\end{cpar}%
+\end{lcom}%
 \@x{ invalidate ( mod ) \.{\defeq} {\TRUE}}%
 \@pvspace{8.0pt}%
 \@x{}\midbar\@xx{}%
@@ -58,20 +60,11 @@
  Invariants
 }%
 \@xx{}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
-Cancellations and reinstatements, like endorsements and renewals, are recorded
- as they are created in a history of policy modifications. Some of those
- modifications
- will take effect, by being issued, others will never be issued. In all
- cases, though,
- modifications retain an identity to which documents and invoices can be
- attached. The
- characteristic of the above modifications, which gives them a group
- commonality, is
- that they can operate to change liability of the parties to the contract
-\end{cpar}%
-\end{lcom}%
+\@x{}%
+\@y{\@s{0}%
+ Below we define a few common invariants of the system.
+}%
+\@xx{}%
 \@x{ InvType \.{\defeq}}%
 \@x{\@s{16.4} \.{\LET} pending \.{\defeq} policy . pending\_modification}%
  \@x{\@s{16.4} \.{\IN} \.{\land} pending \.{\in} {\UNION} \{ Reinstatements
@@ -81,6 +74,13 @@ Cancellations and reinstatements, like endorsements and renewals, are recorded
 \@x{\@s{131.90} \}}%
 \@x{\@s{36.79} \.{\land} policy . state \.{\in} PolicyState}%
 \@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Every policy can have zero or one pending modifications and that pending
+ modification
+ must be in the \ensuremath{Finalized} (Accepted) state.
+\end{cpar}%
+\end{lcom}%
 \@x{ InvPolicy \.{\defeq}}%
 \@x{\@s{16.4} \.{\LET} pending \.{\defeq} policy . pending\_modification}%
 \@x{\@s{16.4} \.{\IN} \.{\land} policy . original\_start\_ts \.{=} policyTi}%
@@ -95,6 +95,14 @@ Cancellations and reinstatements, like endorsements and renewals, are recorded
  \@x{\@s{52.01} \.{\land} pending . auto\_reinstate ) \.{\implies} pending .
  deadline\_ts \.{+} 1 \.{\geq} step}%
 \@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ When a policy is fully cancelled it is \ensuremath{OffRisk} and the time
+ interval of the policy
+ has zero duration. From that state it duration can only be increased by a
+ reinstatement.
+\end{cpar}%
+\end{lcom}%
 \@x{ InvMods \.{\defeq}}%
  \@x{\@s{16.4} \.{\LET}\@s{0.86} pending \.{\defeq} policy .
  pending\_modification}%
@@ -135,17 +143,18 @@ Cancellations and reinstatements, like endorsements and renewals, are recorded
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- A cancellation can be created on any policy that is \ensuremath{OnRisk}. The
+ A cancellation can be created for any policy that is \ensuremath{OnRisk}. The
  start date specified by
  the cancellation should be within the coverage time span of the policy.
  Note that for the specification, we do not have cancellation create events
  result in
  additions to the modifications set. This addition would ordinarily happen in
  a concrete
- implementation, however, we elide the effect here as maintaining basic
- policy state along
- with a list of just issued modifications is sufficient to validate
- consistency.
+ implementation, however, we elide the effect here as maintaining the state
+ in the policy
+ record along with a list of issued modifications is sufficient to validate
+ system
+ properties.
 \end{cpar}%
 \end{lcom}%
 \@x{ createCancellation ( mod ) \.{\defeq}}%
@@ -170,7 +179,7 @@ Cancellations and reinstatements, like endorsements and renewals, are recorded
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  A cancellation can be issued whenever its policy is \ensuremath{OnRisk}.
- Further a cancellation can be
+ Further, a cancellation can be
  issued regardless of any current, pending modifications on its policy. The
  only
  restriction is that the cancellation date must be within the time span of
@@ -525,13 +534,13 @@ Issue; Cancel; Reinstate; \ensuremath{\.{=}} Issue
 \ensuremath{\.{\,\backslash\,}}* Modification History
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
- \ensuremath{Jul} 16 16:36:58 \ensuremath{PDT} 2020 by \ensuremath{marco
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Tue}
+ \ensuremath{Sep} 15 17:44:30 \ensuremath{PDT} 2020 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Mon}
- \ensuremath{Jul} 13 19:14:11 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
+ \ensuremath{Jul} 16 16:36:58 \ensuremath{PDT} 2020 by \ensuremath{marco
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%

@@ -37,13 +37,15 @@ brew install jq jo
 cd ~/Code/socotra-stack/docker-dev
 make tenant
 ```
-You will be able to start stack-app-static on port 8081 with the command
+You will be able to start stack-app-static on port 8081 with the commands
 ```bash
+nvm use 8.9.4
+rvm use ruby-2.6.3
 make run
 ```
 With stack-app-static running you should then be able to navigate to http://docker-dev-configeditor.co.socotra.com:8081/ locally in a browser
-(assuming the line '127.0.0.1 docker-dev-configeditor.co.socotra.com' in /etc/hosts) and login with the username/password 
+(assuming the line '127.0.0.1 docker-dev-configeditor.co.socotra.com' in /etc/hosts) and login with the username/password
 alice.lee/socotra
 
-To run stack-app-static along with the entire complement of Config Manager, Load Assets, and the API refer to the README.md in the root of the 
+To run stack-app-static along with the entire complement of Config Manager, Load Assets, and the API refer to the README.md in the root of the
 stack-config-manager directory.

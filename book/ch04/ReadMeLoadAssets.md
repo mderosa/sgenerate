@@ -1,5 +1,5 @@
 ## Overview
-Load assets takes configuration files from Configuration Manager, validates
+Load Assets takes configuration files from Configuration Manager, validates
 them, and then orchestrates though the stack-api-service to configure data stores
 needed for operation of the software
 
@@ -57,3 +57,10 @@ running stack-api-service. The integration tests can be run with the command:
 ```bash
 make test_intg
 ```
+
+## Building the application
+Though not immediately obvious, Load Assets is built into a composite application where (a) python
+code orchestrates communication with the socotra api, and (b) where the assetload/static directory
+contains and serves the build stack-config-studio-static, stack-load-assets-static, and stack-config-manager
+projects. The assembly of all these elements is managed by the build so just be aware there is more
+to Load Assets than meets the eye.

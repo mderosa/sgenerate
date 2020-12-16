@@ -1,108 +1,9 @@
-%%%%%%%%%%%%%%%%%%%% book.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% sample root file for the chapters of your "monograph"
-%
-% Use this file as a template for your own input.
-%
-%%%%%%%%%%%%%%%% Springer-Verlag %%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-% RECOMMENDED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\documentclass[graybox,envcountchap,sectrefs]{svmono}
-
-% choose options for [] as required from the list
-% in the Reference Guide
-
-%\usepackage{mathptmx}
-%\usepackage{helvet}
-%\usepackage{courier}
-%
-\usepackage{type1cm}         
-
-\usepackage{makeidx}         % allows index generation
-\usepackage{graphicx}        % standard LaTeX graphics tool
-                             % when including figure files
-\usepackage{multicol}        % used for the two-column index
-\usepackage[bottom]{footmisc}% places footnotes at page bottom
-
-\usepackage{newtxtext}       % 
-\usepackage{newtxmath}       % selects Times Roman as basic font
-
-\usepackage{import}
-\usepackage[retainorgcmds]{IEEEtrantools}
-
-% see the list of further useful packages
-% in the Reference Guide
-
-% ---------- styling for pandoc -------------------------------
-\usepackage{hyperref}
-
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\newenvironment{Shaded}{}{}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\BuiltInTok}[1]{#1}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
-\newcommand{\ExtensionTok}[1]{#1}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
-\newcommand{\ImportTok}[1]{#1}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{#1}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
-\newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\setlength{\emergencystretch}{3em}  % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-% ---------- end of pandoc styles --------------------------
-
-
-% -----------styling for box diagrams --------------------------
-\usepackage{pgf}
-\usepackage{tikz}
-\usepackage[utf8]{inputenc}
-\usetikzlibrary{arrows,automata}
-\usetikzlibrary{positioning}
-
-\tikzset{
-    state/.style={
-           rectangle,
-           rounded corners,
-           draw=black, very thick,
-           minimum height=2em,
-           inner sep=2pt,
-           text centered,
-           },
-}
-
-% ----------- styling for tla specs -----------------------------
+\batchmode %% Suppresses most terminal output.
+\documentclass{article}
 \usepackage{color}
 \definecolor{boxshade}{gray}{0.85}
-% \setlength{\textwidth}{360pt}
-% \setlength{\textheight}{541pt}
+\setlength{\textwidth}{360pt}
+\setlength{\textheight}{541pt}
 \usepackage{latexsym}
 \usepackage{ifthen}
 % \usepackage{color}
@@ -139,7 +40,7 @@
 %    \EE       \EE                                                          %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newlength{\symlength}
-% \newcommand{\implies}{\Rightarrow}
+\newcommand{\implies}{\Rightarrow}
 \newcommand{\ltcolon}{\mathrel{<\!\!\mbox{:}}}
 \newcommand{\colongt}{\mathrel{\!\mbox{:}\!\!>}}
 \newcommand{\defeq}{\;\mathrel{\smash   %% keep this symbol from being too tall
@@ -153,7 +54,7 @@
 \newcommand{\slsl}{/\!/}
 \newcommand{\ct}{\hat{\hspace{.4em}}}
 \newcommand{\A}{\forall}
-% \newcommand{\E}{\exists}
+\newcommand{\E}{\exists}
 \renewcommand{\AA}{\makebox{$\raisebox{.05em}{\makebox[0pt][l]{%
    $\forall\hspace{-.517em}\forall\hspace{-.517em}\forall$}}%
    \forall\hspace{-.517em}\forall \hspace{-.517em}\forall\,$}}
@@ -1032,48 +933,41 @@
 \let\noppcal=\notla
 \let\endnoppcal=\endnotla
 
-%%%%%%%%%%%%%%%%%%%%%%%% end of tlatex.sty file %%%%%%%%%%%%%%%%%%%%%%%
-
-
-\makeindex             % used for the subject index
-                       % please use the style svind.ist with
-                       % your makeindex program
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% end of tlatex.sty file %%%%%%%%%%%%%%%%%%%%%%% 
+% last modified on Fri  3 August 2012 at 14:23:49 PST by lamport
 
 \begin{document}
-
-\author{Socotra Delopment}
-\title{Applied Contract Theory}
-\subtitle{-- Concepts and Practice --}
-\maketitle
-
-\frontmatter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\tableofcontents
-
-\include{acronym}
-
-\mainmatter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\include{partConcepts}
-\include{ch01}
-\include{ch02}
-\include{ch03}
-
-\include{partPractice}
-\include{ch04}
-\include{ch05}
-\include{appendix}
-
-\backmatter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\include{glossary}
-\printindex
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\tlatex
+\setboolean{shading}{true}
+ \@x{}\moduleLeftDash\@xx{ {\MODULE}
+ CharacteristicsSplitCtx0}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Integers}%
+\@x{ {\CONSTANTS} MinTime ,\, MaxTime}%
+\@pvspace{8.0pt}%
+\@x{ Characteristics \.{\defeq} [}%
+\@x{\@s{16.4} start\_ts \.{:} Int ,\,}%
+\@x{\@s{16.4} end\_ts \.{:} Int}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
+\@x{ VCharacteristics \.{\defeq} \{ ch \.{\in} Characteristics \.{:}}%
+\@x{\@s{16.4} ch . start\_ts \.{\leq} ch . end\_ts}%
+\@x{\@s{16.4} \.{\land} ch . start\_ts \.{\geq} MinTime}%
+\@x{\@s{16.4} \.{\land} ch . end\_ts \.{\leq} MaxTime \}}%
+\@x{}\bottombar\@xx{}%
+\setboolean{shading}{false}
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{\.{\,\backslash\,}}* Modification History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified Sat \ensuremath{Oct} 17
+ 21:56:37 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* \ensuremath{Created} \ensuremath{Fri}
+ \ensuremath{Oct} 16 13:25:04 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\end{lcom}%
 \end{document}
-
-
-
-
-

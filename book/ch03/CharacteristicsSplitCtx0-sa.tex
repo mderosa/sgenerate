@@ -1,0 +1,33 @@
+\tlatex
+\setboolean{shading}{true}
+ \@x{}\moduleLeftDash\@xx{ {\MODULE}
+ CharacteristicsSplitCtx0}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Integers}%
+\@x{ {\CONSTANTS} MinTime ,\, MaxTime}%
+\@pvspace{8.0pt}%
+\@x{ Characteristics \.{\defeq} [}%
+\@x{\@s{16.4} start\_ts \.{:} Int ,\,}%
+\@x{\@s{16.4} end\_ts \.{:} Int}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
+\@x{ VCharacteristics \.{\defeq} \{ ch \.{\in} Characteristics \.{:}}%
+\@x{\@s{16.4} ch . start\_ts \.{\leq} ch . end\_ts}%
+\@x{\@s{16.4} \.{\land} ch . start\_ts \.{\geq} MinTime}%
+\@x{\@s{16.4} \.{\land} ch . end\_ts \.{\leq} MaxTime \}}%
+\@x{}\bottombar\@xx{}%
+\setboolean{shading}{false}
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{\.{\,\backslash\,}}* Modification History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified Sat \ensuremath{Oct} 17
+ 21:56:37 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* \ensuremath{Created} \ensuremath{Fri}
+ \ensuremath{Oct} 16 13:25:04 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\end{lcom}%

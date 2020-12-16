@@ -1,0 +1,565 @@
+\tlatex
+\setboolean{shading}{true}
+ \@x{}\moduleLeftDash\@xx{ {\MODULE}
+ CharacteristicsSplitMch0}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} CharacteristicsSplitCtx0 ,\, FiniteSets}%
+\@pvspace{8.0pt}%
+ \@x{ {\VARIABLES} policyChs ,\, exChs ,\, perilChs ,\, cPolicyChs ,\, cExChs
+ ,\, cPerilChs ,\, pc}%
+\@pvspace{8.0pt}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+There are three tables in the persistance layer that hold characteristics,
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ \ensuremath{policy\_characteristics}, \ensuremath{exposure\_characteristics},
+ and \ensuremath{peril\_characteristics}. All of these
+ tables are examples of a well exstablished sql modeling structure called a
+ temporal
+ table. The purpose of that structure is to describe a current valid state
+ and at the same
+ time to record the entire transaction history, making it easily
+ reconstructable for any
+ given time.
+ Here, I examine characteristic transformations for simple one exposure, one
+ peril policy.
+ the valid state of the policy\mbox{'}s characteristics are held in the
+ variables \ensuremath{policyChs}, \ensuremath{exChs},
+ and \ensuremath{perilChs}. Then, I mimic the history functionality of a
+ temporal table by storing
+ history in the variables \ensuremath{cPolicyChs}, \ensuremath{cExChs},
+ \ensuremath{cPerilChs}. The framework itself only needs
+ to access characteristic history during a cancellation reinstatement. So
+ these variables
+ hold characteristic state just before the application of the last
+ cancellation.
+\end{cpar}%
+\end{lcom}%
+\@x{}\midbar\@xx{}%
+\@x{ max ( a ,\, b ) \.{\defeq} {\IF} a \.{\geq} b \.{\THEN} a \.{\ELSE} b}%
+ \@x{ min ( a ,\, b )\@s{1.49} \.{\defeq} {\IF} a \.{\leq} b \.{\THEN} a
+ \.{\ELSE} b}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Interval Predicates
+}%
+\@xx{}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ Since characteristics are intervals, making decisions on them is facilitated
+ by a
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ fundamental set of predicate combinators over intervals. The fundamental
+ interval
+ combinators sufficient for all characteristic decisions at
+ \ensuremath{Socotra} are listedbelow. Most
+ of them are implemented in the framework Duration class (or when not, are
+ implemented in
+ an ad-hoc manner).
+\end{cpar}%
+\end{lcom}%
+ \@x{ notOverlaps ( chA ,\, chB ) \.{\defeq} chB . end\_ts \.{\leq} chA .
+ start\_ts}%
+\@x{\@s{16.4} \.{\lor} chB . start\_ts \.{\geq} chA . end\_ts}%
+\@pvspace{8.0pt}%
+ \@x{ overlaps ( chA ,\, chB )\@s{0.63} \.{\defeq} {\lnot} notOverlaps ( chA
+ ,\, chB )}%
+\@pvspace{8.0pt}%
+ \@x{ contains ( chA ,\, chB ) \.{\defeq} chA . start\_ts \.{\leq} chB .
+ start\_ts \.{\land} chB . end\_ts \.{\leq} chA . end\_ts}%
+\@pvspace{8.0pt}%
+\@x{ equals ( chA ,\, chB ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} chA . start\_ts \.{=} chB . start\_ts}%
+\@x{\@s{16.4} \.{\land} chA . end\_ts \.{=} chB . end\_ts}%
+\@pvspace{8.0pt}%
+\@x{ width ( ch ) \.{\defeq} ch . end\_ts \.{-} ch . start\_ts}%
+\@pvspace{8.0pt}%
+ \@x{ within ( tm ,\, ch ) \.{\defeq} ch . start\_ts \.{<} tm \.{\land} tm
+ \.{<} ch . end\_ts}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Interval Functions
+}%
+\@xx{}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ There are two inverval functions which are the fundamental combinators on
+ which all
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+characteristic functions are based. These are:
+ (1) subtract: Interval \ensuremath{\.{\rightarrow}} Interval
+ \ensuremath{\.{\rightarrow}} Set Interval, returns the parts of the first
+ interval
+ that do not overlap with the second interval. And will be a set of
+ cardinality between
+ 0 and 2.
+ (2) union: Interval \ensuremath{\.{\rightarrow} Inteval \.{\rightarrow}} Set
+ Interval, returns the part of the first and second
+ intervals that overlap. And will be a set of cardinality between 0 and 1.
+\end{cpar}%
+\end{lcom}%
+\@x{ subtract ( chA ,\, chB ) \.{\defeq}}%
+\@x{\@s{16.4} {\CASE} notOverlaps ( chA ,\, chB ) \.{\rightarrow} \{ chA \}}%
+\@x{\@s{16.4} {\Box} {\OTHER} \.{\rightarrow}}%
+\@x{\@s{27.97} {\IF} within ( chB . start\_ts ,\, chA ) \.{\THEN}}%
+\@x{\@s{44.22} {\IF} within ( chB . end\_ts ,\, chA ) \.{\THEN} \{}%
+ \@x{\@s{60.48} [ start\_ts \.{\mapsto} chA . start\_ts ,\, end\_ts
+ \.{\mapsto} chB . start\_ts ] ,\,}%
+ \@x{\@s{60.48} [ start\_ts \.{\mapsto} chB . end\_ts ,\, end\_ts \.{\mapsto}
+ chA . end\_ts ]}%
+\@x{\@s{60.48} \}}%
+\@x{\@s{44.22} \.{\ELSE}}%
+ \@x{\@s{60.62} \{ [ start\_ts \.{\mapsto} chA . start\_ts ,\, end\_ts
+ \.{\mapsto} chB . start\_ts ] \}}%
+\@x{\@s{27.97} \.{\ELSE}}%
+\@x{\@s{44.37} {\IF} within ( chB . end\_ts ,\, chA ) \.{\THEN}}%
+ \@x{\@s{60.62} \{ [ start\_ts \.{\mapsto} chB . end\_ts ,\, end\_ts
+ \.{\mapsto} chA . end\_ts ] \}}%
+\@x{\@s{44.37} \.{\ELSE}}%
+\@x{\@s{60.77} \{ \}}%
+\@pvspace{8.0pt}%
+\@x{ union ( chA ,\, chB ) \.{\defeq}}%
+\@x{\@s{16.4} {\IF} notOverlaps ( chA ,\, chB )}%
+\@x{\@s{16.4} \.{\THEN} \{ \}}%
+\@x{\@s{16.4} \.{\ELSE} \{ [}%
+ \@x{\@s{60.91} start\_ts \.{\mapsto} max ( chA . start\_ts ,\, chB .
+ start\_ts ) ,\,}%
+\@x{\@s{60.91} end\_ts \.{\mapsto} min ( chA . end\_ts ,\, chB . end\_ts )}%
+\@x{\@s{47.71} ] \}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Other functions
+}%
+\@xx{}%
+\@x{ maxEndTs ( chs ) \.{\defeq}}%
+ \@x{\@s{16.4} \.{\LET}\@s{10.70} endTss \.{\defeq} \{ ch . end\_ts \.{:} ch
+ \.{\in} chs \}}%
+ \@x{\@s{16.4} \.{\IN} {\CHOOSE} tm \.{\in} endTss \.{:} \A\, el \.{\in}
+ endTss \.{:} tm \.{\geq} el}%
+\@pvspace{8.0pt}%
+\@x{ minStartTs ( chs ) \.{\defeq}}%
+ \@x{\@s{16.4} \.{\LET} startTss \.{\defeq} \{ ch . start\_ts \.{:} ch \.{\in}
+ chs \}}%
+ \@x{\@s{16.4} \.{\IN} {\CHOOSE} tm \.{\in} startTss \.{:} \A\, el\@s{1.66}
+ \.{\in} startTss \.{:} tm \.{\leq} el}%
+\@pvspace{8.0pt}%
+\@x{ one ( es ) \.{\defeq} {\CHOOSE} e \.{\in} es \.{:} {\TRUE}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ In the socotra product a policy always has at least one policy
+ characteristic. One might
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ think that when a policy is fully cancelled it would have 0 policy
+ characteristics but
+ this is not the case. A fully cancelled policy has a single characteristic,
+ fully
+ populated in all respects but with zero width.
+\end{cpar}%
+\end{lcom}%
+\@x{ offPolicy \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} Cardinality ( policyChs ) \.{=} 1}%
+\@x{\@s{16.4} \.{\land} \.{\LET} ch \.{\defeq} one ( policyChs )}%
+\@x{\@s{27.51} \.{\IN} width ( ch ) \.{=} 0}%
+\@pvspace{8.0pt}%
+\@x{ onPolicy \.{\defeq} {\lnot} offPolicy}%
+\@x{}\midbar\@xx{}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ For a policy\mbox{'}s characteristic data to be correct. All manipulations
+ should retain the
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+properties below, with some caveats as noted below.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{T}{F}{2.5}{0}{}%
+ Containment Property: Each peril characteristic must be contained by one
+ characteristic
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ in its parent exposure. Each peril characteristic must be contained by one
+ characteristic
+ in its policy. There are no containment relationships, however, between
+ policy and
+ exposure characteristics. The effect of this property is that splits of peril
+ characteristics migrate up to split both exposure and policy
+ characteristics, while splits
+ of policy or exposure characteristics only migrate down to peril
+ characteristics.
+\end{cpar}%
+\end{lcom}%
+\@x{ InvContainment \.{\defeq}}%
+ \@x{\@s{16.4} \.{\land} \A\, ch \.{\in} perilChs \.{:} ( \E\, pch \.{\in}
+ policyChs \.{:} contains ( pch ,\, ch ) )}%
+ \@x{\@s{16.4} \.{\land} \A\, ch \.{\in} perilChs \.{:} ( \E\, ech\@s{0.51}
+ \.{\in} exChs \.{:} contains ( ech ,\, ch ) )}%
+\@pvspace{8.0pt}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ Existance Property: a policy, exposure, or peril always has at least one
+ characteristic.
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ In the concrete implementation this property sometimes will not hold after a
+ \ensuremath{reduction()
+ } operation like cancellation. Specifically if the start date of a
+ cancellation operation
+ is less than the minimum start date of a set of characteristics then all the
+ characteristics
+ will be removed.
+\end{cpar}%
+\end{lcom}%
+\@x{ InvNotEmpty \.{\defeq} Cardinality ( policyChs ) \.{>} 0}%
+\@x{\@s{16.4} \.{\land} Cardinality ( exChs ) \.{>} 0}%
+\@x{\@s{16.4} \.{\land} Cardinality ( perilChs ) \.{>} 0}%
+\@pvspace{8.0pt}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ Off \ensuremath{Policy} Property: When a policy has been fully cancelled each
+ node in the
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ characteristics tree contains 1 characteristic of zero length. In the
+ concrete implementation
+ there is some deviance here as explained in the \ensuremath{Existance}
+ Property. Of particular note,
+ exposure characteristics do not behave like policy or peril characteristics
+ which grow
+ and shrink with operations. Exposure characteristics only grow in size. The
+ minimum
+ start date in a set of exposure characteristics is always equal to the start
+ date of the
+ exposure when created. The maximum end date in a set of exposure
+ characteristics is
+ always equal to the maximum policy end date that the set of exposures has
+ observed during
+ its lifetime.
+\end{cpar}%
+\end{lcom}%
+\@x{ InvOffPolicy \.{\defeq} offPolicy \.{\implies}}%
+\@x{\@s{49.19} (}%
+\@x{\@s{65.6} \.{\land} Cardinality ( exChs ) \.{=} 1}%
+\@x{\@s{65.6} \.{\land} Cardinality ( perilChs ) \.{=} 1}%
+\@x{\@s{65.6} \.{\land} \.{\LET} pch \.{\defeq} one ( policyChs )}%
+\@x{\@s{97.11} ech\@s{0.51} \.{\defeq} one ( exChs )}%
+\@x{\@s{97.11} prlCh \.{\defeq} one ( perilChs )}%
+\@x{\@s{76.71} \.{\IN} width ( ech ) \.{=} 0}%
+\@x{\@s{80.81} \.{\land} width ( prlCh ) \.{=} 0}%
+\@x{\@s{80.81} \.{\land} ech . start\_ts\@s{5.63} \.{=} pch . start\_ts}%
+\@x{\@s{80.81} \.{\land} ech . end\_ts \.{=} pch . end\_ts}%
+\@x{\@s{80.81} \.{\land} prlCh . start\_ts \.{=} pch . start\_ts}%
+\@x{\@s{80.81} \.{\land} prlCh . end\_ts \.{=} pch . end\_ts}%
+\@x{\@s{49.19} )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ On \ensuremath{Policy} Property: When a policy is active, it has no zero
+ length characteristics
+}%
+\@xx{}%
+\@x{ InvOnPolicyNoZeroLengthChs \.{\defeq} onPolicy \.{\implies} (}%
+ \@x{\@s{16.4} \.{\land} \A\, prlCh \.{\in} perilChs \.{:} prlCh . start\_ts
+ \.{<} prlCh . end\_ts}%
+ \@x{\@s{16.4} \.{\land} \A\, exCh \.{\in} exChs \.{:} exCh . start\_ts \.{<}
+ exCh . end\_ts}%
+ \@x{\@s{16.4} \.{\land} \A\, ch \.{\in} policyChs \.{:} ch .
+ start\_ts\@s{8.03} \.{<} ch . end\_ts}%
+\@x{\@s{16.4} )}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Bounding Property: For all the exposures characteristics at least 1 must
+ start the
+ policy interval; for all the peril characteristics at least one must start
+ the policy
+ interval. The same is true for finishing the policy interval.
+\end{cpar}%
+\end{lcom}%
+ \@x{ InvBoundsStart \.{\defeq} \.{\LET} start \.{\defeq} minStartTs (
+ policyChs )}%
+ \@x{\@s{16.4} \.{\IN} \.{\land} \E\, ech\@s{0.51} \.{\in} exChs \.{:} ech .
+ start\_ts \.{=} start}%
+ \@x{\@s{36.79} \.{\land} \E\, pch \.{\in} perilChs \.{:} pch . start\_ts
+ \.{=} start}%
+\@x{ InvBoundsEnd \.{\defeq} \.{\LET} end \.{\defeq} maxEndTs ( policyChs )}%
+ \@x{\@s{16.4} \.{\IN} \.{\land} \E\, ech\@s{0.51} \.{\in} exChs \.{:} ech .
+ end\_ts \.{=} end}%
+ \@x{\@s{36.79} \.{\land} \E\, pch \.{\in} perilChs \.{:} pch . end\_ts \.{=}
+ end}%
+\@pvspace{8.0pt}%
+\@x{}\midbar\@xx{}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ The various modification operations in the framework affect characteristics
+ in 3
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ abstract ways. \ensuremath{Api.create()}, \ensuremath{Api.reinstate()}, and
+ \ensuremath{Api.renew()} modifications are abstractly
+ \ensuremath{extend()} operations. \ensuremath{Api.cancel()} is abstractly a
+ \ensuremath{reduce()} operation. And \ensuremath{Api.endorse()},
+ \ensuremath{Api.update()} are abstractly \ensuremath{update()} operations.
+ Below I discuss the character of these
+ abstract operations in more detail.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{T}{F}{2.5}{0}{}%
+From the point of view of characteristics a reinstatement can be thought of as
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ application of the set union operator. For example, given an existing set of
+ characteristics,
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\{i1,\, i2,\, i3\}} and a set that are being reinstated,
+ \ensuremath{\{i4,\, i5\}}. The result is
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\{i1,\, i2,\, i3\} \.{+} \{i4,\, i5\} \.{=} \{i1,\, i2,\, i3,\,
+ i4,\, i5\}
+}%
+\end{cpar}%
+\end{lcom}%
+\@x{ reinstate ( mod ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{<} 5}%
+\@x{\@s{16.4} \.{\land} cPolicyChs \.{\neq} \{ \}}%
+\@x{\@s{16.4} \.{\land} mod . start\_ts \.{<} mod . end\_ts}%
+\@x{\@s{16.4} \.{\land} mod . start\_ts \.{\geq} minStartTs ( cPolicyChs )}%
+\@x{\@s{16.4} \.{\land} mod . end\_ts \.{=} maxEndTs ( cPolicyChs )}%
+\@x{\@s{16.4} \.{\land} {\IF} offPolicy}%
+ \@x{\@s{31.61} \.{\THEN} \.{\land} policyChs \.{'} \.{=} {\UNION} \{ union (
+ plcyCh ,\, mod ) \.{:} plcyCh \.{\in} cPolicyChs \}}%
+ \@x{\@s{62.92} \.{\land} exChs \.{'} \.{=} {\UNION} \{ union ( exCh ,\, mod )
+ \.{:} exCh \.{\in} cExChs \}}%
+ \@x{\@s{62.92} \.{\land} perilChs \.{'} \.{=} {\UNION} \{ union ( prlCh ,\,
+ mod ) \.{:} prlCh \.{\in} cPerilChs \}}%
+\@x{\@s{31.61} \.{\ELSE} \.{\land} policyChs \.{'} \.{=} {\UNION} \{}%
+\@x{\@s{90.43} policyChs ,\,}%
+ \@x{\@s{90.43} {\UNION} \{ union ( plcyCh ,\, mod ) \.{:} plcyCh \.{\in}
+ cPolicyChs \} \}}%
+\@x{\@s{62.92} \.{\land} exChs \.{'} \.{=} {\UNION} \{}%
+\@x{\@s{90.43} exChs ,\,}%
+ \@x{\@s{90.43} {\UNION} \{ union ( exCh ,\, mod ) \.{:} exCh \.{\in} cExChs
+ \} \}}%
+\@x{\@s{62.92} \.{\land} perilChs \.{'} \.{=} {\UNION} \{}%
+\@x{\@s{90.43} perilChs ,\,}%
+ \@x{\@s{90.43} {\UNION} \{ union ( prlCh ,\, mod ) \.{:} prlCh \.{\in}
+ cPerilChs \} \}}%
+\@x{\@s{16.4} \.{\land} cPolicyChs \.{'} \.{=} \{ \}}%
+\@x{\@s{16.4} \.{\land} cExChs \.{'} \.{=} \{ \}}%
+\@x{\@s{16.4} \.{\land} cPerilChs \.{'} \.{=} \{ \}}%
+\@x{\@s{16.4} \.{\land} pc \.{'} \.{=} pc \.{+} 1}%
+\@pvspace{8.0pt}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ From the point of view of characteristics a cancellation is the application
+ of the
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ subtract operator, above, over the set of existing characteristics. For
+ illustration,
+ consider the intervals
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\vdash}}\cdash{4} A \cdash{6}
+ \ensuremath{\.{\vdash}}\@s{15.0}\cdash{6} \ensuremath{B}\@s{15.0}\cdash{6}
+ \ensuremath{\.{\vdash}}\@s{15.0}\cdash{5} \ensuremath{C}\@s{12.5}\cdash{5}
+ \ensuremath{\.{\,|\,}}\@s{15.0}an existing set of characteristics
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\vdash}}\cdash{14} \ensuremath{D}\cdash{16}
+ \ensuremath{\.{\,|\,}\@s{42.5}a} cancellation interval. Subtracting
+ \ensuremath{D} from each of A,
+ \ensuremath{B}, and \ensuremath{C} leaves just a short prefix of A, which we
+ write mathematically as
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{\{subtract(x,\, D) \.{\,|\,} x} \ensuremath{in \{A,\, B,\, C\}\}
+}%
+\end{cpar}%
+\end{lcom}%
+\@x{ cancel ( mod ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\LET} startTs \.{\defeq} minStartTs ( policyChs )}%
+\@x{\@s{16.4} \.{\IN}}%
+\@x{\@s{16.4} \.{\land} pc \.{<} 5}%
+\@x{\@s{16.4} \.{\land} cPolicyChs \.{=} \{ \}}%
+\@x{\@s{16.4} \.{\land} mod . start\_ts \.{<} mod . end\_ts}%
+\@x{\@s{16.4} \.{\land} mod . start\_ts \.{\geq} startTs}%
+\@x{\@s{16.4} \.{\land} mod . end\_ts \.{=} maxEndTs ( policyChs )}%
+\@x{\@s{16.4} \.{\land} pc \.{'} \.{=} pc \.{+} 1}%
+\@x{\@s{16.4} \.{\land} {\IF} mod . start\_ts \.{=} startTs}%
+ \@x{\@s{31.61} \.{\THEN} \.{\land} policyChs \.{'} \.{=} \{ [ start\_ts
+ \.{\mapsto} startTs ,\, end\_ts \.{\mapsto} startTs ] \}}%
+ \@x{\@s{62.92} \.{\land} exChs \.{'} \.{=} \{ [ start\_ts \.{\mapsto} startTs
+ ,\, end\_ts \.{\mapsto} startTs ] \}}%
+ \@x{\@s{62.92} \.{\land} perilChs \.{'} \.{=} \{ [ start\_ts \.{\mapsto}
+ startTs ,\, end\_ts \.{\mapsto} startTs ] \}}%
+\@x{\@s{62.92} \.{\land} cPolicyChs \.{'} \.{=} policyChs}%
+\@x{\@s{62.92} \.{\land} cExChs \.{'} \.{=} exChs}%
+\@x{\@s{62.92} \.{\land} cPerilChs \.{'} \.{=} perilChs}%
+ \@x{\@s{31.61} \.{\ELSE} \.{\land} policyChs \.{'}\@s{1.03} \.{=} {\UNION} \{
+ subtract ( plcyCh ,\, mod ) \.{:} plcyCh \.{\in} policyChs \}}%
+ \@x{\@s{62.92} \.{\land} exChs \.{'} \.{=} {\UNION} \{ subtract ( exCh ,\,
+ mod ) \.{:} exCh \.{\in} exChs \}}%
+ \@x{\@s{62.92} \.{\land} perilChs \.{'} \.{=} {\UNION} \{ subtract ( prlCh
+ ,\, mod )\@s{8.26} \.{:} prlCh \.{\in} perilChs \}}%
+ \@x{\@s{62.92} \.{\land} cPolicyChs \.{'} \.{=} {\UNION} \{ union ( plcyCh
+ ,\, mod ) \.{:} plcyCh \.{\in} policyChs \}}%
+ \@x{\@s{62.92} \.{\land} cExChs \.{'} \.{=} {\UNION} \{ union ( exCh ,\, mod
+ ) \.{:} exCh \.{\in} exChs \}}%
+ \@x{\@s{62.92} \.{\land} cPerilChs \.{'} \.{=} {\UNION} \{ union ( prlCh ,\,
+ mod ) \.{:} prlCh \.{\in} perilChs \}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ From the point of view of characteristics an endorsement is the application
+ of the
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ subtract operator over the set of existing characteristics
+ (set\ensuremath{\.{-})}unioned with the the
+ application of the (interval\ensuremath{\.{-})}union operator, above, over
+ the set of existing
+ characteristics. The reader can verify this by drawing two sets of intervals
+ on a piece
+ of paper, following illustration for the cancel function, and visually doing
+ the
+ subtractions and unions. We can write the endorsement splitting process
+ mathematically as
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\{subtract(x,\, D) \.{\,|\,} x} \ensuremath{in \{A,\, B,\, C\}\}
+ \.{+} \{union(x,\, D) \.{\,|\,} x} \ensuremath{in \{A,\, B,\, C\}\}
+}%
+\end{cpar}%
+\end{lcom}%
+\@x{ endorsePolicy ( mod ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{<} 5}%
+\@x{\@s{16.4} \.{\land} cPolicyChs \.{=} \{ \}}%
+\@x{\@s{16.4} \.{\land} mod . start\_ts \.{<} mod . end\_ts}%
+\@x{\@s{16.4} \.{\land} mod . start\_ts \.{\geq} minStartTs ( policyChs )}%
+\@x{\@s{16.4} \.{\land} mod . end\_ts \.{\leq} maxEndTs ( policyChs )}%
+\@x{\@s{16.4} \.{\land} pc \.{'} \.{=} pc \.{+} 1}%
+\@x{\@s{16.4} \.{\land} policyChs \.{'} \.{=} {\UNION} \{}%
+ \@x{\@s{31.61} {\UNION} \{ subtract ( policyCh ,\, mod ) \.{:} policyCh
+ \.{\in} policyChs \} ,\,}%
+ \@x{\@s{31.61} {\UNION} \{ union ( policyCh ,\, mod ) \.{:} policyCh \.{\in}
+ policyChs \} \}}%
+\@x{\@s{16.4} \.{\land} perilChs \.{'} \.{=} {\UNION} \{}%
+ \@x{\@s{48.01} {\UNION} \{ subtract ( prlCh ,\, mod ) \.{:} prlCh \.{\in}
+ perilChs \} ,\,}%
+ \@x{\@s{48.01} {\UNION} \{ union ( prlCh ,\, mod ) \.{:} prlCh \.{\in}
+ perilChs \} \}}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} exChs ,\, cPolicyChs ,\,
+ cExChs ,\, cPerilChs {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{ endorseEx ( mod ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{<} 5}%
+\@x{\@s{16.4} \.{\land} cPolicyChs \.{=} \{ \}}%
+\@x{\@s{16.4} \.{\land} mod . start\_ts \.{<} mod . end\_ts}%
+\@x{\@s{16.4} \.{\land} mod . start\_ts \.{\geq} minStartTs ( exChs )}%
+\@x{\@s{16.4} \.{\land} mod . end\_ts \.{\leq} maxEndTs ( exChs )}%
+\@x{\@s{16.4} \.{\land} pc \.{'} \.{=} pc \.{+} 1}%
+\@x{\@s{16.4} \.{\land} exChs \.{'} \.{=} {\UNION} \{}%
+ \@x{\@s{31.61} {\UNION} \{ subtract ( exCh ,\, mod ) \.{:} exCh \.{\in} exChs
+ \} ,\,}%
+ \@x{\@s{31.61} {\UNION} \{ union ( exCh ,\, mod ) \.{:} exCh \.{\in} exChs \}
+ \}}%
+\@x{\@s{16.4} \.{\land} perilChs \.{'} \.{=} {\UNION} \{}%
+ \@x{\@s{48.01} {\UNION} \{ subtract ( prlCh ,\, mod ) \.{:} prlCh \.{\in}
+ perilChs \} ,\,}%
+ \@x{\@s{48.01} {\UNION} \{ union ( prlCh ,\, mod ) \.{:} prlCh \.{\in}
+ perilChs \} \}}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} policyChs ,\, cPolicyChs ,\,
+ cExChs ,\, cPerilChs {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{ endorsePeril ( mod ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{<} 5}%
+\@x{\@s{16.4} \.{\land} cPolicyChs \.{=} \{ \}}%
+\@x{\@s{16.4} \.{\land} mod . start\_ts \.{<} mod . end\_ts}%
+\@x{\@s{16.4} \.{\land} mod . start\_ts \.{\geq} minStartTs ( perilChs )}%
+\@x{\@s{16.4} \.{\land} mod . end\_ts \.{\leq} maxEndTs ( perilChs )}%
+\@x{\@s{16.4} \.{\land} pc \.{'} \.{=} pc \.{+} 1}%
+\@x{\@s{16.4} \.{\land} perilChs \.{'} \.{=} {\UNION} \{}%
+ \@x{\@s{100.36} {\UNION} \{ subtract ( prlCh ,\, mod ) \.{:} prlCh \.{\in}
+ perilChs \} ,\,}%
+ \@x{\@s{100.36} {\UNION} \{ union ( prlCh ,\, mod ) \.{:} prlCh \.{\in}
+ perilChs \} \}}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} policyChs ,\, exChs ,\,
+ cPolicyChs ,\, cExChs ,\, cPerilChs {\rangle}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ Lastly, splitting characteristics for renewal is identical to the splitting
+ process
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ for reinstatements. It is just less general as for renewals there is always
+ only a
+ single added characteristics which is added in to the existing valid set.
+\end{cpar}%
+\end{lcom}%
+\@x{ renew ( mod ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{<} 5}%
+\@x{\@s{16.4} \.{\land} cPolicyChs \.{=} \{ \}}%
+\@x{\@s{16.4} \.{\land} mod . start\_ts \.{<} mod . end\_ts}%
+\@x{\@s{16.4} \.{\land} mod . start\_ts \.{=} maxEndTs ( policyChs )}%
+\@x{\@s{16.4} \.{\land} policyChs \.{'} \.{=} policyChs \.{\cup} \{ mod \}}%
+\@x{\@s{16.4} \.{\land} exChs \.{'} \.{=} exChs \.{\cup} \{ mod \}}%
+\@x{\@s{16.4} \.{\land} perilChs \.{'} \.{=} perilChs \.{\cup} \{ mod \}}%
+\@x{\@s{16.4} \.{\land} pc \.{'} \.{=} pc \.{+} 1}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} cPolicyChs ,\, cExChs ,\,
+ cPerilChs {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{ term \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{=} 5}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} policyChs ,\, exChs ,\,
+ perilChs ,\, cPolicyChs ,\, cExChs ,\, cPerilChs ,\, pc {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}\midbar\@xx{}%
+ \@x{ Init \.{\defeq} \.{\LET} ch \.{\defeq} [ start\_ts \.{\mapsto} 0 ,\,
+ end\_ts \.{\mapsto} 3 ]}%
+\@x{\@s{16.4} \.{\IN} \.{\land} policyChs \.{=} \{ ch \}}%
+\@x{\@s{36.79} \.{\land} exChs \.{=} \{ ch \}}%
+\@x{\@s{36.79} \.{\land} perilChs \.{=} \{ ch \}}%
+ \@x{\@s{36.79} \.{\land} cPolicyChs \.{=} \{ \} \.{\land} cExChs \.{=} \{ \}
+ \.{\land} cPerilChs \.{=} \{ \}}%
+\@x{\@s{36.79} \.{\land} pc \.{=} 0}%
+\@pvspace{8.0pt}%
+\@x{ Next \.{\defeq}}%
+\@x{\@s{16.4} \.{\lor} term}%
+\@x{\@s{16.4} \.{\lor} \E\, ch \.{\in} VCharacteristics \.{:}}%
+\@x{\@s{42.93} \.{\lor} cancel ( ch )}%
+\@x{\@s{42.93} \.{\lor} reinstate ( ch )}%
+\@x{\@s{42.93} \.{\lor} renew ( ch )}%
+\@x{\@s{42.93} \.{\lor} endorsePeril ( ch )}%
+\@x{\@s{42.93} \.{\lor} endorseEx ( ch )}%
+\@x{\@s{42.93} \.{\lor} endorsePolicy ( ch )}%
+\@pvspace{16.0pt}%
+ \@x{ Spec \.{\defeq} Init \.{\land} {\Box} [ Next ]_{ {\langle} policyChs ,\,
+ exChs ,\, perilChs ,\, cPolicyChs ,\, cExChs ,\, cPerilChs ,\, pc
+ {\rangle}}}%
+\@x{}\bottombar\@xx{}%
+\setboolean{shading}{false}
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{\.{\,\backslash\,}}* Modification History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Tue}
+ \ensuremath{Dec} 15 15:14:20 \ensuremath{PST} 2020 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* \ensuremath{Created} \ensuremath{Fri}
+ \ensuremath{Oct} 16 13:25:40 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\end{lcom}%

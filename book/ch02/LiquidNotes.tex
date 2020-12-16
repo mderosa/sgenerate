@@ -1,0 +1,18 @@
+When primitive Java types are passed to JRuby they are converted to the following Ruby types:
+
+\begin{tabular}{l l}
+  Java Type & Ruby Type \\
+  \toprule
+  public String & String \\
+  public byte & Fixnum \\
+  public short & Fixnum \\
+  public char & Fixnum \\
+  public int & Fixnum \\
+  public long & Fixnum \\
+  public float & Float \\
+  public double & Float
+\end{tabular}
+
+The Java Booleans true and false are coerced to the Ruby singleton classes TrueClass and FalseClass
+which are represented in Ruby with the instances true and false.
+The null Java object is coerced to the Ruby class NilClass which is represented in Ruby as the instance nil.

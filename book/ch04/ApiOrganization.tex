@@ -1,0 +1,147 @@
+
+\begin{figure}[b]
+  \begin{tikzpicture}[->,>=stealth']
+
+    \filldraw
+    (-3,2) circle node (tl){} --
+    (2.8,2) circle node (tm){} --
+    (8.5,2) circle node (tr){} --
+    (8.5,-14) circle node (br){} --
+    (2.8,-14) circle node (bm) {} --
+    (-3,-14) circle node (bl) {} --
+    (-3,2) circle node (end) {};
+
+    \draw[-, dotted] (tm) -- (bm);    
+
+    \node[state] (stack-api-client) {
+      \begin{tabular}{l}
+        \textbf{stack-api-client}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] com.socotra.client
+          \item[.] com.socotra.model
+          \end{itemize}
+        }\\[4em]
+        \textbf{Holds}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] Request / Response objects
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      below of=stack-api-client,
+      node distance=6cm] (stack-service-common) {
+      \begin{tabular}{l}
+        \textbf{stack-service-common}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] com.socotra.common
+          \end{itemize}
+        }\\[4em]
+        \textbf{Holds}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] Persistence objects
+          \item[.] Business logic
+          \item[.] Model objects
+          \item[.] Utility objects
+          \item[.] Validation
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      below of=stack-service-common,
+      node distance=6cm] (stack-api-service) {
+      \begin{tabular}{l}
+        \textbf{stack-api-service}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] com.socotra.api
+          \end{itemize}
+        }\\[4em]
+        \textbf{Holds}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] Controllers
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      right of=stack-api-client,
+      node distance=5.6cm] (ModelLayer) {
+      \begin{tabular}{l}
+        \textbf{ModelLayer}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] Utility objects
+          \item[.] Model objects
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      below of=ModelLayer,
+      node distance=4cm] (PersistenceLayer) {
+      \begin{tabular}{l}
+        \textbf{PersistenceLayer}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] Persistence objects
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      below of=PersistenceLayer,
+      node distance=4cm] (ServiceLayer) {
+      \begin{tabular}{l}
+        \textbf{ServiceLayer}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] Business logic
+          \end{itemize}
+        }
+      \end{tabular}
+    };
+
+    \node[state,
+      below of=ServiceLayer,
+      node distance=4cm] (ControllerLayer) {
+      \begin{tabular}{l}
+        \textbf{ControllerLayer}\\
+        \parbox{4cm}{
+          \begin{itemize}
+          \item[.] Controllers
+          \item[.] Request / Response objects
+          \item[.] Validation
+          \end{itemize}
+        }
+      \end{tabular}
+    };    
+
+    \path
+    (stack-api-service) edge (stack-service-common)
+    (stack-service-common) edge (stack-api-client)
+    (PersistenceLayer) edge (ModelLayer)
+    (ServiceLayer) edge (PersistenceLayer)
+    (ControllerLayer) edge (ServiceLayer)
+    ;
+
+
+
+  \end{tikzpicture}
+  \caption{
+    The Socotra API organization on the left. For reference, the industry standard organization
+    for a tiered API on the right.
+  }
+  \label{fig:3:2}
+\end{figure}    

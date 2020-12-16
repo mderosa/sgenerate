@@ -1,0 +1,150 @@
+\hypertarget{overview}{%
+\subsection{Overview}\label{overview}}
+
+Config Manager allows user to create, modify, and deploy custom,
+insurance Products.
+
+\hypertarget{local-development-front-end}{%
+\subsection{Local Development (Front
+End)}\label{local-development-front-end}}
+
+Install npm packages: \texttt{npm\ install} (You may have to restart
+VSCode after this to pick up the installed components)
+
+Generate the default configuration assets as .js files:
+\texttt{npm\ run\ create-assets}
+
+Compile the app and serve it via webpack-dev-server:
+\texttt{npm\ run\ start-dev}
+
+Chances are you'll need to open the app in a browser that has CORS
+disabled (b/c the local frontend app will be hitting a deployed backend
+(as opposed to a backend hosted locally). So this will produce a CORS
+error). Run this command in a terminal to open a CORS-disabled version
+of Chrome:
+\texttt{open\ -n\ -a\ /Applications/Google\textbackslash{}\ Chrome.app/Contents/MacOS/Google\textbackslash{}\ Chrome\ -\/-args\ -\/-user-data-dir="/tmp/chrome\_dev\_test"\ -\/-disable-web-security}
+
+\hypertarget{local-development-back-end}{%
+\subsection{Local Development (Back
+End)}\label{local-development-back-end}}
+
+\begin{itemize}
+\tightlist
+\item
+  Boot stack-api-service on port 8080 by running it through your IDE, as
+  usual. Stack-api-services, directly, provides login services for
+  config manager
+\item
+  Boot stack-load-assets on port 5000 by running the command
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{nvm}\NormalTok{ use 8.9.4}
+\ExtensionTok{rvm}\NormalTok{ use ruby-2.6.3}
+\FunctionTok{make}\NormalTok{ run}
+\end{Highlighting}
+\end{Shaded}
+
+from the stack-load-assets base directory. Stack-load-assets provides
+all of the asset publishing services for config manager.
+
+\begin{itemize}
+\tightlist
+\item
+  Boot stack-config-manager on port 9001 by running the command
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{make}\NormalTok{ run}
+\end{Highlighting}
+\end{Shaded}
+
+from the stack-config-manager base directory.
+
+When all three applications are running you should then be able to
+navigate to \href{http://localhost:9001}{http://localhost:9001} in any
+browser, login, and submit assets all within a local development
+environment.
+
+\hypertarget{build-and-deploy}{%
+\subsection{Build and deploy}\label{build-and-deploy}}
+
+The build of Config Manager is coordinated by the build.sh (python 2) or
+build3.sh (python 3) in the root of the project. The shell scripts
+bundle the application and deploy it to
+repo://source/stack-load-assets/assetload/static/configmanager. Once
+deployed Config Manager can then be accessed through a running
+load-assets application, at the path /studio/. So for example, running
+load-assets locally the access url would be
+\href{http://localhost:5000/studio/}{http://localhost:5000/studio/}
+
+Build and deploy using Python 3 with:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{rvm}\NormalTok{ use ruby-2.6.3}
+\ExtensionTok{nvm}\NormalTok{ use 8.9.4}
+\ExtensionTok{./build3.sh}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{directory-layout}{%
+\subsection{Directory Layout:}\label{directory-layout}}
+
+\begin{itemize}
+\tightlist
+\item
+  assets: Contains default configurations artifacts (i.e. default
+  config, default product)
+\item
+  public: Contains icons and image assets
+\item
+  sass: Contains sass files for styling. Currently trying to move over
+  to a BEM-style methodology
+\item
+  src
+
+  \begin{itemize}
+  \item
+    api: Contains code to make requests to backend APIs
+  \item
+    components: Contains our React components
+
+    \begin{itemize}
+    \tightlist
+    \item
+      actionpane: code for the actions sidebar
+    \item
+      actions: Contains the Actions of the Trigger-Action component
+      design
+    \item
+      modals: Contains modal components
+    \item
+      pages: Contains pages and layouts
+    \item
+      popups: Contains popup components (i.e. action menus, dropdown
+      menus). Distinct from modals in that modals are fullscreen and
+      darken the bg. Popups and modals also currently use different
+      underlying libraries for their implementation. They should
+      probably be consolidated at some point.
+    \item
+      various other components not organized into the above folders
+    \end{itemize}
+  \item
+    context: Contains state management code. We're using React's Context
+    API for state management.
+  \item
+    models: Contains any complex data models (i.e. the configuration)
+  \item
+    util: Contains various utility code
+  \end{itemize}
+\item
+  history.tsx: Specifies the history library to be used with
+  react-router
+\item
+  main.tsx: The main entry point for the app
+\item
+  routes.tsx: Specifies the app's URL routes. Uses react-router
+\end{itemize}

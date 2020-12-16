@@ -1,0 +1,103 @@
+\hypertarget{overview}{%
+\subsection{Overview}\label{overview}}
+
+stack-api-service is the highest layer in the Socotra platform. It
+depends on the statck-service-common project for business and
+persistence services. It despends on the stack-api-client project for
+generic and specialized model classes.
+
+\hypertarget{testing}{%
+\subsection{Testing}\label{testing}}
+
+\hypertarget{overview-1}{%
+\subsubsection{Overview}\label{overview-1}}
+
+Testing is organized so that a developer can run unit tests and an
+essential subset of the integration tests locally on a development
+machine. These unit and essential integration tests are referred to as
+the essential test subset and satisfy the following criteria:
+
+\begin{itemize}
+\tightlist
+\item
+  Runs must of the essential test subset must run within a time budget
+  of 15 minutes.
+\item
+  The essential test subset may be run locally by a developer, but the
+  essential subset must run and pass before developers are allowed to
+  merge a pull request into the develop branch.
+\end{itemize}
+
+The full set of project tests, which is a superset of the essential
+subset, is run continuously by the automated build tools. A failure of
+the full set indicates a code issue on the develop branch and must be
+resolved by the team as a their first priority.
+
+\hypertarget{running-tests}{%
+\subsubsection{Running tests}\label{running-tests}}
+
+\begin{itemize}
+\tightlist
+\item
+  The unit tests for stack-service-common will run on any machine with a
+  Java installation. The unit tests can be run by the command
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{make}\NormalTok{ test}
+\end{Highlighting}
+\end{Shaded}
+
+This command insures the local maven repository contains a build of the
+latest branch specific Java libraries and runs all of the Java unit
+tests in the socotra-stack project. If one would like to run just the
+unit tests for the stack-api-service project, that can be done by
+issuing the command
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{mvn}\NormalTok{ test}
+\end{Highlighting}
+\end{Shaded}
+
+from the root of the project.
+
+\begin{itemize}
+\tightlist
+\item
+  The essential test subset, as defined above, for stack-service-common
+  will run on any machine with a standard development environment. The
+  essential subset can be run by the command
+\end{itemize}
+
+\begin{verbatim}
+make test_intg
+\end{verbatim}
+
+If a developer would like to run just the essential test subset for the
+stack-service common project alone, that can be done by issuing the
+command
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{mvn}\NormalTok{ verify -P essential-test}
+\end{Highlighting}
+\end{Shaded}
+
+from the root of the project.
+
+\begin{itemize}
+\tightlist
+\item
+  Currently the full set of project tests will run with the command.
+\end{itemize}
+
+\begin{verbatim}
+mvn verify -P integration-test
+\end{verbatim}
+
+A developer machine will likely choke on the processing that will ensue
+after this command so you really don't want to run all the tests. Still,
+everyone should be familiar with the tests commands that are used in the
+orgainization.

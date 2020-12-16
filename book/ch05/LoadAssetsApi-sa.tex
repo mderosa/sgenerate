@@ -1,0 +1,284 @@
+\hypertarget{api-overview}{%
+\subsection{Api Overview}\label{api-overview}}
+
+There are a documented and non documented API endpoints for the load
+assets project. A schema for the documented API can be viewed on a
+development machine at \href{http://localhost:5000/api/swagger.json}{Api
+Schema} A brief discusion of all API endpoints are described below.
+
+\hypertarget{api-detail}{%
+\subsection{Api Detail}\label{api-detail}}
+
+\hypertarget{post-assetsv1deploy}{%
+\subsubsection{POST /assets/v1/deploy}\label{post-assetsv1deploy}}
+
+Creates or updates a tenant-hostname / tenant combination Request
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \ErrorTok{zipFile}\FunctionTok{:} \ErrorTok{Bytes}\FunctionTok{,}
+    \ErrorTok{tenantName}\FunctionTok{:} \ErrorTok{String}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{zipFile} : A zipped directory of socotra configuration files
+\item
+  \emph{tenantName} : Creates or updates a configuration such that
+  tenant-hostname.hostname = {[}tenantName{]}.co.socotra.com and
+  tenant.tenant.tenant\_name = {[}tenantName{]}
+\end{itemize}
+
+Response
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \ErrorTok{hostname}\FunctionTok{:} \ErrorTok{String}\FunctionTok{,}
+    \ErrorTok{logfile}\FunctionTok{:} \ErrorTok{String}\FunctionTok{,}
+    \ErrorTok{success}\FunctionTok{:} \ErrorTok{Boolean}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{hostname} : the hostname (ex:
+  docker-dev-configeditor.co.socotra.com) at which one can access the
+  uploaded configuration given the uploaded credentials (ex: alice.lee /
+  socotra)
+\end{itemize}
+
+\hypertarget{assetsv1deploytest}{%
+\subsubsection{/assets/v1/deployTest}\label{assetsv1deploytest}}
+
+Creates or updates a tenant-hostname / tenant combination Request
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \ErrorTok{zipFile}\FunctionTok{:} \ErrorTok{Bytes}\FunctionTok{,}
+    \ErrorTok{tenantNameSuffix}\FunctionTok{:} \ErrorTok{String}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{zipFile} : A zipped directory of socotra configuration files
+\item
+  \emph{tenantName} : Creates or updates a configuration such that
+  tenant-hostname.hostname =
+  {[}username{]}-{[}tenantName{]}.co.socotra.com and
+  tenant.tenant.tenant\_name = {[}username{]}-{[}tenantName{]}, where
+  {[}username{]} is the admin user contained in the authorization
+  credentials
+\end{itemize}
+
+Response
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \ErrorTok{hostname}\FunctionTok{:} \ErrorTok{String}\FunctionTok{,}
+    \ErrorTok{logfile}\FunctionTok{:} \ErrorTok{String}\FunctionTok{,}
+    \ErrorTok{success}\FunctionTok{:} \ErrorTok{Boolean}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{hostname} : the hostname (ex:
+  docker-dev-configeditor.co.socotra.com) at which one can access the
+  uploaded configuration given the uploaded credentials (ex: alice.lee /
+  socotra)
+\end{itemize}
+
+\hypertarget{assetsv1export}{%
+\subsubsection{/assets/v1/export}\label{assetsv1export}}
+
+Request
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \ErrorTok{?} \ErrorTok{includeFailed}\FunctionTok{:} \ErrorTok{Boolean}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Response
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \ErrorTok{deployed}\FunctionTok{:} \ErrorTok{Boolean}\FunctionTok{,}
+    \ErrorTok{expiresTimestamp}\FunctionTok{:} \ErrorTok{Integer}\FunctionTok{,}
+    \ErrorTok{url}\FunctionTok{:} \ErrorTok{String}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{assetsv1login}{%
+\subsubsection{/assets/v1/login}\label{assetsv1login}}
+
+\hypertarget{assetsv1createadmin}{%
+\subsubsection{/assets/v1/createAdmin}\label{assetsv1createadmin}}
+
+\hypertarget{configurationdeploytest}{%
+\subsubsection{/configuration/deployTest}\label{configurationdeploytest}}
+
+Request
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \ErrorTok{zipFile}\FunctionTok{:} \ErrorTok{Bytes}\FunctionTok{,}
+    \ErrorTok{?} \ErrorTok{tenantNameSuffix}\FunctionTok{:} \ErrorTok{String}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Response
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \ErrorTok{hostname}\FunctionTok{:} \ErrorTok{String}\FunctionTok{,}
+    \ErrorTok{logfile}\FunctionTok{:} \ErrorTok{String}\FunctionTok{,}
+    \ErrorTok{success}\FunctionTok{:} \ErrorTok{Boolean}\FunctionTok{,}
+    \ErrorTok{tenantName}\FunctionTok{:} \ErrorTok{String}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{configurationupdateexternalserviceintegrations}{%
+\subsubsection{/configuration/updateExternalServiceIntegrations}\label{configurationupdateexternalserviceintegrations}}
+
+\hypertarget{end-points-for-config-studio}{%
+\subsection{End Points For Config
+Studio}\label{end-points-for-config-studio}}
+
+\hypertarget{post-configeditordeploy}{%
+\subsubsection{POST
+/configeditor/deploy}\label{post-configeditordeploy}}
+
+This end point is used by Config Studio to submit assests to the Socotra
+main api service. Requires that the client set an 'authorization' field
+in the header containing a authorization header
+
+The request should contain a json body of the form
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \ErrorTok{assets}\FunctionTok{:} \ErrorTok{Map<String}\FunctionTok{,} \ErrorTok{JSON>}
+    \ErrorTok{recreate}\FunctionTok{:} \ErrorTok{Boolean}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+ex:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \ErrorTok{assets}\FunctionTok{:\{}
+        \ErrorTok{config.json}\FunctionTok{:} \FunctionTok{\{}
+            \ErrorTok{timezone}\FunctionTok{:} \StringTok{"America/Los_Angeles"}\FunctionTok{,}
+            \ErrorTok{currency}\FunctionTok{:} \StringTok{"USD"}\FunctionTok{,}
+            \ErrorTok{improvedRating}\FunctionTok{:} \KeywordTok{true}
+            \FunctionTok{\},}
+        \ErrorTok{security/roles.json}\FunctionTok{:} \FunctionTok{\{}
+        \ErrorTok{underwriter1}\FunctionTok{:} \StringTok{"Underwriter Level 1"}\FunctionTok{,}
+        \ErrorTok{underwriter2}\FunctionTok{:} \StringTok{"Underwriter Level 2"}
+        \FunctionTok{\},}
+    \FunctionTok{\},}
+    \ErrorTok{recreate}\FunctionTok{:} \KeywordTok{false}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+The response will be of the form
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \ErrorTok{hostname}\FunctionTok{:} \ErrorTok{String}\FunctionTok{,}
+    \ErrorTok{logfile}\FunctionTok{:} \ErrorTok{String}\FunctionTok{,}
+    \ErrorTok{success}\FunctionTok{:} \ErrorTok{Boolean}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{post-configeditorvalidate}{%
+\subsubsection{POST
+/configeditor/validate}\label{post-configeditorvalidate}}
+
+This end point is used by Config Studio to check if asset files are
+valid. The client does not need to set and 'authorization' header.
+
+The request should contain a json body of the form
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \ErrorTok{assets}\FunctionTok{:} \ErrorTok{Map<String}\FunctionTok{,} \ErrorTok{JSON>}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+The response will be of the form
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \DataTypeTok{"config.json"}\FunctionTok{:}\KeywordTok{null}\FunctionTok{,}
+    \DataTypeTok{"payment/payment.json"}\FunctionTok{:}\KeywordTok{null}\FunctionTok{,}
+    \DataTypeTok{"policyholder/policyholder.card.json"}\FunctionTok{:}\KeywordTok{null}\FunctionTok{,}
+    \ErrorTok{...}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+where null indicates that the corresponding file has passed validation
+
+\hypertarget{configeditorimport}{%
+\subsubsection{/configeditor/import}\label{configeditorimport}}
+
+\hypertarget{configeditorexport}{%
+\subsubsection{/configeditor/export}\label{configeditorexport}}
+
+\hypertarget{monitoring-end-points}{%
+\subsection{Monitoring End Points}\label{monitoring-end-points}}
+
+\hypertarget{get-health}{%
+\subsubsection{GET /health}\label{get-health}}
+
+Just a health check endpoint for monitoring. The response is of the form
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \DataTypeTok{"duration_millis"}\FunctionTok{:} \FloatTok{0.011139154434204102}\FunctionTok{,} 
+    \DataTypeTok{"generated_at"}\FunctionTok{:} \StringTok{"2020-02-07T22:20:58Z"}\FunctionTok{,} 
+    \DataTypeTok{"result"}\FunctionTok{:} \StringTok{"passed"}\FunctionTok{,} 
+    \DataTypeTok{"tests"}\FunctionTok{:} \FunctionTok{\{}
+        \DataTypeTok{"core_api"}\FunctionTok{:} \FunctionTok{\{}
+            \DataTypeTok{"duration_millis"}\FunctionTok{:} \FloatTok{0.011105060577392578}\FunctionTok{,} 
+            \DataTypeTok{"result"}\FunctionTok{:} \StringTok{"passed"}\FunctionTok{,} 
+            \DataTypeTok{"tested_at"}\FunctionTok{:} \StringTok{"2020-02-07T22:20:58Z"}
+        \FunctionTok{\}}
+    \FunctionTok{\}}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+

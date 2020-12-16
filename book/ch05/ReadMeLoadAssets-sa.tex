@@ -1,0 +1,129 @@
+\hypertarget{overview}{%
+\subsection{Overview}\label{overview}}
+
+Load Assets takes configuration files from Configuration Manager,
+validates them, and then orchestrates though the stack-api-service to
+configure data stores needed for operation of the software
+
+\hypertarget{development-environment-setup}{%
+\subsection{Development environment
+setup}\label{development-environment-setup}}
+
+Load assets can be run locally on a developer computer against a locally
+running instance of stack-api-service on port 8080. To setup your
+environment you can run the command
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{make}\NormalTok{ setup-debian}
+\end{Highlighting}
+\end{Shaded}
+
+or
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{make}\NormalTok{ setup}
+\end{Highlighting}
+\end{Shaded}
+
+depending on the type of system you are on. The setup process (1)
+installs pyenv to manage your virtual environments, (2) installs pipenv
+and (3) installs all of the dependencies for the stack-load-assets
+project
+
+After running the setup you should then be able to start your virtual
+environment by typing:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{pipenv}\NormalTok{ shell}
+\end{Highlighting}
+\end{Shaded}
+
+and exit the virtual environment by typing:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{exit}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{running-the-application}{%
+\subsection{Running the application}\label{running-the-application}}
+
+The application can be run on port 5000 by entering your virtual
+environment and then entering the command
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{make}\NormalTok{ run}
+\end{Highlighting}
+\end{Shaded}
+
+The makefile sets up all of the environment variables needed for the
+application to run against a locally running stack-api-service
+
+\hypertarget{testing-the-application}{%
+\subsection{Testing the application}\label{testing-the-application}}
+
+Tests can be run from inside the virtual environment as described below.
+
+\begin{itemize}
+\tightlist
+\item
+  static analysis and type checking is run as part of all the test
+  routines. Both types of checks can also be run stand alone. Static
+  analysis can be run with the command:
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{make}\NormalTok{ static}
+\end{Highlighting}
+\end{Shaded}
+
+Type checking can be run with the comamnd:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{make}\NormalTok{ mypy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  unit tests can be run with the command:
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{make}\NormalTok{ test}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  There are currently integration tests for stack-load-assets that run
+  against a locally running stack-api-service. The integration tests can
+  be run with the command:
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{make}\NormalTok{ test_intg}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{building-the-application}{%
+\subsection{Building the application}\label{building-the-application}}
+
+Though not immediately obvious, Load Assets is built into a composite
+application where (a) python code orchestrates communication with the
+socotra api, and (b) where the assetload/static directory contains and
+serves the build stack-config-studio-static, stack-load-assets-static,
+and stack-config-manager projects. The assembly of all these elements is
+managed by the build so just be aware there is more to Load Assets than
+meets the eye.

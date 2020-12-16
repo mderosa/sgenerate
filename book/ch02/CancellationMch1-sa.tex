@@ -9,21 +9,47 @@
 \@x{ {\VARIABLES} policy ,\, step ,\, mods ,\, term}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- Here, I model the state by separating it into a \ensuremath{Policy} state and
- a Modification Set
- state. Observing just the state of the the Modification Set, each
- Modification follows
- a stand alone, independent state machine which in greatest generality is:
- . \ensuremath{\.{\rightarrow} Created \.{\rightarrow}} Accepted
- \ensuremath{\.{\rightarrow} Issued \.{\,|\,}} Invalidated
- \ensuremath{\.{\rightarrow}} . Observing just policy state,
- a \ensuremath{Policy} only listens to \ensuremath{Issued} events, and
- updates its state on those events.
- In the system all modifications are retained but for this abstraction only
- issued
- modifications are recorded. This omission reduces the state space without
- loss of
- generality.
+ Here, I model the total state by separating it into the variables policy and
+ \ensuremath{mods}.
+ The \ensuremath{mods} variable is a sequential record of the issued
+ modifications associated with the
+ policy. Any accepted modifications associated with the policy are placed in
+ the policy\mbox{'}s
+ \ensuremath{pending\_modification} field. The choice to have a
+ \ensuremath{pending\_modification} field on the
+ policy variable is driven by the need to express the invariant that only one
+ modification
+ can be in the Accepted state at any time.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+A cancellation modification follows the state sequence:
+ \ensuremath{Init \.{\mm}(create)}--\ensuremath{\.{>} Created
+ \.{\mm}(issue)}--\ensuremath{\.{>} Issued} \.{\dots}
+ A reinstatement modification follows one of the state sequences:
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{Init \.{\mm}(create)}--\ensuremath{\.{>} Created
+ \.{\mm}(accept)}--\ensuremath{\.{>}} Accepted
+ \ensuremath{\.{\mm}(issue)}--\ensuremath{\.{>} Issued} \.{\dots}
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{Init \.{\mm}(create)}--\ensuremath{\.{>} Created
+ \.{\mm}(accept)}--\ensuremath{\.{>}} Accepted
+ \ensuremath{\.{\mm}(invalidate) \.{\rightarrow}} Draft \.{\dots}
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{Init \.{\mm}(create)}--\ensuremath{\.{>} Created
+ \.{\mm}(accept)}--\ensuremath{\.{>}} Accepted
+ \ensuremath{\.{\mm}(expire)}--\ensuremath{\.{>}} Expired
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Conceptually, this development takes the view that only accept and issue
+ events of
+ essential to understanding state evolution, this view point reduces the
+ state space
+ without loss of generality.
 \end{cpar}%
 \end{lcom}%
 \@x{}\midbar\@xx{}%
@@ -47,7 +73,7 @@
  guard, the
 \end{cpar}%
 \begin{cpar}{1}{F}{F}{0}{0}{}%
- reader should interpret it a a requirement to check and invalidate any
+ reader should interpret it a a requirement to check for and invalidate any
  accepted
  modifications
 \end{cpar}%
@@ -65,6 +91,12 @@
  Below we define a few common invariants of the system.
 }%
 \@xx{}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Check a few variable fields to ensure that types are correct
+}%
+\@xx{}%
 \@x{ InvType \.{\defeq}}%
 \@x{\@s{16.4} \.{\LET} pending \.{\defeq} policy . pending\_modification}%
  \@x{\@s{16.4} \.{\IN} \.{\land} pending \.{\in} {\UNION} \{ Reinstatements
@@ -76,9 +108,23 @@
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- Every policy can have zero or one pending modifications and that pending
- modification
- must be in the \ensuremath{Finalized} (Accepted) state.
+Policy Invariants are:
+\end{cpar}%
+\begin{cpar}{0}{T}{F}{2.5}{0}{}%
+(1) a policy should have zero or one pending modifications.
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ (2) pending modifications must be in the \ensuremath{Finalized} (Accepted)
+ state.
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ (3) if a policy is \ensuremath{OffRisk} then (a) its \ensuremath{start\_dt}
+ must equal its \ensuremath{end\_dt} (b) the most
+ recently issued modification must be a cancellations (c) there must be
+ either no
+ pending modifications or one of type \ensuremath{Reinstatment}.
+ (4) all pending reinstatements must have a \ensuremath{deadline\_dt \.{<}}
+ now.
 \end{cpar}%
 \end{lcom}%
 \@x{ InvPolicy \.{\defeq}}%
@@ -88,19 +134,35 @@
  EndorsementOrRenewal \} \.{\implies}}%
 \@x{\@s{181.66} pending . state \.{=}\@w{Finalized}}%
 \@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{OffRisk} \.{\implies} (}%
-\@x{\@s{56.11} pending \.{\neq} EndorsementOrRenewal}%
- \@x{\@s{56.11} \.{\land} policy . original\_start\_ts \.{=} policy .
- effective\_end\_ts )}%
-\@x{\@s{36.79} \.{\land} (\@s{4.31} \.{\land} pending \.{\in} Reinstatements}%
+ \@x{\@s{56.11} policy . original\_start\_ts \.{=} policy . effective\_end\_ts
+ )}%
+ \@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{OffRisk} \.{\implies}
+ prevMod \.{\in} Cancellations}%
+ \@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{OffRisk} \.{\implies}
+ pending\@s{3.62} \.{\in} Reinstatements \.{\cup} \{ NoModification \}}%
+\@x{\@s{36.79} \.{\land} ( \.{\land} pending \.{\in} Reinstatements}%
  \@x{\@s{52.01} \.{\land} pending . auto\_reinstate ) \.{\implies} pending .
  deadline\_ts \.{+} 1 \.{\geq} step}%
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- When a policy is fully cancelled it is \ensuremath{OffRisk} and the time
- interval of the policy
- has zero duration. From that state it duration can only be increased by a
- reinstatement.
+Modification Invariants are:
+ (1) the first policy modification has a \ensuremath{start\_dt} equals to the
+ policy\mbox{'}s original
+ policy start dt
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+(2) all modifications have \ensuremath{start\_dt \.{<} end\_dt
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+(3) once a cancellation is issued that modification can only be followed by a
+ cancellation or reinstatement. All issued cancellations must have a
+ matching, following
+ reinstatement before any endorsements or renewals can be issued
+ (4) a cancellation and its matching reinstatement must have equal
+ \ensuremath{end\_dts
+}%
 \end{cpar}%
 \end{lcom}%
 \@x{ InvMods \.{\defeq}}%
@@ -109,14 +171,9 @@
 \@x{\@s{16.4} \.{\IN} \.{\land} prevMod \.{\neq} NoModification \.{\implies}}%
  \@x{\@s{56.11} prevMod . start\_timestamp \.{\geq} policy .
  original\_start\_ts}%
- \@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{OffRisk} \.{\implies}
- prevMod \.{\in} Cancellations}%
- \@x{\@s{36.79} \.{\land} policy . state \.{=}\@w{OffRisk} \.{\implies}
- pending\@s{3.62} \.{\in} Reinstatements \.{\cup} \{ NoModification \}}%
- \@x{\@s{36.79} \.{\land} \A\, idx \.{\in} 1 \.{\dotdot} Len ( mods ) \.{:}
- mods [ idx ] \.{\in} Cancellations \.{\implies}}%
- \@x{\@s{67.43} ( mods [ idx ] . start\_timestamp \.{<} mods [ idx ] .
- end\_timestamp )}%
+\@pvspace{8.0pt}%
+ \@x{\@s{36.79} \.{\land} \A\, idx \.{\in} 1 \.{\dotdot} Len ( mods ) \.{:} (
+ mods [ idx ] . start\_timestamp \.{<} mods [ idx ] . end\_timestamp )}%
  \@x{\@s{36.79} \.{\land} \A\, idx \.{\in} 2 \.{\dotdot} Len ( mods ) \.{:}
  mods [ idx ] \.{\in} Reinstatements \.{\implies}}%
  \@x{\@s{67.43} ( \.{\land} mods [ idx\@s{0.21} \.{-} 1 ] \.{\in}
@@ -146,10 +203,10 @@
  A cancellation can be created for any policy that is \ensuremath{OnRisk}. The
  start date specified by
  the cancellation should be within the coverage time span of the policy.
- Note that for the specification, we do not have cancellation create events
- result in
- additions to the modifications set. This addition would ordinarily happen in
- a concrete
+ Note that for the specification, cancellation create events do not result in
+ additions
+ to the policy\mbox{'}s modifications set. This addition does happen in the
+ concrete
  implementation, however, we elide the effect here as maintaining the state
  in the policy
  record along with a list of issued modifications is sufficient to validate
@@ -178,13 +235,16 @@
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- A cancellation can be issued whenever its policy is \ensuremath{OnRisk}.
- Further, a cancellation can be
- issued regardless of any current, pending modifications on its policy. The
- only
- restriction is that the cancellation date must be within the time span of
- the policy. If
- any endorsement or renewals are pending then those must be invalidated.
+ A cancellation can be issued whenever its policy is \ensuremath{OnRisk}, and
+ the cancellation date
+ is within the time span of the policy. If any endorsement or renewals are
+ pending then
+ the cancellation invalidates those endorsements / renewals. In the concrete
+ implementation
+ the cancellation can also block when there are existing accepted
+ modifications. For maximal
+ generality, in this development I always assume the cancellation will
+ invalidate.
 \end{cpar}%
 \end{lcom}%
 \@x{ issueCancellation ( mod ) \.{\defeq}}%
@@ -226,67 +286,39 @@
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- The legacy lapse action acts similarly to the above cancellation method. It
- can be
- thought of as the sequential application of a cancellation create + issue.
- There is a
- switch in the new cancellation configuration to disable the
- \ensuremath{legacyLapse} action, possibly
- but not preferably, as shown in the first guard condition below
+ The legacy lapse action is only active if the \ensuremath{cancellations.json}
+ configuration items
+ are not present in the policy\mbox{'}s product configuration. We will assume
+ this is the
+ case for the policy we are considering here, so legacy lapse will never
+ execute.
 \end{cpar}%
 \end{lcom}%
-\@x{ legacyLapse ( mod ) \.{\defeq}}%
-\@x{\@s{16.4} \.{\land}\@w{Lapse} \.{\notin} CancellationReasons}%
-\@x{\@s{16.4} \.{\land} issueCancellation ( mod )}%
+\@x{ legacyLapse ( mod ) \.{\defeq} {\FALSE}}%
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- I have not included \ensuremath{legacyReinstatement} in the model, as one can
- see in the \ensuremath{Next} definition.
- Instead I just note that \ensuremath{legacyReinstatment} should equal the
- effect of consecutive draft,
- accept, issue operations in the new \ensuremath{API}, and so it is
- effectively already modeled.
- Because this function is defined as draft + accept + issue, the
- preconditions for this
- functions proper operation must be the conjunction of the guard conditions
- for draft,
- accept, and issue below.
+As with legacy lapse, above, legacy reinstatements will be disabled if a
+ \ensuremath{cancellations.json} file exists in the asset bundle.
 \end{cpar}%
 \end{lcom}%
-\@x{ legacyReinstatement ( mod ) \.{\defeq}}%
-\@x{\@s{16.4} \.{\land}\@w{Lapse} \.{\notin} CancellationReasons}%
-\@x{\@s{16.4} \.{\land} step \.{<} policyMaxTs}%
-\@x{\@s{16.4} \.{\land} policy . state \.{=}\@w{OffRisk}}%
- \@x{\@s{16.4} \.{\land} mod . type \.{=}\@w{Reinstatement} \.{\land} mod .
- state \.{=}\@w{Created}}%
- \@x{\@s{16.4} \.{\land} mod . start\_timestamp \.{<} policy .
- effective\_end\_ts}%
- \@x{\@s{16.4} \.{\land} mod . start\_timestamp \.{\geq} prevMod .
- start\_timestamp}%
-\@x{\@s{16.4} \.{\land} mod . deadline\_ts \.{\geq} step}%
- \@x{\@s{16.4} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} . state
- \.{=}\@w{OnRisk} ,\,}%
-\@x{\@s{139.79} {\bang} . pending\_modification \.{=} NoModification ]}%
- \@x{\@s{16.4} \.{\land} mods \.{'} \.{=} Append ( mods ,\, [ mod {\EXCEPT}
- {\bang} . state \.{=}\@w{Issued} ] )}%
-\@x{\@s{16.4} \.{\land} step \.{'}\@s{5.04} \.{=} step \.{+} 1}%
-\@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} term {\rangle}}%
+\@x{ legacyReinstatement ( mod ) \.{\defeq} {\FALSE}}%
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- If a policy is in the canceled state then we can begin a draft reinstatement
- to reinstate
- it. The draft must specify an effective start date within the timespan
- truncated by the
- cancellation which preceded it. For the purposes of specification, updating
- a draft
- reinstatement is modeled as having the same processing effect as adding a
- new draft to
- the modification set.
+ If a policy\mbox{'}s most recent modification is a cancellation then then we
+ can begin a draft
+ reinstatement to reinstate it. The draft must specify an effective start
+ date within the
+ timespan of the cancellation which preceded it, and an end date equal to the
+ preceeding
+ cancellation.
  As with \ensuremath{createCancellation} we don\mbox{'}t model the addition
  to the modification set, though
- that would be part of the concrete implementation.
+ that would be part of the concrete implementation. Also, in the
+ implementation, drafts
+ are matched 1:1 with a cancellation and that matching is immutable once
+ established.
 \end{cpar}%
 \end{lcom}%
 \@x{ draftReinstatement ( mod ) \.{\defeq}}%
@@ -296,8 +328,10 @@
  deadline\_ts \.{>} step}%
  \@x{\@s{36.79} \.{\land} mod . start\_timestamp \.{\geq} policy .
  effective\_end\_ts}%
+\@x{\@s{36.79} \.{\land} mod . start\_timestamp \.{<} mod . end\_timestamp}%
 \@x{\@s{36.79} \.{\land} mod . deadline\_ts \.{+} 1\@s{4.63} \.{<} step}%
-\@x{\@s{36.79} \.{\land} prevMod \.{\in} Cancellations}%
+ \@x{\@s{36.79} \.{\land} prevMod \.{\in} Cancellations \.{\land} prevMod .
+ end\_timestamp \.{=} mod . end\_timestamp}%
  \@x{\@s{36.79} \.{\land} {\lnot} pendingReinstatementExpired ( policy
  )\@s{16.4}}%
 \@y{\@s{0}%
@@ -312,12 +346,16 @@
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  If a reinstatement exists past its \ensuremath{deadline\_ts} without being
  issued then it expires.
- At that point the reinstatement is removed as a pending modification, its
+ On expiration, the reinstatement is removed as a pending modification; its
  documents are
- discarded, and its invoices are settled.
- Though not modeled here it is possible for a reinstatement in the draft
- state to expire.
- These can just be discarded.
+ discarded; and its invoices are settled.
+ Note that it is not possible for a draft reinstatement to transition to the
+ expired
+ state even if \ensuremath{deadline\_dt \.{<}} now. In this case the draft
+ reinstatement will be unable to
+ transition to the accept state and its \ensuremath{deadline\_dt} will have
+ to be updated via the
+ update \ensuremath{API} to take part in further transitions.
 \end{cpar}%
 \end{lcom}%
 \@x{ expireReinstatement \.{\defeq}}%
@@ -334,28 +372,16 @@
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  In order to accept a reinstatement the start date of the reinstatement must
  be within
- the time span truncated by the cancellation it follows. There must also be
- (1) no other
- accepted modifications pending and (2) (in this model) the most recently
+ the time span of the cancellation it restores. There must also be (1) no
+ other
+ accepted modification pending and (2) (in this model) the most recently
  issued
  modification must be a \ensuremath{Cancellation}.
-\end{cpar}%
-\vshade{5.0}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- (1) means the reinstatement waits, like other modification operations, when
- it is blocked.
- Formally it participates in the system Draft \ensuremath{\.{\rightarrow}}
- Accept \ensuremath{\.{\rightarrow}} Issue workflow. Note that
- this behavior is unlike the \ensuremath{Cancellation} workflow, which does
- not block and is
- privileged to clear the global accept lock when it does its work.
-\end{cpar}%
-\vshade{5.0}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
-(2) is a bit more restrictive than what we want for the concrete
- implementation where we will only insist that a cancellation designated in
- the request
- exists and has not since been followed by a renewal
+ In the concrete implementation, we dont require that a reinstatement follow
+ its
+ cancellation. We are slightly more relaxed on only require that all
+ cancelations must
+ be reinstated before we can quote or accept endorsements or renewals
 \end{cpar}%
 \end{lcom}%
 \@x{ acceptReinstatement ( mod ) \.{\defeq}}%
@@ -382,10 +408,15 @@
  of the previous cancellation.
  Note that with cancellations and reinstatements it becomes possible to have
  gaps in a
- policies coverage. These gaps will be of some potential concern for financial
- calculations and claim coverage. Gaps will also factor into the timestamps
- on peril
- characteristic records in ways that will need to be defined and documented.
+ policy\mbox{'}s coverage. These gaps are new to the framework and are of
+ importance for
+ financial calculations and claim coverage. The gaps are recorded in the
+ database in
+ the policy\mbox{'}s currently active \ensuremath{policy\_characteristics}
+ set. These \ensuremath{policy\_characteristics
+ } previously would have been sequential, meeting, and non overlapping. Now
+ they must be,
+ just, sequential and not overlapping.
 \end{cpar}%
 \end{lcom}%
 \@x{ issueReinstatement \.{\defeq}}%
@@ -431,11 +462,11 @@ If we receive a payment when we have a finalized reinstatement in the
  pending modifications set then the policy can be issued if
  \ensuremath{autoReinstate
 } is on.
- The operation below is just a placeholder to make the existence of the auto
+ The operation below is just a placeholder to mark the existence of the auto
  reinstate
- functionality. Implementing it would just repeat the
- \ensuremath{issueReinstatement} operation
- above.
+ functionality. It is not included in the model as inclusion would just
+ repeat the
+ \ensuremath{issueReinstatement} operation above.
 \end{cpar}%
 \end{lcom}%
 \@x{ payInvoiceReinstatement \.{\defeq}}%
@@ -464,13 +495,12 @@ If we receive a payment when we have a finalized reinstatement in the
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- General observations: For cancellations I believe that if we issue a policy
- from \ensuremath{t1} to
- \ensuremath{t3} and then cancel back to some intermediate time
- \ensuremath{t2}, the effect, from the pov of an
- external observer of total payments, should be as if the policy was issued
- from \ensuremath{t1} to \ensuremath{t2}.
- Or, more generally, there are many sequences where the following will hold
+ Testing notes: With configurations that calculate all charges as a percentage
+ of
+ premium (not all), there are many sequences of cancellation and reinstatment
+ operations
+ that should leave the total charges invariant. For example, it should be the
+ case that
 \end{cpar}%
 \vshade{5.0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
@@ -478,9 +508,8 @@ Issue; Cancel; Reinstate; \ensuremath{\.{=}} Issue
 \end{cpar}%
 \vshade{5.0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- These sorts of relationship should be useful in checking the financial
- calculation
- routines to the extent they need to be checked.
+ These sorts of relationship are useful for checking financial calculation
+ routines.
 \end{cpar}%
 \end{lcom}%
 \@x{}\midbar\@xx{}%
@@ -512,12 +541,6 @@ Issue; Cancel; Reinstate; \ensuremath{\.{=}} Issue
  acceptReinstatement ( m )}%
 \@x{\@s{16.4} \.{\lor} expireReinstatement}%
 \@x{\@s{16.4} \.{\lor} issueReinstatement}%
-\@x{\@s{16.4}}%
-\@y{\@s{0}%
- \ensuremath{\.{\lor} \E\, m \.{\in} Reinstatements} :
- \ensuremath{legacyReinstatement(m)
-}}%
-\@xx{}%
 \@x{\@s{16.4} \.{\lor} invalidateReinstatement}%
 \@x{\@s{16.4} \.{\lor} doStep}%
 \@x{\@s{16.4} \.{\lor} doTerm}%
@@ -535,7 +558,7 @@ Issue; Cancel; Reinstate; \ensuremath{\.{=}} Issue
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Tue}
- \ensuremath{Sep} 15 17:44:30 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+ \ensuremath{Dec} 15 12:15:46 \ensuremath{PST} 2020 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%

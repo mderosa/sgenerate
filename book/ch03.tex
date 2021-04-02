@@ -77,11 +77,12 @@ a customer decided to cancel this policy starting at Feb 1st, then there are two
 be made to this policy. First the premium would be prorated to account for the single month of coverage.
 Assuming monthly proration 10 dollars would be charged for the month of coverage. Next there may be penalty
 charges due to the customer canceling the policy early. We call these penalty charges holdbacks, and a typical
-charge scenario, for our example, might be
+charge scenario, for our example, might be:
 \begin{eqnarray*}
 totalCharges_{Jan01->Feb01} & = & prorated(premium) + holdback \\
                           & = & (\frac{1}{12}) premium + 0.1(\frac{11}{12})(premium)
 \end{eqnarray*}
+where, here, the customer is charged a ten percent penalty fee on the part of the policy that was cancelled.
 
 \subsection{Specification}
 

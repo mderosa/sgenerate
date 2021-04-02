@@ -38,11 +38,11 @@ Similarly for commissions
 \begin{equation*}
 GrossCommission = \sum_{p \in Perils} \Delta t \cdot p.liquid.commission(obj_p)
 \end{equation*}
-Premiums and commissions are then placed on the peril characteristc and tax calculations are made
+Premiums and commissions are then placed on the peril characteristic and tax calculations are made
 \begin{equation*}
   GrossTax = \sum_{p \in Perils} \sum_{tx \in Taxes} tx.liquid.tax(obj'_p) 
 \end{equation*}
-Lastly, as can be seen from the functions signature above, the rater returns each of the fully priced peril characteristics, indexed
+Lastly, as can be seen from the signature of getPricedCharacteristics, above, the rater returns each of the fully priced peril characteristics, indexed
 by locator.
 
 \subsection{Fees}

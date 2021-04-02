@@ -63,8 +63,21 @@ program}\label{using-the-socortraadmin-program}}
 This program allows one to update and read information from an
 installation of the socortra platform. The program takes a combination
 of positional and named arguments the combination of which defines the
-data to read or update. Some example usages in a local development
-environment are listed below
+data to read or update. One can get information on the commands offered
+and the format required by the commands by using the -\/-help argument
+on the command line. Examples of using the -\/-help argument to walk
+through the positional argument tree is:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{python}\NormalTok{ bin/socotraadmin --help}
+\ExtensionTok{python}\NormalTok{ bin/socotraadmin tenant --help}
+\ExtensionTok{python}\NormalTok{ bin/socotraadmin tenant set_config --help}
+\end{Highlighting}
+\end{Shaded}
+
+Some example usages of common commands in a local development
+environment are listed below.
 
 \hypertarget{creating-a-bootstrap-account}{%
 \subsubsection{Creating a bootstrap
@@ -94,9 +107,11 @@ tenants. An example of the usage in a local dev environment is:
 \end{Highlighting}
 \end{Shaded}
 
+\hypertarget{tenant-maintenance}{%
+\subsubsection{Tenant Maintenance}\label{tenant-maintenance}}
+
 \hypertarget{adding-a-user-to-a-tenant}{%
-\subsubsection{Adding a user to a
-tenant}\label{adding-a-user-to-a-tenant}}
+\paragraph{Adding a user to a tenant}\label{adding-a-user-to-a-tenant}}
 
 Once a tenant exists a user can be added to the tenant with a command of
 the form
@@ -146,16 +161,18 @@ and a command that creates a readonly user
 \end{Shaded}
 
 \hypertarget{finding-the-tenant-info-associated-with-a-hostname}{%
-\subsubsection{Finding the tenant info associated with a
+\paragraph{Finding the tenant info associated with a
 hostname}\label{finding-the-tenant-info-associated-with-a-hostname}}
 
 The command usage is:
 
-\begin{verbatim}
-socotraadmin tenant find_tenant [--api_url] [--jwtsecret]
-                                [--admin_username] [--admin_password]
-                                hostname
-\end{verbatim}
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{socotraadmin}\NormalTok{ tenant find_tenant [--api_url] [--jwtsecret]}
+\NormalTok{                                [}\ExtensionTok{--admin_username}\NormalTok{] [--admin_password]}
+                                \FunctionTok{hostname}
+\end{Highlighting}
+\end{Shaded}
 
 This will return the contents of the tenant table in Dynamodb given a
 hostname. An example of the usage in a local dev environment is:
@@ -165,6 +182,58 @@ hostname. An example of the usage in a local dev environment is:
 \BuiltInTok{export} \VariableTok{PYTHONPATH=$PYTHONPATH}\NormalTok{:./:../stack-monitoring}
 \ExtensionTok{python}\NormalTok{ bin/socotraadmin tenant find_tenant --api_url http://localhost:8080 --jwtsecret SGAGWfq31D2HRccsq87s33v1 --admin_username docker-dev }
     \ExtensionTok{--admin_password}\NormalTok{ socotra docker-dev-configeditor.co.socotra.com}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{geting-the-tenant-configuration-flags}{%
+\paragraph{Geting the tenant configuration
+flags}\label{geting-the-tenant-configuration-flags}}
+
+This endpoint returns a list of the tenant feature flags and their
+values. The command usage is:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{socotraadmin}\NormalTok{ tenant get_config [--api_url] [--jwtsecret]}
+\NormalTok{                               [}\ExtensionTok{--admin_username}\NormalTok{] [--admin_password]}
+                               \ExtensionTok{tenant_name}
+\end{Highlighting}
+\end{Shaded}
+
+An example of the usage in a local dev environment is:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{export} \VariableTok{PYTHONPATH=$PYTHONPATH}\NormalTok{:./:../stack-monitoring}
+\ExtensionTok{python}\NormalTok{ bin/socotraadmin tenant get_config --api_url http://localhost:8080 --jwtsecret SGAGWfq31D2HRccsq87s33v1 --admin_username docker-dev }
+    \ExtensionTok{--admin_password}\NormalTok{ socotra docker-dev-configeditor}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{setting-a-tenant-configuration-flag}{%
+\paragraph{Setting a tenant configuration
+flag}\label{setting-a-tenant-configuration-flag}}
+
+This endpoint will set the value of a tenant level configuration flag.
+The names of available flags can be queried using the get\_config
+option, above. The command usage is:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{socotraadmin}\NormalTok{ tenant get_config [--api_url] [--jwtsecret]}
+\NormalTok{                               [}\ExtensionTok{--admin_username}\NormalTok{] [--admin_password]}
+\NormalTok{                               [}\ExtensionTok{--config_uri}\NormalTok{] [--config-value]}
+                               \ExtensionTok{tenant_name}
+\end{Highlighting}
+\end{Shaded}
+
+An example of the usage in a local dev environment is:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{export} \VariableTok{PYTHONPATH=$PYTHONPATH}\NormalTok{:./:../stack-monitoring}
+\ExtensionTok{python}\NormalTok{ bin/socotraadmin tenant set_config --api_url http://localhost:8080 --jwtsecret SGAGWfq31D2HRccsq87s33v1 --admin_username docker-dev }
+    \ExtensionTok{--admin_password}\NormalTok{ socotra docker-dev-configeditor property.proration.plugin.enabled true}
 \end{Highlighting}
 \end{Shaded}
 

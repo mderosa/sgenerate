@@ -22,7 +22,7 @@ add the modifications
 \begin{equation*}
   \{Cancellation, Reinstatement\}.
 \end{equation*}
-These new modifications are similiar to modifications we already
+These new modifications are similar to modifications we already
 know, with slight differences. Reinstatements are different from previous modifications in that they have two unique
 fields, auto\_reinstate and deadline\_timestamp, which we will describe shortly. Cancellations differ from previous
 modifications in that their state lifecycle only has the two events onCreate and onIssue. Below is an abstraction which
@@ -37,25 +37,34 @@ state centric way.
 
 \import{ch02/}{CancellationMch1-sa.tex}
 
+\section{Scheduled Grace and Lapse Jobs}
+In addition to cancellations that can happen through the API, it's also possible to policies to be canceled automatically by
+the system. This automated cancellation happens when a policy has outstanding invoices which have not been payed. The system
+scheduled grace job flags outstanding invoices and the scheduled lapse job after some time will eventually cancel the policies
+associated with those flagged invoices. Below is a simplified model of the process, which details the essential points of
+understanding for the jobs.
+\import{ch02/}{AutoGraceLapseInvoiceCtx0-sa.tex}
+\import{ch02/}{AutoGraceLapseInvoiceMch0-sa.tex}
+
 \section{Interaction with other Modifications}
-The developement of quotes for Endorsement and Renewals and the development of Cancellation and Reinstatements functionality
-partialy overlaped and so it turns out that the two functionalities interact in a less than perfectly way.
+The development of quotes for Endorsement and Renewals and the development of Cancellation and Reinstatements functionality
+partially overlapped and so it turns out that the two functionalities interact in a less than perfectly way.
 
 Before we can discuss potential interactions of the two functionalities, I will quickly review the essentials of quotes. The
 purpose of quotes is to price a potential modification given a policy in some state. And the way that given policy state is described
-coloqually is as ``a policy where the last applied modifications is x'', or slightly more technically ``a policy with basis x''. The
+colloquially is as ``a policy where the last applied modifications is x'', or slightly more technically ``a policy with basis x''. The
 framework realization of both of these informal descriptions is a field in both the endorsement and
 renewal tables called quoted\_policy\_basis which holds a policy modification locator. The quote code would then, conceptually, have
 mechanism to allow a quoted endorsement or renewal to progress to the accepted state only when
 $ modification.quote\_policy\_base = lastModification(policy).locator $. Now in
 fact the actual implementation is not as uniform and explicit as I have described, but the brief explanation here is still a good way
-to conceptualize and growing complexity may force uniformity and explictness in the long term anyways.
+to conceptualize and growing complexity may force uniformity and explicitness in the long term anyways.
 
 The challenge for cancellation and reinstatements is then to prevent situations where a quote is made, some arbitrary cancellation
 reinstatement sequence changes the policy and then the quote becomes accepted and issued. There are three mechanisms that
-prevent this occurance that have been added to the cancellation / reinstatment state machine. First whenever a policy is
+prevent this occurrence that have been added to the cancellation / reinstatment state machine. First whenever a policy is
 changed by cancellation or reinstatement we invalidate all policy quotes. By definition if the policy has changed and the quote
-could not anticipate that change then the bais of the quote must be then be invalid. Second, if a policy has any outstanding
+could not anticipate that change then the basis of the quote must be then be invalid. Second, if a policy has any outstanding
 cancellations then no renewals can be created. This prevents any renewals from effecting the policy until all cancellation
 renewal sequences are completed. Lastly endorsement quotes are not permitted when a reinstatement is in the accepted state. This
 quotes from being made on policies that are about to change.

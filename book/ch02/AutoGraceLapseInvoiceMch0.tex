@@ -939,116 +939,382 @@
 \begin{document}
 \tlatex
 \setboolean{shading}{true}
-\@x{}\moduleLeftDash\@xx{ {\MODULE} CancellationCtx1}\moduleRightDash\@xx{}%
-\@x{ {\EXTENDS} Integers ,\, Policy}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- In this specification I only model cancellations and renewals processes, but
- I can not
- ignore the effects of other concurrent endorsement or renewals that may
- happen during
- those processes. I model possible endorsements and renewals with the constant
- \ensuremath{EndorsementOrRenewal} which represents such a modification, in
- the accepted state.
-\end{cpar}%
-\end{lcom}%
-\@x{ {\CONSTANTS} EndorsementOrRenewal}%
+ \@x{}\moduleLeftDash\@xx{ {\MODULE}
+ AutoGraceLapseInvoiceMch0}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} AutoGraceLapseInvoiceCtx0 ,\, FiniteSets ,\, TLC}%
+\@x{ {\CONSTANTS} endTime}%
 \@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
-A reinstatement is type of modification. A reinstatement starts at some time
- and reactivates a policy upto the end timestamp of the cancellation it
- reinstates. A
- reinstatement has two specialized attributes. One, specified in
- configuration, is the
- \ensuremath{auto\_reinstate}: boolean variable. If this variable is true for
- a reinstatement a payment
- recieved on a finalized reinstatement should cause the reinstatement to be
- issued. The
- second attribute is a \ensuremath{deadline\_timestamp} which is the last
- time at which the reinstatement
- can be issued. The deadline timestamp can be specified in configuration or
- it can be
- specified in \ensuremath{Api.reinstatement\_draft()} and
- \ensuremath{Api.reinstatement\_update()} request. If the
- value is never specified it defaults to infinity.
-\end{cpar}%
-\end{lcom}%
-\@x{ Reinstatements \.{\defeq} [}%
-\@x{\@s{16.4} type \.{:} \{\@w{Reinstatement} \} ,\,}%
-\@x{\@s{16.4} state \.{:} ModificationState ,\,}%
-\@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} auto\_reinstate \.{:} {\BOOLEAN} ,\,}%
-\@x{\@s{16.4} deadline\_ts \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
-\@x{ ]}%
+\@x{ {\VARIABLES} invsIssued ,\, policy ,\, gracesUnsettled ,\, time}%
 \@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- A cancellation is also a special type of modification. In the concrete
- implementation
- cancellations have an additional attribute, reason, commented out below. The
- reason is
- one of many user configuration reason strings which the customer uses to
- descriminate
- the purpose of a cancellation. Additionally the system will alway define a
- define a
- cancellation reason of ``lapse'' if such a reason does not exist. The lapse
- reason is
- the reason given by the system to cancellations which result from invoices
- remaining
- unpaid past their grace period. Lapse cancellations are created by the
- scheduled
- lapse routines that run in the background of the \ensuremath{API} application
-\end{cpar}%
-\end{lcom}%
-\@x{ Cancellations \.{\defeq} [}%
-\@x{\@s{16.4} type \.{:} \{\@w{Cancellation} \} ,\,}%
-\@x{\@s{16.4} state \.{:} ModificationState ,\,}%
-\@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4}}%
+\@x{}\midbar\@xx{}%
+\@x{}%
 \@y{\@s{0}%
- reason: String
+ The possible combinations of settlement status and invoice type
 }%
 \@xx{}%
-\@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
-\@x{ ]}%
+\@x{ InvInvoices \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} \forall\, i \.{\in} invsIssued \.{:}}%
+ \@x{\@s{48.01} \.{\land} i . settlementStatus \.{=}\@w{Outstanding}
+ \.{\implies} i . settlementType \.{=}\@w{Null}}%
+ \@x{\@s{48.01} \.{\land} i . settlementStatus \.{=}\@w{Settled} \.{\implies}
+ i . settlementType \.{\in} \{}%
+ \@x{\@s{78.28}\@w{ZeroDue} ,\,\@w{WrittenOff} ,\,\@w{Invalidated}
+ ,\,\@w{Paid}}%
+\@x{\@s{63.20} \}}%
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-Cancellations and reinstatements, like endorsements and renewals, are recorded
- as they are created in the history of policy modifications. Some of these
- modifications
- will take effect, by being issued, others will never be issued. In all
- cases, though,
- modifications retain an identity to which documents and invoices can be
- attached.
- The characteristic of the modifications, which gives them a group
- commonality, is
- that they can operate to change liability of the parties to the contract
+ A policy is either on policy or off policy. If it is off policy then the
+ policy is
+ no longer being offered to the customer and there must be no outstanding
+ invoices.
 \end{cpar}%
 \end{lcom}%
+\@x{ InvPolicy \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} policy . startDt \.{\leq} policy . endDt}%
+\@x{\@s{16.4} \.{\land} policy . startDt \.{=} policy . endDt \.{\implies}}%
+ \@x{\@s{48.01} ( \{ i \.{\in} invsIssued \.{:} i . settlementStatus
+ \.{=}\@w{Outstanding} \} \.{=} \{ \} )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ There must be at most one unsetteled grace record per policy
+}%
+\@xx{}%
+\@x{ InvGraceRecs \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} Cardinality ( gracesUnsettled ) \.{\leq} 1}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ If any outstanding policy invoices exist, then there must be a unsettled
+ grace record
+ for the policy. If there is an unsettled grace record then there must be an
+ outstanding policy invoice.
+\end{cpar}%
+\end{lcom}%
+\@x{ InvInvoicesGraceRecs \.{\defeq}}%
+ \@x{\@s{16.4} \.{\land} \{ i \.{\in} invsIssued \.{:} \.{\land} i .
+ settlementStatus \.{=}\@w{Outstanding}}%
+ \@x{\@s{103.27} \.{\land} time \.{>} i . dueDt \} \.{\neq} \{ \} \.{\implies}
+ gracesUnsettled \.{\neq} \{ \}}%
+ \@x{\@s{16.4} \.{\land} gracesUnsettled \.{\neq} \{ \} \.{\implies} \exists\,
+ i \.{\in} invsIssued \.{:}}%
+\@x{\@s{150.17} \.{\land} i . settlementStatus \.{=}\@w{Outstanding}}%
+\@x{\@s{150.17} \.{\land} i . dueDt \.{\leq} time}%
+\@pvspace{8.0pt}%
+\@x{}\midbar\@xx{}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ The scheduled grace job tries to find policies that (1) dont have any
+ associated,
+ unsettled grace records in the \ensuremath{grace\_period} table and (2) do
+ have outstanding invoices
+ that are past their due date. If it finds such records it adds them to the
+ \ensuremath{grace\_period} table, which roughly can be thought of as a queue
+ of jobs which may or may
+ not get to the top of the queueu and cause a lapse (cancellation)
+\end{cpar}%
+\end{lcom}%
+\@x{ autoGraceCanRun ( tm ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} gracesUnsettled \.{=} \{ \}}%
+ \@x{\@s{16.4} \.{\land} \exists\, i \.{\in} invsIssued \.{:} i . dueDt \.{=}
+ tm \.{\land} i . settlementStatus \.{=}\@w{Outstanding}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ The scheduled lapse job looks for unsettled records in the
+ \ensuremath{grace\_period} period and
+ cancels the associated policy if the end of the grace period
+ \ensuremath{\.{<}} now.
+\end{cpar}%
+\end{lcom}%
+ \@x{ autoLapseCanRun ( tm ) \.{\defeq} \exists\, g \.{\in} gracesUnsettled
+ \.{:} g . endDt \.{=} tm}%
+\@pvspace{8.0pt}%
+\@x{ autoJobCanRun ( tm ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\lor} autoGraceCanRun ( tm )}%
+\@x{\@s{16.4} \.{\lor} autoLapseCanRun ( tm )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ the definition of containment for a point within a closed - open interval.
+}%
+\@xx{}%
+ \@x{ contains ( interval ,\, t )\@s{5.78} \.{\defeq} interval . startDt
+ \.{\leq} t \.{\land} t \.{<} interval . endDt}%
+\@pvspace{8.0pt}%
+\@x{ overdueInvoices ( invs ) \.{\defeq} \{ i \.{\in} invs \.{:}}%
+\@x{\@s{32.8} \.{\land} i . settlementStatus \.{=}\@w{Outstanding}}%
+\@x{\@s{32.8} \.{\land} i . dueDt \.{\leq} time \}}%
+\@pvspace{8.0pt}%
+ \@x{ max ( t1 ,\, t2 ) \.{\defeq} {\IF} t1 \.{>} t2 \.{\THEN} t1 \.{\ELSE}
+ t2}%
+\@pvspace{8.0pt}%
+\@x{}\midbar\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ Extension is a generic operation extends a policy range, a renewal or
+ reinstatement.
+}%
+\@xx{}%
+\@x{ extend ( m ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} {\lnot} autoJobCanRun ( time )}%
+\@x{\@s{16.4} \.{\land} time \.{<} endTime}%
+\@x{\@s{16.4} \.{\land} m . startDt \.{=} policy . endDt}%
+\@x{\@s{16.4} \.{\land} m . startDt \.{<} m . endDt}%
+ \@x{\@s{16.4} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} . endDt
+ \.{=} m . endDt ]}%
+\@x{\@s{16.4} \.{\land} invsIssued \.{'} \.{=} invsIssued \.{\cup} \{ [}%
+\@x{\@s{48.01} totalDue \.{\mapsto} 10 ,\,}%
+\@x{\@s{48.01} startDt \.{\mapsto} m . startDt ,\,}%
+ \@x{\@s{48.01} dueDt \.{\mapsto} max ( m . startDt \.{+} 1 ,\, time \.{+} 1 )
+ ,\,}%
+\@x{\@s{48.01} settlementStatus \.{\mapsto}\@w{Outstanding} ,\,}%
+\@x{\@s{48.01} settlementType \.{\mapsto}\@w{Null}}%
+\@x{\@s{31.61} ] \}}%
+\@x{\@s{16.4} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+\@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} gracesUnsettled {\rangle}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+Reduce is a generic operation that reduces a policy range, a cancellation.
+ Note that once we go off policy we should clear any grace records. Going off
+ policy, by definition, means that policy coverage has been revoked from
+ which it
+ follows that a revoked policy can not be in grace.
+\end{cpar}%
+\end{lcom}%
+\@x{ reduce ( m ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} {\lnot} autoJobCanRun ( time )}%
+\@x{\@s{16.4} \.{\land} time \.{<} endTime}%
+\@x{\@s{16.4} \.{\land} m . startDt \.{\geq} policy . startDt}%
+\@x{\@s{16.4} \.{\land} m . endDt \.{=} policy . endDt}%
+\@x{\@s{16.4} \.{\land} m . startDt \.{<} m . endDt}%
+ \@x{\@s{16.4} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} . endDt
+ \.{=} m . startDt ]}%
+ \@x{\@s{16.4} \.{\land} \.{\LET} outstanding \.{\defeq} \{ i\@s{1.65} \.{\in}
+ invsIssued \.{:} i . settlementStatus \.{=}\@w{Outstanding} \}}%
+ \@x{\@s{47.91} invalidates\@s{4.15} \.{\defeq} \{ o \.{\in} outstanding \.{:}
+ o . startDt \.{\geq} m . startDt \}}%
+ \@x{\@s{27.51} \.{\IN} \.{\land} invsIssued \.{'} \.{=} ( invsIssued
+ \.{\,\backslash\,} invalidates ) \.{\cup}}%
+ \@x{\@s{108.13} \{ [ i {\EXCEPT} {\bang} . settlementStatus \.{=}\@w{Settled}
+ ,\,}%
+ \@x{\@s{162.01} {\bang} . settlementType \.{=}\@w{WrittenOff} ] \.{:} i
+ \.{\in} invalidates \}}%
+\@x{\@s{47.91} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+\@x{\@s{47.91} \.{\land} {\IF} outstanding \.{=} invalidates}%
+\@x{\@s{56.11} \.{\THEN} gracesUnsettled \.{'} \.{=} \{ \}}%
+\@x{\@s{56.11} \.{\ELSE} {\UNCHANGED} {\langle} gracesUnsettled {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Change is a generic operations the updates policy coverage, an endorsement.
+}%
+\@xx{}%
+\@x{ change ( m ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} {\lnot} autoJobCanRun ( time )}%
+\@x{\@s{16.4} \.{\land} time \.{<} endTime}%
+ \@x{\@s{16.4} \.{\land} policy . startDt \.{\leq} m . startDt \.{\land} m .
+ startDt \.{<} policy . endDt}%
+\@x{\@s{16.4} \.{\land} m . endDt \.{=} policy . endDt}%
+\@x{\@s{16.4} \.{\land} m . startDt \.{<} m . endDt}%
+\@x{\@s{16.4} \.{\land} invsIssued \.{'} \.{=} invsIssued \.{\cup} \{ [}%
+\@x{\@s{48.01} totalDue \.{\mapsto} 10 ,\,}%
+\@x{\@s{48.01} startDt \.{\mapsto} m . startDt ,\,}%
+ \@x{\@s{48.01} dueDt \.{\mapsto} max ( m . startDt \.{+} 1 ,\, time \.{+} 1 )
+ ,\,}%
+\@x{\@s{48.01} settlementStatus \.{\mapsto}\@w{Outstanding} ,\,}%
+\@x{\@s{48.01} settlementType \.{\mapsto}\@w{Null}}%
+\@x{\@s{31.61} ] \}}%
+\@x{\@s{16.4} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} policy ,\, gracesUnsettled
+ {\rangle}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ We have discussed grace processing above. For emphasis here, note that the
+ guard clause
+ below only adds a grace record if there are no unsettled records associated
+ with the
+ policy.
+\end{cpar}%
+\end{lcom}%
+\@x{ doAutoGrace ( inv ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} time \.{<} endTime}%
+\@x{\@s{16.4} \.{\land} gracesUnsettled \.{=} \{ \}}%
+ \@x{\@s{16.4} \.{\land} inv . settlementStatus \.{=}\@w{Outstanding}
+ \.{\land} inv . dueDt \.{=} time}%
+ \@x{\@s{16.4} \.{\land} gracesUnsettled \.{'} \.{=} gracesUnsettled \.{\cup}
+ \{ [}%
+\@x{\@s{48.01} startDt \.{\mapsto} time ,\,}%
+\@x{\@s{48.01} endDt \.{\mapsto} time \.{+} 2}%
+\@x{\@s{31.61} ] \}}%
+\@x{\@s{16.4} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} policy ,\, invsIssued
+ {\rangle}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Auto lapse will cancel the whole policy and that requires settling all the
+ invoices,
+ not just 1 particular invoice, associated with the grace record. In the
+ implementation
+ that invoice cancellation details are handled in the
+ \ensuremath{CancellationsService
+}%
+\end{cpar}%
+\end{lcom}%
+\@x{ doAutoLapse ( g ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} time \.{<} endTime}%
+\@x{\@s{16.4} \.{\land} g . endDt \.{=} time}%
+ \@x{\@s{16.4} \.{\land} policy \.{'}\@s{6.93} \.{=} [ policy {\EXCEPT}
+ {\bang} . endDt \.{=} policy . startDt ]}%
+ \@x{\@s{16.4} \.{\land} \.{\LET} outstanding \.{\defeq} \{ i \.{\in}
+ invsIssued \.{:} i . settlementStatus \.{=}\@w{Outstanding} \}}%
+ \@x{\@s{47.91} settled \.{\defeq} \{ i \.{\in} invsIssued \.{:} i .
+ settlementStatus \.{=}\@w{Settled} \}}%
+\@x{\@s{27.51} \.{\IN} invsIssued \.{'} \.{=} settled \.{\cup}}%
+ \@x{\@s{72.51} \{ [ i {\EXCEPT} {\bang} . settlementStatus \.{=}\@w{Settled}
+ ,\,}%
+ \@x{\@s{126.39} {\bang} . settlementType \.{=}\@w{WrittenOff} ] \.{:} i
+ \.{\in} outstanding \}}%
+\@x{\@s{16.4} \.{\land} gracesUnsettled \.{'} \.{=} \{ \}}%
+\@x{\@s{16.4} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ When payments come in, the framework checks to see if the policy is in grace.
+ If it is
+ and the current payment will settle all outstandiing invoices, then the
+ payment routines
+ can also settle the grace record, bringing the policy out of grace. This
+ processing
+ rule tends to be hard to understand for engineers, so remember paying one
+ invoice
+ generally does not get a policy out of grace, all outstanding invoices have
+ to be
+ paid.
+\end{cpar}%
+\end{lcom}%
+\@x{ doPayment ( inv ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} {\lnot} autoJobCanRun ( time )}%
+\@x{\@s{16.4} \.{\land} time \.{<} endTime}%
+\@x{\@s{16.4} \.{\land} inv . settlementStatus \.{=}\@w{Outstanding}}%
+ \@x{\@s{16.4} \.{\land} invsIssued \.{'} \.{=} ( invsIssued
+ \.{\,\backslash\,} \{ inv \} ) \.{\cup} \{}%
+ \@x{\@s{48.01} [ inv {\EXCEPT} {\bang} . settlementStatus \.{=}\@w{Settled}
+ ,\, {\bang} . settlementType \.{=}\@w{Paid} ]}%
+\@x{\@s{48.01} \}}%
+\@x{\@s{16.4} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+ \@x{\@s{16.4} \.{\land} \.{\LET} overdueInvs \.{\defeq} overdueInvoices (
+ invsIssued \.{\,\backslash\,} \{ inv \} )}%
+ \@x{\@s{27.51} \.{\IN} {\CASE} overdueInvs \.{=} \{ \} \.{\land}
+ gracesUnsettled \.{=} \{ \} \.{\rightarrow}}%
+\@x{\@s{77.98} {\UNCHANGED} {\langle} policy ,\, gracesUnsettled {\rangle}}%
+ \@x{\@s{56.11} {\Box}\@s{10.30} overdueInvs \.{=} \{ \} \.{\land}
+ gracesUnsettled \.{\neq} \{ \} \.{\rightarrow}}%
+\@x{\@s{77.98} \.{\land} gracesUnsettled \.{'} \.{=} \{ \}}%
+\@x{\@s{77.98} \.{\land} {\UNCHANGED} policy}%
+\@x{\@s{56.11} {\Box}\@s{10.30} overdueInvs \.{\neq} \{ \} \.{\rightarrow}}%
+\@x{\@s{77.98} {\UNCHANGED} {\langle} policy ,\, gracesUnsettled {\rangle}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ When we reverse payment we want to (1) reset the due date, and grace date of
+ the
+ affected invoice. This prevents reversals of older invoices from immediately
+ causing
+ the policy to go into grace and immediately after be cancelled. This is a
+ side effect
+ that customers will find hard to understand. Presumably if a customer has to
+ pay some
+ time must be given to them to do so before cancelling their policy. (2) We
+ dont want to
+ reverse payments on policies that are fully cancelled. To reinterate a
+ similiar
+ thought above, it does not make sense in that a customer would have to
+ suddenly owe
+ money on a previous invoice and yet the coverage that invoice is based on is
+ not being
+ offered to them. Customer but also the code will expect this convention so
+ if it is
+ violated the automated lapse code will refuse to cooperate and someone,
+ maybe you,
+ will get a late night call.
+\end{cpar}%
+\end{lcom}%
+\@x{ doRevPayment ( inv ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} {\lnot} autoJobCanRun ( time )}%
+\@x{\@s{16.4} \.{\land} policy . startDt \.{<} policy . endDt}%
+\@x{\@s{16.4} \.{\land} time \.{<} endTime}%
+\@x{\@s{16.4} \.{\land} inv . settlementStatus \.{=}\@w{Settled}}%
+ \@x{\@s{16.4} \.{\land} invsIssued \.{'} \.{=} ( invsIssued
+ \.{\,\backslash\,} \{ inv \} ) \.{\cup} \{}%
+ \@x{\@s{48.01} [ inv {\EXCEPT} {\bang} . settlementStatus
+ \.{=}\@w{Outstanding} ,\,}%
+\@x{\@s{107.17} {\bang} . settlementType \.{=}\@w{Null} ,\,}%
+\@x{\@s{107.17} {\bang} . dueDt \.{=} max ( inv . dueDt ,\, time \.{+} 1 ) ]}%
+\@x{\@s{48.01} \}}%
+\@x{\@s{16.4} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} policy ,\, gracesUnsettled
+ {\rangle}}%
+\@pvspace{16.0pt}%
+\@x{ tick \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} {\lnot} autoJobCanRun ( time )}%
+\@x{\@s{16.4} \.{\land} time \.{<} endTime}%
+\@x{\@s{16.4} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} invsIssued ,\, policy ,\,
+ gracesUnsettled {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{ term \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} time \.{=} endTime}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} invsIssued ,\, policy ,\,
+ gracesUnsettled ,\, time {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{ Init \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} \exists\, p \.{\in} Policy \.{:}}%
+\@x{\@s{48.01} \.{\land} p . startDt \.{<} p . endDt}%
+\@x{\@s{48.01} \.{\land} policy \.{=} p}%
+\@x{\@s{16.4} \.{\land} time \.{=} 0}%
+\@x{\@s{16.4} \.{\land} invsIssued \.{=} \{ [}%
+\@x{\@s{48.01} totalDue \.{\mapsto} 10 ,\,}%
+\@x{\@s{48.01} startDt \.{\mapsto} policy . startDt ,\,}%
+\@x{\@s{48.01} dueDt \.{\mapsto} policy . startDt \.{+} 1 ,\,}%
+\@x{\@s{48.01} settlementStatus \.{\mapsto}\@w{Outstanding} ,\,}%
+\@x{\@s{48.01} settlementType \.{\mapsto}\@w{Null}}%
+\@x{\@s{31.61} ] \}}%
+\@x{\@s{16.4} \.{\land} gracesUnsettled \.{=} \{ \}}%
+\@pvspace{8.0pt}%
+\@x{ Next \.{\defeq}}%
+\@x{\@s{16.4} \.{\lor} \exists\, m \.{\in} Modification \.{:}}%
+\@x{\@s{48.01} \.{\lor} change ( m )}%
+\@x{\@s{48.01} \.{\lor} extend ( m )}%
+\@x{\@s{48.01} \.{\lor} reduce ( m )}%
+\@x{\@s{16.4} \.{\lor} \exists\, inv \.{\in} invsIssued \.{:}}%
+\@x{\@s{48.01} \.{\lor} doAutoGrace ( inv )}%
+\@x{\@s{48.01} \.{\lor} doPayment ( inv )}%
+\@x{\@s{48.01} \.{\lor} doRevPayment ( inv )}%
+ \@x{\@s{16.4} \.{\lor} \exists\, g \.{\in} gracesUnsettled \.{:} doAutoLapse
+ ( g )}%
+\@x{\@s{16.4} \.{\lor} term}%
+\@pvspace{8.0pt}%
+ \@x{ Spec \.{\defeq} Init \.{\land} {\Box} [ Next ]_{ {\langle} invsIssued
+ ,\, policy ,\, gracesUnsettled ,\, time {\rangle}}}%
 \@x{}\bottombar\@xx{}%
 \setboolean{shading}{false}
 \begin{lcom}{0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-\ensuremath{\.{\,\backslash\,}}* Modification History
+\ensuremath{\.{\,\backslash\,}}* \ensuremath{Modification} History
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Tue}
- \ensuremath{Dec} 15 15:53:25 \ensuremath{PST} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
+ \ensuremath{Dec} 23 15:54:04 \ensuremath{PST} 2020 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
- \ensuremath{Jul} 16 16:33:53 \ensuremath{PDT} 2020 by \ensuremath{marco
-}%
-\end{cpar}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Created Sat \ensuremath{Jun} 27 21:12:19
- \ensuremath{PDT} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* Created \ensuremath{Wed} \ensuremath{Nov} 18
+ 17:58:19 \ensuremath{PST} 2020 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \end{lcom}%

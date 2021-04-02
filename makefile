@@ -14,8 +14,14 @@ doc:
 	cp ../../workspace/specsfinancial/Policy.toolbox/Policy.tex book/ch01/Policy.tex
 	cp ../../workspace/specsfinancial/CancellationCtx1.toolbox/CancellationCtx1.tex book/ch02/CancellationCtx1.tex
 	cp ../../workspace/specsfinancial/CancellationMch1.toolbox/CancellationMch1.tex book/ch02/CancellationMch1.tex
+	cp ../../workspace/specsfinancial/AutoGraceLapseInvoiceCtx0.toolbox/AutoGraceLapseInvoiceCtx0.tex book/ch02/AutoGraceLapseInvoiceCtx0.tex
+	cp ../../workspace/specsfinancial/AutoGraceLapseInvoiceMch0.toolbox/AutoGraceLapseInvoiceMch0.tex book/ch02/AutoGraceLapseInvoiceMch0.tex
+
 	cp ../../workspace/specsfinancial/CharacteristicsSplitCtx0.toolbox/CharacteristicsSplitCtx0.tex book/ch03/CharacteristicsSplitCtx0.tex
 	cp ../../workspace/specsfinancial/CharacteristicsSplitMch0.toolbox/CharacteristicsSplitMch0.tex book/ch03/CharacteristicsSplitMch0.tex
+	cp ../../workspace/specsfinancial/IntervalOps.toolbox/IntervalOps.tex book/ch03/IntervalOps.tex
+	cp ../../workspace/specsfinancial/ProrationCtx2.toolbox/ProrationCtx2.tex book/ch03/ProrationCtx2.tex
+	cp ../../workspace/specsfinancial/ProrationMch2.toolbox/ProrationMch2.tex book/ch03/ProrationMch2.tex
 
 	cp ../socotra-stack/source/stack-config-manager/README.md book/ch05/ReadMeConfigManager.md
 	pandoc -f gfm -t latex -o book/ch05/ReadMeConfigManager-sa.tex book/ch05/ReadMeConfigManager.md

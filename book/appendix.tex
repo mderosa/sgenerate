@@ -113,8 +113,8 @@ be done, and assist co-workers with business skill sets is the ability to clearl
 
 \subsubsection{Minimal Commits}
 I am often surprised, when I model a system with a computer checked tool, by how difficult it is to get the model correct. Usually the model
-is highly abstracted and simplified, a toy compared to the real thing. And yet the tools find corner cases that I would never have discovered even
-in the simplest of toys. The reason for the surprise is that as engineers, and more so for non engineers, we have only a passing feeling for the
+is highly abstracted and simplified, a toy compared to the real thing. And yet the tools find corner cases that I would never have discovered with
+human reasoning skills. The reason for the surprise is that as engineers, and more so for non engineers, we have only a passing feeling for the
 ability of state to multiply. Consider the simple, cancellation model in Chapter 2. How many states are there if the model steps through 8 time intervals?
 There are almost a million and the model checker takes half and hour to check them all of them.
 
@@ -123,24 +123,24 @@ was brought up:
 ``Its hard for me to predict the effects of my changes \dots'', because system bad. A few months ago I sat through a related engineering discussion about how
 difficult it is to estimate delivery dates for new and ongoing projects, because system bad. What we need is? \- to have better encapsulation, to move the system
 towards a micro-service architecture, to design with better architecture and patterns \dots or add your own favorite delusion. I am going to suggest an alternate theory for system
-bad based on my frustrations building simple, abstract mathematical models. You are a very limited human being in the face of what you have created, and you have
+bad based on my frustrations building simple, abstract mathematical models. I will suggest that you are a very limited human being in the face of what you have created, and you have
 to learn to work in a way that is appropriate to that reality.
 
-Now, you are an experienced engineer, and you have read all the books, and you have come through the toughest, largest projects there are. You already
-know what you are doing. And still there may be just more one practice that no one has ever told you and in fact its just the opposite of what the people who
+Now, I know you are an experienced engineer, and you have read all the books, and you have come through the toughest, largest projects there are. You already
+know what you are doing. And still there may be just one more practice that no one has ever told you and in fact its just the opposite of what the people who
 talk cleaner code, and micro-service architecture, and design patterns propagandize. The practice is: make minimal commits. If you have a bug, or if you have
 a feature to implement, or if you have a project to finish, find the smallest problem related to your bug, feature or project and define it precisely.
 Write code to solve just that problem, precisely. Commit. Repeat until you are done. Anything can be accomplished as a series of minimal commits.
 
-I know you will be tempted to disregard this practice. The minimum. That sounds so negligent. Why you may even desire to refactor. After all there were those
-books about clean code and patterns and stuff; the guys that wrote that book really know what they are doing, right? Well, I am not telling you to do the minimum. I am not telling
+I know you will be tempted to disregard this practice. The minimum. That sounds so negligent. Why you may even desire to refactor. After all that was promoted in those
+books about clean code, micro-services and patterns and stuff; the guys that wrote those books really know what they are doing, right? Well, I am not telling you to do the minimum. I am not telling
 you to not make systems better. What I am saying is you are limited. You didn't 100\% understand the ramifications of that ambitious bug fix you made today and,
 by the way, you didn't sleep well last night. That ambitious architecture idea you've been thinking on; two years from now you are going to look back and think
 it was foolish, because you have grown. I am saying if you are limited, a precise, rigorous practice will help you be successful, and I am afraid other engineers
 you meet in your career are not going to tell you. Minimal commits. Precisely define the minimal problem, write just that code, and commit. A lot of tasks
 become better executed, a lot of systems improve, and you will be more successful if you can just repeat that process.
 
-\subsection{If you don't completely understand what you have observed, then its wrong.}
+\subsection{If you don't completely understand what you have observed, then your understanding wrong.}
 One of the traits of a good theory is that when you apply it to a phenomena you are investigating, then it explains all of the observations you have made, not 90\%
 of your observations, not 95\% of you observations, all of your observations. One of the traits of a bad theory is that it explains enough to
 satisfy you. The classic example of a bad theory is Ptolemy's geocentric model of the universe. It explained almost all heavenly observations and served as the basis
@@ -160,22 +160,22 @@ confidence in your theory. Put another way you need more explanatory power than 
 
 Now lets talk about theories in relation to computer systems at Socotra. I am going to recount a story from a few months ago. I was in Socotra's daily scrum and an engineer
 explained that he was working on a bug. He explained that he couldn't quite reproduce the error or detail how the error was coming about. But he was pretty confident
-that the ultimate cause had to be X and he had committed a solution Y. That is bad practice, and it is all to common among software engineers. Software engineering culture
-accepts and allows people to make the jump from ``this theory makes sense'' to ``my theory is correct''. This jump is not acceptable or allowed in any other
+that the ultimate cause had to be X and he had committed a solution Y. That is bad practice, and it is all too common among software engineers. Software engineering culture
+accepts and allows people to make the jump from ``my theory explains an observation'' to ``my theory is correct''. This jump is not acceptable or allowed in any other
 engineering discipline. Unless you can reproduce, unless you can explain, unless you can account for all the observations, then you know nothing. You need to
 dig deeper, and you have no business committing solution Y, except to gain missing data.
 
 Above we talked about when a bug is properly understood and hopefully corrected. On a related note, and getting back to the title of this post, imagine you are writing
 code, building a system. Further, imagine that in one of the system executions you notice something curious. Possibly an error, but you cant reproduce it. And you are very busy;
 it's probably something one off. I am going to suggest that your understanding of your code is like a theory and you have an observation that contradicts the
-theory. With that one contradiction, you now need more explanitory power than you think to assume something one off happened. In fact, despite your
+theory. With that one contradiction, you now need more explanatory power than you think to assume something one off happened. In fact, despite your
 best feelings of assurance, you have to assume, with assurance, that the code is wrong. And do work to generate an explanation.
 
 What I have written above might seem a bit strong. If it seems a bit strong then for your next few bugs fixes, start by listing all you theories. Maybe
 you will start off with 10 possible theories and you might well add new theories as you work through the bug. Note that you will generally have to toss
 away a lot of plausible theories before you finally find a root cause of your bug. Note also that the solution that you finally end with, will not generally be
 in the initial set of theories you started with. What I have written above might, on the other hand, seem obvious. If that is that case, then the next time
-you read the news just take note of topics of current concern and the related theories, sufficient for you to feel assuraces in your opinions. (Covid and Global
+you read the news just take note of topics of current concern and the related theories, sufficient for you to feel assured in your opinions. (Covid and Global
 Warming are on the front page of CNN as I write this.) Then come back to this paragraph in 15 years.
 
 \subsection{If code is not being used, then it doesn't work.}
@@ -183,10 +183,63 @@ When building systems its common to have unused code: sub-systems that are finis
 executed on a regular basis. Any code that one expects to work must prove it works on a regular basis. If the code does not prove it works, you best assumption
 is that it does not.
 
+\subsection{System problems can not be solved with single solutions, or by efforts at a single time.}
+In a recent engineering meeting development quality was evaluated in terms of the number of customer bug reports per month.
+One tentative suggestion from the graphs was that there was a large number of latent bugs in existing code waiting to be exposed by
+new customers doing new things. This prompted the question of how can we remove bugs from the existing code and the response
+``we have to write more tests''. How likely is that to be a solution for uncovering latent bugs in code?
+
+We can answer questions like this by making a quick engineering estimates. How many state items are there in the configuration plus
+database fields that can influence processing? Lets say the state items are bounded on the low side by $10^2$. Lets further assume
+that all states are binary and
+that processing is never influenced by the confluence of more than three data items. The system then has a lower bound of $10^6$ state combinations.
+If not properly handling some of those $10^6$ states would lead to a bug, then we can say that to sufficiently
+remove just data bugs, a lower limit on the number of tests necessary would be $10^6$. Further we would still have many other classes of bugs
+to investigate with perhaps equally large state spaces. No team will every write those tens of millions of tests, and if they could then they would
+spend months of time just trying to run their test suite, once. The answer ``we have to write more tests'' does not work in theory. Slightly differently,
+theory tells you that your wrong.
+
+I am going to give you another answer to the question of how to remove bugs in existing code. But the answer is general to all improvements
+that one seeks to implement in complex systems. You have to accumulate a set of effective attack methods to use towards your goal and
+you have to apply those methods systematically over an extended period of time. The extended period of time varies by the problem domain
+but for software systems a typical value of the extending period of time is on the order of one year.
+
+When I started my first job as a software engineer, I worked at a financial institution in Boston with a faulty reporting system. It was a big
+problem because customers expected timely (right now) financial reports and there were ten to fifty failures that had to be resolved every morning. Every
+morning I would try to identify every problem and manually produce the reports by any means necessary. Then I would go downstairs to my
+desk and fix as many problems as were identified. I would also search all the other reports for any specific classes of problems that could be
+extrapolated from the days failures and I would fix those too. For some issues I would ask ``what would I have to do to prevent an issue like
+this from ever happening again?'' and then I would do that. For issues that I couldn't find a root cause for, I had a lab notebook where I
+would record every issue and every observation that I had made about the issue. Everything was tracked. Where I needed more information,
+I would add logging and monitoring. After a year of persistent attack from many angles, one day I came into work and there were no report
+failures. Over the years, with many failing systems I have personally seen variations of the above story replay many times. There are no easy one
+shot solutions. One applies many simple strategies, consistently over time, and in about a year one will end up where one wants to be.
+
+\subsection{Change one thing at a time.}
+Most systems, even simple systems are complex enough to exceed the reasoning ability of the best engineers, and we can see the manifestation of this truth regularly at
+Socotra. We have a moderately complex system and yet its not unknown to see one or more engineers struggle to fix system problems and
+be uncertain about the ultimate fix. Will the fix be correct in all circumstances? It's also not unknown specifications of new functionality
+to be incomplete or in need of revision after discussion of system details. Demonstrably, no one can reason about our system with confidence, and
+I would suspect that the most confident are in line to fall the hardest.
+
+One golden rule for navigating system complexity (along with minimal commits) is to always change one thing at a time. If someone changes module
+X and you would like to add functionality in module X for your feature, Y. Wait for X to go live in production and then add your feature Y. If
+problems occur in Module X or a related module before your changes land, then someone else is closer to isolating what changes have created problems.
+It's always much harder to analyze a problem when multiple changes have happened at the same time especially if the changes interact in
+unintuitive ways. One change at a time is also why many organizations deploy code continuously. If each commit is well targeted, which it should
+be, then only one piece of functionality has changed. If after a deployment, monitors show abnormalities, then code can be rolled back and it will
+be very apparent what single change caused what problem. Surprisingly what seems to be very dangerous, deploying as soon as commits land, turns
+out to be safer because only one thing is changing at a time.
+
 \subsection{There is no right way. There are only trade offs.}
+Try never to say ``this is the right way to do it''. That statement may be emotionally satisfying but it is not engineering. Engineering
+is about trade offs. Just like raising children or like deciding what to do on the weekend or like deciding what business opportunities to pursue.
+One defines the problem (see above) or, mathematically, one defines a set of inequalities which bound the solution space. One then navigates among needs,
+values, precise discussion with stakeholders, and hopefully good judgment to pick a point in that solution space. Being an engineer means you
+can come up with many possible solutions to any problem and you can explain the trade off for each one.
 
 \subsection{Build you personal rule set.}
 
 \subsection{If you don't know what to do, then do something anyways.}
 
-\subsection{Theory and practice.}
+\subsection{Theory and Practice.}

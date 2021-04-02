@@ -29,10 +29,16 @@ on the --test flag and is as follows:
 
 
 ## Using the socortraadmin program
-This program allows one to update and read information from an installation of the 
-socortra platform. The program takes a combination of positional and named arguments
-the combination of which defines the data to read or update. Some example usages in 
-a local development environment are listed below
+This program allows one to update and read information from an installation of the socortra platform. The program takes a combination of 
+positional and named arguments the combination of which defines the data to read or update. One can get information on the commands
+offered and the format required by the commands by using the --help argument on the command line. Examples of using the --help argument
+to walk through the positional argument tree is: 
+```bash
+python bin/socotraadmin --help
+python bin/socotraadmin tenant --help
+python bin/socotraadmin tenant set_config --help
+```
+Some example usages of common commands in a local development environment are listed below.
 
 ### Creating a bootstrap account
 The command usage is:
@@ -53,7 +59,8 @@ python bin/socotraadmin environment bootstrap_admin --name DockerDev --username 
     --password socotra --account_type account.internal --api_url http://localhost:8080 --jwtsecret SGAGWfq31D2HRccsq87s33v1 
 ```
 
-### Adding a user to a tenant
+### Tenant Maintenance 
+#### Adding a user to a tenant
 Once a tenant exists a user can be added to the tenant with a command of the form
 ```
 socotraadmin tenant add_user [tenant_name] [user_display_name] [username] [password] [email] [account_type]
@@ -79,9 +86,10 @@ python bin/socotraadmin tenant add_user docker-dev-configeditor ReadOnly readonl
 	--admin_username docker-dev --admin_password socotra
 ```
 
-### Finding the tenant info associated with a hostname
+
+#### Finding the tenant info associated with a hostname
 The command usage is:
-```
+```bash
 socotraadmin tenant find_tenant [--api_url] [--jwtsecret]
                                 [--admin_username] [--admin_password]
                                 hostname
@@ -92,4 +100,34 @@ example of the usage in a local dev environment is:
 export PYTHONPATH=$PYTHONPATH:./:../stack-monitoring
 python bin/socotraadmin tenant find_tenant --api_url http://localhost:8080 --jwtsecret SGAGWfq31D2HRccsq87s33v1 --admin_username docker-dev 
     --admin_password socotra docker-dev-configeditor.co.socotra.com
+```
+
+#### Geting the tenant configuration flags
+This endpoint returns a list of the tenant feature flags and their values. The command usage is:
+```bash
+socotraadmin tenant get_config [--api_url] [--jwtsecret]
+                               [--admin_username] [--admin_password]
+                               tenant_name
+```
+An example of the usage in a local dev environment is:
+```bash
+export PYTHONPATH=$PYTHONPATH:./:../stack-monitoring
+python bin/socotraadmin tenant get_config --api_url http://localhost:8080 --jwtsecret SGAGWfq31D2HRccsq87s33v1 --admin_username docker-dev 
+    --admin_password socotra docker-dev-configeditor
+```
+
+#### Setting a tenant configuration flag
+This endpoint will set the value of a tenant level configuration flag. The names of available flags can be queried using the get_config
+option, above. The command usage is:
+```bash
+socotraadmin tenant get_config [--api_url] [--jwtsecret]
+                               [--admin_username] [--admin_password]
+							   [--config_uri] [--config-value]
+                               tenant_name
+```
+An example of the usage in a local dev environment is:
+```bash
+export PYTHONPATH=$PYTHONPATH:./:../stack-monitoring
+python bin/socotraadmin tenant set_config --api_url http://localhost:8080 --jwtsecret SGAGWfq31D2HRccsq87s33v1 --admin_username docker-dev 
+    --admin_password socotra docker-dev-configeditor property.proration.plugin.enabled true
 ```

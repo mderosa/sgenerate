@@ -939,116 +939,79 @@
 \begin{document}
 \tlatex
 \setboolean{shading}{true}
-\@x{}\moduleLeftDash\@xx{ {\MODULE} CancellationCtx1}\moduleRightDash\@xx{}%
-\@x{ {\EXTENDS} Integers ,\, Policy}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- In this specification I only model cancellations and renewals processes, but
- I can not
- ignore the effects of other concurrent endorsement or renewals that may
- happen during
- those processes. I model possible endorsements and renewals with the constant
- \ensuremath{EndorsementOrRenewal} which represents such a modification, in
- the accepted state.
-\end{cpar}%
-\end{lcom}%
-\@x{ {\CONSTANTS} EndorsementOrRenewal}%
+ \@x{}\moduleLeftDash\@xx{ {\MODULE}
+ AutoGraceLapseInvoiceCtx0}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Integers}%
+\@x{ {\CONSTANTS} Time}%
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-A reinstatement is type of modification. A reinstatement starts at some time
- and reactivates a policy upto the end timestamp of the cancellation it
- reinstates. A
- reinstatement has two specialized attributes. One, specified in
- configuration, is the
- \ensuremath{auto\_reinstate}: boolean variable. If this variable is true for
- a reinstatement a payment
- recieved on a finalized reinstatement should cause the reinstatement to be
- issued. The
- second attribute is a \ensuremath{deadline\_timestamp} which is the last
- time at which the reinstatement
- can be issued. The deadline timestamp can be specified in configuration or
- it can be
- specified in \ensuremath{Api.reinstatement\_draft()} and
- \ensuremath{Api.reinstatement\_update()} request. If the
- value is never specified it defaults to infinity.
+The invoice table maintains the following variables to track the settlement
+ state of an invoice
 \end{cpar}%
 \end{lcom}%
-\@x{ Reinstatements \.{\defeq} [}%
-\@x{\@s{16.4} type \.{:} \{\@w{Reinstatement} \} ,\,}%
-\@x{\@s{16.4} state \.{:} ModificationState ,\,}%
-\@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} auto\_reinstate \.{:} {\BOOLEAN} ,\,}%
-\@x{\@s{16.4} deadline\_ts \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
-\@x{ ]}%
+\@x{ SettlementStatus \.{\defeq} \{\@w{Outstanding} ,\,\@w{Settled} \}}%
 \@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- A cancellation is also a special type of modification. In the concrete
- implementation
- cancellations have an additional attribute, reason, commented out below. The
- reason is
- one of many user configuration reason strings which the customer uses to
- descriminate
- the purpose of a cancellation. Additionally the system will alway define a
- define a
- cancellation reason of ``lapse'' if such a reason does not exist. The lapse
- reason is
- the reason given by the system to cancellations which result from invoices
- remaining
- unpaid past their grace period. Lapse cancellations are created by the
- scheduled
- lapse routines that run in the background of the \ensuremath{API} application
-\end{cpar}%
-\end{lcom}%
-\@x{ Cancellations \.{\defeq} [}%
-\@x{\@s{16.4} type \.{:} \{\@w{Cancellation} \} ,\,}%
-\@x{\@s{16.4} state \.{:} ModificationState ,\,}%
-\@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4}}%
+ \@x{ SettlementType \.{\defeq} \{\@w{ZeroDue} ,\,\@w{WrittenOff}
+ ,\,\@w{Invalidated} ,\,\@w{Paid} ,\,\@w{Null} \}}%
+\@pvspace{8.0pt}%
+\@x{}%
 \@y{\@s{0}%
- reason: String
+ A simplified representation of invoices
 }%
 \@xx{}%
-\@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
+\@x{ Invoice \.{\defeq} [}%
+\@x{\@s{16.4} totalDue \.{:} \{ 10 ,\, \.{-} 10 \} ,\,}%
+\@x{\@s{16.4} startDt \.{:} Time ,\,}%
+\@x{\@s{16.4} dueDt \.{:} Time ,\,}%
+\@x{\@s{16.4} settlementStatus \.{:} SettlementStatus ,\,}%
+\@x{\@s{16.4} settlementType \.{:} SettlementType}%
 \@x{ ]}%
 \@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
-Cancellations and reinstatements, like endorsements and renewals, are recorded
- as they are created in the history of policy modifications. Some of these
- modifications
- will take effect, by being issued, others will never be issued. In all
- cases, though,
- modifications retain an identity to which documents and invoices can be
- attached.
- The characteristic of the modifications, which gives them a group
- commonality, is
- that they can operate to change liability of the parties to the contract
-\end{cpar}%
-\end{lcom}%
+\@x{}%
+\@y{\@s{0}%
+ A simplified policy representation
+}%
+\@xx{}%
+\@x{ Policy \.{\defeq} [}%
+\@x{\@s{16.4} startDt \.{:} Time ,\,}%
+\@x{\@s{16.4} endDt \.{:} Time}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ A simplified \ensuremath{grace\_period} record representation
+}%
+\@xx{}%
+\@x{ Grace \.{\defeq} [}%
+\@x{\@s{16.4} startDt \.{:} Time ,\,}%
+\@x{\@s{16.4} endDt \.{:} Time}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ A simplified policy modification representation
+}%
+\@xx{}%
+\@x{ Modification \.{\defeq} [}%
+\@x{\@s{16.4} startDt \.{:} Time ,\,}%
+\@x{\@s{16.4} endDt \.{:} Time}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
 \@x{}\bottombar\@xx{}%
 \setboolean{shading}{false}
 \begin{lcom}{0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-\ensuremath{\.{\,\backslash\,}}* Modification History
+\ensuremath{\.{\,\backslash\,}}* \ensuremath{Modification} History
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Tue}
- \ensuremath{Dec} 15 15:53:25 \ensuremath{PST} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
+ \ensuremath{Dec} 23 15:27:56 \ensuremath{PST} 2020 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
- \ensuremath{Jul} 16 16:33:53 \ensuremath{PDT} 2020 by \ensuremath{marco
-}%
-\end{cpar}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Created Sat \ensuremath{Jun} 27 21:12:19
- \ensuremath{PDT} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* Created \ensuremath{Wed} \ensuremath{Nov} 18
+ 17:57:57 \ensuremath{PST} 2020 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \end{lcom}%

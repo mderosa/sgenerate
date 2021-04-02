@@ -6,3 +6,4 @@
 *.thm
 *.toc
 *.out
+__pycache__/

@@ -17,25 +17,22 @@
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-The no config values indicates that a there is no cancellation configuration
- on the system and at that legacy cancellation logic should be called.
-\end{cpar}%
-\end{lcom}%
-\@x{ NoConfig \.{\defeq} {\CHOOSE} x \.{:} x \.{\notin} {\BOOLEAN}}%
-\@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
 A reinstatement is type of modification. A reinstatement starts at some time
- and reactivates a policy upto one of its previous end timestamps. A
- reinstatement has
- two specialized attributes one, specified in configuration, is the
- \ensuremath{auto\_reinstate}: boolean
- variable. If this variable is true for a reinstatement a payment recieved on
- a finalized
- reinstatement should cause the reinstatement to be issued. The second
- attribute is a
- \ensuremath{deadline\_ts} which is the last time at which the reinstatement
- can be issued.
+ and reactivates a policy upto the end timestamp of the cancellation it
+ reinstates. A
+ reinstatement has two specialized attributes. One, specified in
+ configuration, is the
+ \ensuremath{auto\_reinstate}: boolean variable. If this variable is true for
+ a reinstatement a payment
+ recieved on a finalized reinstatement should cause the reinstatement to be
+ issued. The
+ second attribute is a \ensuremath{deadline\_timestamp} which is the last
+ time at which the reinstatement
+ can be issued. The deadline timestamp can be specified in configuration or
+ it can be
+ specified in \ensuremath{Api.reinstatement\_draft()} and
+ \ensuremath{Api.reinstatement\_update()} request. If the
+ value is never specified it defaults to infinity.
 \end{cpar}%
 \end{lcom}%
 \@x{ Reinstatements \.{\defeq} [}%
@@ -50,25 +47,21 @@ A reinstatement is type of modification. A reinstatement starts at some time
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- Its possible that different behaviors can be defined for different
- cancelation reasons,
- using liquid scripting. Inside \ensuremath{Java} \ensuremath{API} code, the
- cancellation reason, Lapsed, is used
- to mark cancellations that happen through the action of the automated
- Grace-Lapse routines.
-\end{cpar}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{CancellationReasons \.{\defeq} \{\mbox{``}Lapse\mbox{''},\,
- \@w{OtherReason}\}
-}%
-\end{cpar}%
-\end{lcom}%
-\@x{ CancellationReasons \.{\defeq} \{\@w{OtherReason} \}}%
-\@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
-A cancellation is also a special type of modification. Though not modeled
- in this specification cancellations should record their cancellation reason.
+ A cancellation is also a special type of modification. In the concrete
+ implementation
+ cancellations have an additional attribute, reason, commented out below. The
+ reason is
+ one of many user configuration reason strings which the customer uses to
+ descriminate
+ the purpose of a cancellation. Additionally the system will alway define a
+ define a
+ cancellation reason of ``lapse'' if such a reason does not exist. The lapse
+ reason is
+ the reason given by the system to cancellations which result from invoices
+ remaining
+ unpaid past their grace period. Lapse cancellations are created by the
+ scheduled
+ lapse routines that run in the background of the \ensuremath{API} application
 \end{cpar}%
 \end{lcom}%
 \@x{ Cancellations \.{\defeq} [}%
@@ -76,6 +69,11 @@ A cancellation is also a special type of modification. Though not modeled
 \@x{\@s{16.4} state \.{:} ModificationState ,\,}%
 \@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
 \@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
+\@x{\@s{16.4}}%
+\@y{\@s{0}%
+ reason: String
+}%
+\@xx{}%
 \@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
 \@x{ ]}%
 \@pvspace{8.0pt}%
@@ -101,7 +99,7 @@ Cancellations and reinstatements, like endorsements and renewals, are recorded
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Tue}
- \ensuremath{Sep} 15 17:29:27 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+ \ensuremath{Dec} 15 15:53:25 \ensuremath{PST} 2020 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%

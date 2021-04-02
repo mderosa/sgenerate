@@ -939,116 +939,152 @@
 \begin{document}
 \tlatex
 \setboolean{shading}{true}
-\@x{}\moduleLeftDash\@xx{ {\MODULE} CancellationCtx1}\moduleRightDash\@xx{}%
-\@x{ {\EXTENDS} Integers ,\, Policy}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- In this specification I only model cancellations and renewals processes, but
- I can not
- ignore the effects of other concurrent endorsement or renewals that may
- happen during
- those processes. I model possible endorsements and renewals with the constant
- \ensuremath{EndorsementOrRenewal} which represents such a modification, in
- the accepted state.
-\end{cpar}%
-\end{lcom}%
-\@x{ {\CONSTANTS} EndorsementOrRenewal}%
+\@x{}\moduleLeftDash\@xx{ {\MODULE} IntervalOps}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Integers ,\, Reals}%
 \@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
-A reinstatement is type of modification. A reinstatement starts at some time
- and reactivates a policy upto the end timestamp of the cancellation it
- reinstates. A
- reinstatement has two specialized attributes. One, specified in
- configuration, is the
- \ensuremath{auto\_reinstate}: boolean variable. If this variable is true for
- a reinstatement a payment
- recieved on a finalized reinstatement should cause the reinstatement to be
- issued. The
- second attribute is a \ensuremath{deadline\_timestamp} which is the last
- time at which the reinstatement
- can be issued. The deadline timestamp can be specified in configuration or
- it can be
- specified in \ensuremath{Api.reinstatement\_draft()} and
- \ensuremath{Api.reinstatement\_update()} request. If the
- value is never specified it defaults to infinity.
-\end{cpar}%
-\end{lcom}%
-\@x{ Reinstatements \.{\defeq} [}%
-\@x{\@s{16.4} type \.{:} \{\@w{Reinstatement} \} ,\,}%
-\@x{\@s{16.4} state \.{:} ModificationState ,\,}%
-\@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} auto\_reinstate \.{:} {\BOOLEAN} ,\,}%
-\@x{\@s{16.4} deadline\_ts \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
-\@x{ ]}%
+\@x{ max ( a ,\, b ) \.{\defeq} {\IF} a \.{\geq} b \.{\THEN} a \.{\ELSE} b}%
+ \@x{ min ( a ,\, b )\@s{1.49} \.{\defeq} {\IF} a \.{\leq} b \.{\THEN} a
+ \.{\ELSE} b}%
 \@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- A cancellation is also a special type of modification. In the concrete
- implementation
- cancellations have an additional attribute, reason, commented out below. The
- reason is
- one of many user configuration reason strings which the customer uses to
- descriminate
- the purpose of a cancellation. Additionally the system will alway define a
- define a
- cancellation reason of ``lapse'' if such a reason does not exist. The lapse
- reason is
- the reason given by the system to cancellations which result from invoices
- remaining
- unpaid past their grace period. Lapse cancellations are created by the
- scheduled
- lapse routines that run in the background of the \ensuremath{API} application
-\end{cpar}%
-\end{lcom}%
-\@x{ Cancellations \.{\defeq} [}%
-\@x{\@s{16.4} type \.{:} \{\@w{Cancellation} \} ,\,}%
-\@x{\@s{16.4} state \.{:} ModificationState ,\,}%
-\@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4}}%
+\@x{}%
 \@y{\@s{0}%
- reason: String
+ Interval Predicates
 }%
 \@xx{}%
-\@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
-\@x{ ]}%
-\@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
-Cancellations and reinstatements, like endorsements and renewals, are recorded
- as they are created in the history of policy modifications. Some of these
- modifications
- will take effect, by being issued, others will never be issued. In all
- cases, though,
- modifications retain an identity to which documents and invoices can be
- attached.
- The characteristic of the modifications, which gives them a group
- commonality, is
- that they can operate to change liability of the parties to the contract
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ Since characteristics are intervals, making decisions on them is facilitated
+ by a
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ fundamental set of predicate combinators over intervals. The fundamental
+ interval
+ combinators sufficient for all characteristic decisions at
+ \ensuremath{Socotra} are listedbelow. Most
+ of them are implemented in the framework Duration class (or when not, are
+ implemented in
+ an ad-hoc manner).
 \end{cpar}%
 \end{lcom}%
+ \@x{ notOverlaps ( chA ,\, chB ) \.{\defeq} chB . end\_ts \.{\leq} chA .
+ start\_ts}%
+\@x{\@s{16.4} \.{\lor} chB . start\_ts \.{\geq} chA . end\_ts}%
+\@pvspace{8.0pt}%
+\@x{ overlaps ( chA ,\, chB ) \.{\defeq} {\lnot} notOverlaps ( chA ,\, chB )}%
+\@pvspace{8.0pt}%
+ \@x{ starts ( chA ,\, chB ) \.{\defeq} chA . start\_ts \.{=} chB . start\_ts
+ \.{\land} chA . end\_ts \.{<} chB . end\_ts}%
+\@pvspace{8.0pt}%
+ \@x{ contains ( chA ,\, chB ) \.{\defeq} chA . start\_ts \.{\leq} chB .
+ start\_ts \.{\land} chB . end\_ts \.{\leq} chA . end\_ts}%
+\@pvspace{8.0pt}%
+\@x{ equals ( chA ,\, chB ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} chA . start\_ts \.{=} chB . start\_ts}%
+\@x{\@s{16.4} \.{\land} chA . end\_ts \.{=} chB . end\_ts}%
+\@pvspace{8.0pt}%
+\@x{ width ( ch ) \.{\defeq} ch . end\_ts \.{-} ch . start\_ts}%
+\@pvspace{8.0pt}%
+ \@x{ within ( tm ,\, ch ) \.{\defeq} ch . start\_ts \.{<} tm \.{\land} tm
+ \.{<} ch . end\_ts}%
+\@pvspace{8.0pt}%
+\@x{ {\RECURSIVE} overlapsAny ( \_ ,\, \_ )}%
+\@x{ overlapsAny ( ch ,\, chs ) \.{\defeq}}%
+\@x{\@s{16.4} {\IF} chs \.{=} \{ \} \.{\THEN} {\FALSE}}%
+ \@x{\@s{16.4} \.{\ELSE} \.{\LET} tmp \.{\defeq} {\CHOOSE} x \.{\in} chs \.{:}
+ {\TRUE}}%
+\@x{\@s{47.71} \.{\IN} {\IF} overlaps ( ch ,\, tmp ) \.{\THEN} {\TRUE}}%
+ \@x{\@s{68.11} \.{\ELSE} overlapsAny ( ch ,\, chs \.{\,\backslash\,} \{ tmp
+ \} )}%
+\@pvspace{8.0pt}%
+\@x{ {\RECURSIVE} startsAny ( \_ ,\, \_ )}%
+\@x{ startsAny ( ch ,\, chs ) \.{\defeq}}%
+\@x{\@s{16.4} {\IF} chs \.{=} \{ \} \.{\THEN} {\FALSE}}%
+ \@x{\@s{16.4} \.{\ELSE} \.{\LET} tmp \.{\defeq} {\CHOOSE} x \.{\in} chs \.{:}
+ {\TRUE}}%
+\@x{\@s{47.71} \.{\IN} {\IF} starts ( ch ,\, tmp ) \.{\THEN} {\TRUE}}%
+ \@x{\@s{68.11} \.{\ELSE} startsAny ( ch ,\, chs \.{\,\backslash\,} \{ tmp \}
+ )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Interval Functions
+}%
+\@xx{}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ There are two inverval functions which are the fundamental combinators on
+ which all
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+characteristic functions are based. These are:
+ (1) subtract: \ensuremath{Interval \.{\rightarrow} Interval \.{\rightarrow}}
+ Set \ensuremath{Interval}, returns the parts of the first interval
+ that do not overlap with the second interval. And will be a set of
+ cardinality between
+ 0 and 2.
+ (2) union: \ensuremath{Interval \.{\rightarrow} Inteval \.{\rightarrow}} Set
+ \ensuremath{Interval}, returns the part of the first and second
+ intervals that overlap. And will be a set of cardinality between 0 and 1.
+\end{cpar}%
+\end{lcom}%
+\@x{ subtract ( chA ,\, chB ) \.{\defeq}}%
+\@x{\@s{16.4} {\CASE} notOverlaps ( chA ,\, chB ) \.{\rightarrow} \{ chA \}}%
+\@x{\@s{16.4} {\Box} {\OTHER} \.{\rightarrow}}%
+\@x{\@s{27.97} {\IF} within ( chB . start\_ts ,\, chA ) \.{\THEN}}%
+\@x{\@s{44.22} {\IF} within ( chB . end\_ts ,\, chA ) \.{\THEN} \{}%
+ \@x{\@s{60.48} [ chA {\EXCEPT} {\bang} . start\_ts \.{=} chA . start\_ts ,\,
+ {\bang} . end\_ts \.{=} chB . start\_ts ] ,\,}%
+ \@x{\@s{60.48} [ chA {\EXCEPT} {\bang} . start\_ts \.{=} chB . end\_ts ,\,
+ {\bang} . end\_ts \.{=} chA . end\_ts ]}%
+\@x{\@s{60.48} \}}%
+\@x{\@s{44.22} \.{\ELSE}}%
+ \@x{\@s{60.62} \{ [ chA {\EXCEPT} {\bang} . start\_ts \.{=} chA . start\_ts
+ ,\, {\bang} . end\_ts \.{=} chB . start\_ts ] \}}%
+\@x{\@s{27.97} \.{\ELSE}}%
+\@x{\@s{44.37} {\IF} within ( chB . end\_ts ,\, chA ) \.{\THEN}}%
+ \@x{\@s{60.62} \{ [ chA {\EXCEPT} {\bang} . start\_ts \.{=} chB . end\_ts ,\,
+ {\bang} . end\_ts \.{=} chA . end\_ts ] \}}%
+\@x{\@s{44.37} \.{\ELSE}}%
+\@x{\@s{60.77} \{ \}}%
+\@pvspace{8.0pt}%
+\@x{ intersect ( chA ,\, chB ) \.{\defeq}}%
+\@x{\@s{16.4} {\IF} notOverlaps ( chA ,\, chB )}%
+\@x{\@s{16.4} \.{\THEN} \{ \}}%
+ \@x{\@s{16.4} \.{\ELSE} \{ [ chA {\EXCEPT} {\bang} . start\_ts \.{=} max (
+ chA . start\_ts ,\, chB . start\_ts ) ,\,}%
+ \@x{\@s{114.65} {\bang} . end\_ts \.{=} min ( chA . end\_ts ,\, chB . end\_ts
+ )}%
+\@x{\@s{47.71} ] \}}%
+\@pvspace{8.0pt}%
+\@x{ extend ( chA ,\, chB ) \.{\defeq}}%
+ \@x{\@s{16.4} [ chA {\EXCEPT} {\bang} . start\_ts \.{=} min ( chA . start\_ts
+ ,\, chB . start\_ts ) ,\,}%
+ \@x{\@s{78.34} {\bang} . end\_ts \.{=} max ( chA . end\_ts ,\, chB . end\_ts
+ ) ]}%
+\@pvspace{8.0pt}%
+ \@x{ subtractAll ( chs ,\, chB ) \.{\defeq} {\UNION} \{ subtract ( chA ,\,
+ chB ) \.{:} chA \.{\in} chs \}}%
+\@pvspace{8.0pt}%
+ \@x{ intersectAll ( chs ,\, chB ) \.{\defeq} {\UNION} \{ intersect ( chA ,\,
+ chB ) \.{:} chA \.{\in} chs \}}%
+\@pvspace{8.0pt}%
+ \@x{ overlapsAll ( chs ,\, int ) \.{\defeq} \{ ch \.{\in} chs \.{:} overlaps
+ ( ch ,\, int ) \}}%
+\@pvspace{8.0pt}%
 \@x{}\bottombar\@xx{}%
 \setboolean{shading}{false}
 \begin{lcom}{0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-\ensuremath{\.{\,\backslash\,}}* Modification History
+\ensuremath{\.{\,\backslash\,}\.{*} Modification} History
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Tue}
- \ensuremath{Dec} 15 15:53:25 \ensuremath{PST} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}\.{*}} Last modified \ensuremath{Wed}
+ \ensuremath{Mar} 31 10:48:32 \ensuremath{PDT} 2021 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
- \ensuremath{Jul} 16 16:33:53 \ensuremath{PDT} 2020 by \ensuremath{marco
-}%
-\end{cpar}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Created Sat \ensuremath{Jun} 27 21:12:19
- \ensuremath{PDT} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}\.{*}} Created \ensuremath{Mon}
+ \ensuremath{Dec} 28 09:50:41 \ensuremath{PST} 2020 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \end{lcom}%

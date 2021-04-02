@@ -3,11 +3,19 @@ import sgen.file_ops as Op
 
 def main() -> None:
     Op.mk_standalone_tex('book/ch01/Policy.tex')
+    
     Op.mk_standalone_tex('book/ch02/CancellationCtx1.tex')
     Op.mk_standalone_tex('book/ch02/CancellationMch1.tex')
+    Op.mk_standalone_tex('book/ch02/AutoGraceLapseInvoiceCtx0.tex')
+    Op.mk_standalone_tex('book/ch02/AutoGraceLapseInvoiceMch0.tex')
+    
     Op.mk_standalone_tex('book/ch03/CancellationCalculations.tex')
     Op.mk_standalone_tex('book/ch03/CharacteristicsSplitCtx0.tex')
     Op.mk_standalone_tex('book/ch03/CharacteristicsSplitMch0.tex')
+    Op.mk_standalone_tex('book/ch03/IntervalOps.tex')
+    Op.mk_standalone_tex('book/ch03/ProrationCtx2.tex')
+    Op.mk_standalone_tex('book/ch03/ProrationMch2.tex')
+
     print("success")
 
 

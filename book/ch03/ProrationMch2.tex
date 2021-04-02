@@ -939,116 +939,412 @@
 \begin{document}
 \tlatex
 \setboolean{shading}{true}
-\@x{}\moduleLeftDash\@xx{ {\MODULE} CancellationCtx1}\moduleRightDash\@xx{}%
-\@x{ {\EXTENDS} Integers ,\, Policy}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- In this specification I only model cancellations and renewals processes, but
- I can not
- ignore the effects of other concurrent endorsement or renewals that may
- happen during
- those processes. I model possible endorsements and renewals with the constant
- \ensuremath{EndorsementOrRenewal} which represents such a modification, in
- the accepted state.
-\end{cpar}%
-\end{lcom}%
-\@x{ {\CONSTANTS} EndorsementOrRenewal}%
+\@x{}\moduleLeftDash\@xx{ {\MODULE} ProrationMch2}\moduleRightDash\@xx{}%
+ \@x{ {\EXTENDS} ProrationCtx2 ,\, Sequences ,\, IntervalOps ,\, FiniteSets
+ ,\, TLC}%
 \@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
-A reinstatement is type of modification. A reinstatement starts at some time
- and reactivates a policy upto the end timestamp of the cancellation it
- reinstates. A
- reinstatement has two specialized attributes. One, specified in
- configuration, is the
- \ensuremath{auto\_reinstate}: boolean variable. If this variable is true for
- a reinstatement a payment
- recieved on a finalized reinstatement should cause the reinstatement to be
- issued. The
- second attribute is a \ensuremath{deadline\_timestamp} which is the last
- time at which the reinstatement
- can be issued. The deadline timestamp can be specified in configuration or
- it can be
- specified in \ensuremath{Api.reinstatement\_draft()} and
- \ensuremath{Api.reinstatement\_update()} request. If the
- value is never specified it defaults to infinity.
-\end{cpar}%
-\end{lcom}%
-\@x{ Reinstatements \.{\defeq} [}%
-\@x{\@s{16.4} type \.{:} \{\@w{Reinstatement} \} ,\,}%
-\@x{\@s{16.4} state \.{:} ModificationState ,\,}%
-\@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} auto\_reinstate \.{:} {\BOOLEAN} ,\,}%
-\@x{\@s{16.4} deadline\_ts \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
-\@x{ ]}%
+\@x{ {\VARIABLES} policy ,\, policyChs ,\, pc ,\, cancelQ ,\, holdbacks}%
 \@pvspace{8.0pt}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- A cancellation is also a special type of modification. In the concrete
- implementation
- cancellations have an additional attribute, reason, commented out below. The
- reason is
- one of many user configuration reason strings which the customer uses to
- descriminate
- the purpose of a cancellation. Additionally the system will alway define a
- define a
- cancellation reason of ``lapse'' if such a reason does not exist. The lapse
- reason is
- the reason given by the system to cancellations which result from invoices
- remaining
- unpaid past their grace period. Lapse cancellations are created by the
- scheduled
- lapse routines that run in the background of the \ensuremath{API} application
-\end{cpar}%
-\end{lcom}%
-\@x{ Cancellations \.{\defeq} [}%
-\@x{\@s{16.4} type \.{:} \{\@w{Cancellation} \} ,\,}%
-\@x{\@s{16.4} state \.{:} ModificationState ,\,}%
-\@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
-\@x{\@s{16.4}}%
+\@x{ {\CONSTANTS} maxPc ,\, maxT ,\, pluginActive}%
+\@pvspace{8.0pt}%
+\@x{}\midbar\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ oneOf ( S )\@s{2.59} \.{\defeq} {\CHOOSE} x \.{\in} S \.{:} {\TRUE}}%
+ \@x{ maxOf ( S ) \.{\defeq} {\CHOOSE} x \.{\in} S \.{:} \A\, y \.{\in} S
+ \.{:} x \.{\geq} y}%
+ \@x{ minOf ( S )\@s{1.06} \.{\defeq} {\CHOOSE} x \.{\in} S \.{:} \A\, y
+ \.{\in} S \.{:} x \.{\leq} y}%
+\@pvspace{8.0pt}%
+ \@x{ maxCh ( chs ) \.{\defeq} {\CHOOSE} ch \.{\in} chs \.{:} ( \A\, ds
+ \.{\in} chs \.{:} ch . start\_ts \.{\geq} ds . start\_ts )}%
+\@x{ addPremium ( n ,\, chB ) \.{\defeq} n \.{+} chB . premium}%
+\@pvspace{8.0pt}%
+ \@x{ isNotZeroWidth ( ch )\@s{5.83} \.{\defeq} ch . start\_ts \.{<} ch .
+ end\_ts}%
+\@pvspace{8.0pt}%
+\@x{ {\RECURSIVE} fold ( \_ ,\, \_ ,\, \_ )}%
+ \@x{ fold ( Op ( \_ ,\, \_ ) ,\, init ,\, Txs ) \.{\defeq} {\IF} Txs \.{=} \{
+ \}}%
+\@x{\@s{16.87} \.{\THEN} init}%
+\@x{\@s{16.87} \.{\ELSE} \.{\LET} tx \.{\defeq} oneOf ( Txs )}%
+ \@x{\@s{48.18} \.{\IN} fold ( Op ,\, Op ( init ,\, tx ) ,\, Txs
+ \.{\,\backslash\,} \{ tx \} )}%
+\@pvspace{8.0pt}%
+\@x{ sumPremium ( chs ) \.{\defeq} fold ( addPremium ,\, 0 ,\, chs )}%
+\@pvspace{8.0pt}%
+ \@x{ filter ( fn ( \_ ) ,\, xs ) \.{\defeq} \{ x \.{\in} xs \.{:} fn ( x )
+ \}}%
+\@pvspace{8.0pt}%
+\@x{}\midbar\@xx{}%
+\@pvspace{8.0pt}%
+ \@x{ InvTypeQ \.{\defeq} \A\, n \.{\in} 1 \.{\dotdot} Len ( cancelQ ) \.{:}
+ cancelQ [ n ] \.{\in} Modification}%
+ \@x{ InvTypeCh \.{\defeq} \A\, ch \.{\in} policyChs \.{:} ch \.{\in}
+ Characteristic}%
+ \@x{ InvTypeHoldback \.{\defeq} \A\, hb \.{\in} holdbacks \.{:} hb \.{\in}
+ Holdback}%
+\@pvspace{8.0pt}%
+\@x{}%
 \@y{\@s{0}%
- reason: String
+ When the policy is fully canceled there is always 1 policy characteristic
 }%
 \@xx{}%
-\@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
-\@x{ ]}%
+\@x{ InvPolicy \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} policy \.{\in} Interval}%
+\@x{\@s{16.4} \.{\land} policy . start\_ts \.{\leq} policy . end\_ts}%
+ \@x{\@s{16.4} \.{\land} ( policy . start\_ts \.{=} policy . end\_ts \.{\land}
+ pc \.{>} 0 ) \.{\implies} Cardinality ( policyChs ) \.{=} 1}%
+ \@x{\@s{16.4} \.{\land} ( policy . start\_ts \.{=} policy . end\_ts \.{\land}
+ pc \.{>} 0 ) \.{\implies} (}%
+ \@x{\@s{47.79} \.{\LET} ch \.{\defeq} {\CHOOSE} ch \.{\in} policyChs \.{:}
+ {\TRUE}}%
+ \@x{\@s{47.79} \.{\IN} ch . start\_ts \.{=} ch . end\_ts \.{\land} ch .
+ start\_ts \.{=} policy . start\_ts}%
+\@x{\@s{47.79} )}%
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-Cancellations and reinstatements, like endorsements and renewals, are recorded
- as they are created in the history of policy modifications. Some of these
- modifications
- will take effect, by being issued, others will never be issued. In all
- cases, though,
- modifications retain an identity to which documents and invoices can be
- attached.
- The characteristic of the modifications, which gives them a group
- commonality, is
- that they can operate to change liability of the parties to the contract
+ The start and ends of the policy exactly bracket the range of the
+ characteristics.
+ And none of the characteristics, which are valid for the policy, may overlap.
 \end{cpar}%
 \end{lcom}%
+\@x{ InvPolicyChs \.{\defeq}}%
+ \@x{\@s{16.4} \.{\land} pc \.{>} 0 \.{\implies} Cardinality ( policyChs )
+ \.{>} 0}%
+ \@x{\@s{16.4} \.{\land} pc \.{>} 0 \.{\implies} policy . start\_ts \.{=}
+ minOf ( \{ ch . start\_ts \.{:} ch \.{\in} policyChs \} )}%
+ \@x{\@s{16.4} \.{\land} pc \.{>} 0 \.{\implies} policy . end\_ts \.{=} maxOf
+ ( \{ ch . end\_ts \.{:} ch \.{\in} policyChs \} )}%
+ \@x{\@s{16.4} \.{\land} ( \exists\, ch \.{\in} policyChs \.{:} ch . start\_ts
+ \.{=} ch . end\_ts ) \.{\implies}}%
+\@x{\@s{43.69} policy . start\_ts \.{=} policy . end\_ts}%
+ \@x{\@s{16.4} \.{\land} \A\, ch1 ,\, ch2 \.{\in} policyChs \.{:} ( ch1
+ \.{\neq} ch2 ) \.{\implies} notOverlaps ( ch1 ,\, ch2 )}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+Holdbacks are always bounded by the interval of the policy. When there are no
+ outstanding cancellations, then there can be no active
+ \ensuremath{holdbacks}. This last property
+ comes about as only cancellations create \ensuremath{holdbacks} and
+ reinstatements always reverse
+ the \ensuremath{holdbacks} created by their matched cancellation.
+\end{cpar}%
+\end{lcom}%
+\@x{ InvHoldbacks \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} Cardinality ( holdbacks ) \.{=} Len ( cancelQ )}%
+ \@x{\@s{16.4} \.{\land} \A\, hb \.{\in} holdbacks \.{:} \.{\land} hb .
+ start\_ts \.{=} policy . start\_ts}%
+\@x{\@s{107.94} \.{\land} hb . end\_ts \.{\leq} policy . end\_ts}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ When the policy start date equals the policy end date, that is a sign that
+ there are
+ one or more unreversed cancellations in the policies modification set. In
+ most cases
+ we expect that the most recent, unreversed cancellation will have a start
+ date equal
+ to the policies end data, but this is not always the case. Since policies
+ can have
+ gaps in coverage, the actual policy end date can sometimes be less than the
+ most
+ recent cancellations start date. Then if there are unrevered cancellations
+ we may have
+ valid \ensuremath{holdbacks} and when all cancellations have been reversed
+ there should be no
+ valid \ensuremath{holdbacks}.
+\end{cpar}%
+\end{lcom}%
+\@x{ InvCancelQ \.{\defeq}}%
+ \@x{\@s{16.4} \.{\land} ( pc \.{\neq} 0 \.{\land} policy . start\_ts \.{=}
+ policy . end\_ts ) \.{\implies} Len ( cancelQ ) \.{>} 0}%
+ \@x{\@s{16.4} \.{\land} Len ( cancelQ ) \.{>} 0 \.{\implies} \.{\LET} last
+ \.{\defeq} cancelQ [ Len ( cancelQ ) ]}%
+\@x{\@s{120.60} \.{\IN} last . start\_ts \.{\geq} policy . end\_ts}%
+ \@x{\@s{16.4} \.{\land} \A\, n \.{\in} 1 \.{\dotdot} Len ( cancelQ ) \.{:} (
+ \exists\, hb \.{\in} holdbacks \.{:} hb . pc \.{=} cancelQ [ n ] . pc )}%
+\@pvspace{8.0pt}%
+\@x{}\midbar\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ make a default, priced characteristic
+}%
+\@xx{}%
+\@x{ mkDfltCh ( from ,\, to ,\, progCtr ) \.{\defeq} [}%
+\@x{\@s{42.56} start\_ts \.{\mapsto} from ,\,}%
+\@x{\@s{42.56} end\_ts \.{\mapsto} to ,\,}%
+\@x{\@s{42.56} premium \.{\mapsto} to \.{-} from ,\,}%
+\@x{\@s{42.56} monthPremium \.{\mapsto} 1 ,\,}%
+\@x{\@s{42.56} pc \.{\mapsto} progCtr}%
+\@x{\@s{16.4} ]}%
+\@pvspace{8.0pt}%
+\@x{ prorate ( chs ,\, progCtr ) \.{\defeq} \{}%
+ \@x{\@s{16.4} [ ch {\EXCEPT} {\bang} . premium \.{=} ch . monthPremium \.{*}
+ ( ch . end\_ts \.{-} ch . start\_ts ) ,\,}%
+\@x{\@s{71.67} {\bang} . pc \.{=} progCtr \.{+} 1 ] \.{:} ch \.{\in} chs \}}%
+\@pvspace{8.0pt}%
+ \@x{ reprice ( chs ,\, progCtr ) \.{\defeq} \{ [ ch {\EXCEPT} {\bang} .
+ premium \.{=} ch . end\_ts \.{-} ch . start\_ts ,\,}%
+\@x{\@s{171.60} {\bang} . pc \.{=} progCtr \.{+} 1 ] \.{:} ch \.{\in} chs \}}%
+\@pvspace{8.0pt}%
+\@x{ reducedChsFrwork ( chs ,\, int ,\, progCtr ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\LET} remainSet \.{\defeq} subtractAll ( chs ,\, int )}%
+ \@x{\@s{36.79} prorateSet \.{\defeq} \{ r \.{\in} remainSet \.{:} r
+ \.{\notin} chs \}}%
+\@x{\@s{16.4} \.{\IN} {\IF} remainSet \.{=} \{ \}}%
+\@x{\@s{36.79} \.{\THEN} \{ [}%
+\@x{\@s{85.41} start\_ts \.{\mapsto} int . start\_ts ,\,}%
+\@x{\@s{85.41} end\_ts \.{\mapsto} int . start\_ts ,\,}%
+\@x{\@s{85.41} premium \.{\mapsto} 0 ,\,}%
+\@x{\@s{85.41} pc \.{\mapsto} progCtr \.{+} 1}%
+\@x{\@s{68.11} ] \}}%
+\@x{\@s{36.79} \.{\ELSE} {\UNION} \{}%
+\@x{\@s{84.51} ( remainSet \.{\,\backslash\,} prorateSet ) ,\,}%
+\@x{\@s{84.51} prorate ( prorateSet ,\, progCtr )}%
+\@x{\@s{68.11} \}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ In our abstract model the proration has the effect of adding a retained
+ amount to the
+ last characteristic in the reduced set. Since we generally want to add a
+ retained amount,
+ when we split on a characteristic boundary, we have to add the retained
+ amount to
+ a characteristic ouside of the modification interval.
+ In general, this function would potentially change premium, tax, or fee
+ amounts.
+\end{cpar}%
+\end{lcom}%
+\@x{ reducedChsPlugin ( chs ,\, int ,\, progCtr ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\LET} remainSet \.{\defeq} subtractAll ( chs ,\, int )}%
+ \@x{\@s{36.79} prorateSet \.{\defeq} \{ r \.{\in} remainSet \.{:} r
+ \.{\notin} chs \}}%
+\@x{\@s{36.79} mx \.{\defeq} {\IF} prorateSet \.{=} \{ \}}%
+\@x{\@s{69.70} \.{\THEN} maxCh ( remainSet )}%
+\@x{\@s{69.70} \.{\ELSE} maxCh ( prorateSet )}%
+\@x{\@s{16.4} \.{\IN} {\IF} remainSet \.{=} \{ \}}%
+\@x{\@s{36.79} \.{\THEN} \{ [}%
+\@x{\@s{85.41} start\_ts \.{\mapsto} int . start\_ts ,\,}%
+\@x{\@s{85.41} end\_ts \.{\mapsto} int . start\_ts ,\,}%
+\@x{\@s{85.41} premium \.{\mapsto} 0 ,\,}%
+\@x{\@s{85.41} pc \.{\mapsto} progCtr \.{+} 1}%
+\@x{\@s{68.11} ] \}}%
+\@x{\@s{36.79} \.{\ELSE} {\UNION} \{}%
+\@x{\@s{80.41} ( remainSet \.{\,\backslash\,} \{ mx \} ) ,\,}%
+\@x{\@s{80.41} prorate ( \{ mx \} ,\, progCtr )}%
+\@x{\@s{68.11} \}}%
+\@pvspace{8.0pt}%
+\@x{ reducedChs ( chs ,\, int ,\, progCtr ) \.{\defeq}}%
+\@x{\@s{16.4} {\IF} pluginActive \.{=} 0}%
+\@x{\@s{16.4} \.{\THEN} reducedChsFrwork ( chs ,\, int ,\, progCtr )}%
+\@x{\@s{16.4} \.{\ELSE} reducedChsPlugin ( chs ,\, int ,\, progCtr )}%
+\@pvspace{8.0pt}%
+\@x{}\midbar\@xx{}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Below \ensuremath{ts} is the start date of the endorsement and
+ \ensuremath{te} is the resulting end date of the
+ endorsed policy. Although \ensuremath{te} can be greater than the end of the
+ policy, in this spec
+ we only model the case where \ensuremath{te \.{\leq}} the policy end dt.
+ Note, that endorsments can
+ not change the policy\mbox{'}s holdback collection.
+\end{cpar}%
+\end{lcom}%
+\@x{ endorsePolicy ( ts ,\, te ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{<} maxPc}%
+\@x{\@s{16.4} \.{\land} policy . start\_ts \.{<} policy . end\_ts}%
+ \@x{\@s{16.4} \.{\land} ts \.{\geq} policy . start\_ts \.{\land} ts \.{<} te
+ \.{\land} te \.{\leq} policy . end\_ts}%
+\@x{\@s{16.4} \.{\land} Len ( cancelQ ) \.{=} 0}%
+ \@x{\@s{16.4} \.{\land} \.{\LET} endorseInt \.{\defeq} [ start\_ts
+ \.{\mapsto} ts ,\, end\_ts \.{\mapsto} te ]}%
+ \@x{\@s{47.91} repriceSet\@s{3.21} \.{\defeq} reprice ( intersectAll (
+ policyChs ,\, endorseInt ) ,\, pc )}%
+ \@x{\@s{47.91} splitSet \.{\defeq} \{ ch \.{\in} policyChs \.{:} within ( ts
+ ,\, ch ) \}}%
+\@x{\@s{47.91} prorateSet \.{\defeq} prorate ( \{}%
+ \@x{\@s{68.41} dh \.{\in} subtractAll ( splitSet ,\, endorseInt ) \.{:} dh .
+ start\_ts \.{<} ts \} ,\, pc )}%
+ \@x{\@s{47.91} unchangedSet \.{\defeq} \{ ch \.{\in} policyChs \.{:} ch .
+ end\_ts \.{\leq} ts \}}%
+ \@x{\@s{47.91} nextPolicyChs \.{\defeq} {\UNION} \{ repriceSet ,\, prorateSet
+ ,\, unchangedSet \}}%
+ \@x{\@s{47.91} nextMaxT \.{\defeq} maxOf ( \{ ch . end\_ts \.{:} ch \.{\in}
+ nextPolicyChs \} )}%
+ \@x{\@s{27.51} \.{\IN} \.{\land} Assert ( nextMaxT \.{\leq} te
+ ,\,\@w{unexpected\ max} )}%
+\@x{\@s{47.91} \.{\land} Assert (}%
+ \@x{\@s{71.32} policy . end\_ts \.{=} te \.{\implies} sumPremium ( policyChs
+ ) \.{=} sumPremium ( nextPolicyChs ) ,\,}%
+\@x{\@s{71.32}\@w{unmatched\ premiums} )}%
+ \@x{\@s{47.91} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} .
+ end\_ts \.{=} nextMaxT ]}%
+\@x{\@s{47.91} \.{\land} policyChs \.{'} \.{=} nextPolicyChs}%
+\@x{\@s{47.91} \.{\land} pc \.{'} \.{=} pc \.{+} 1}%
+ \@x{\@s{47.91} \.{\land} {\UNCHANGED} {\langle} cancelQ ,\, holdbacks
+ {\rangle}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ An abstract cancellation. When cancellations occur new \ensuremath{holdbacks}
+ will be added to the
+ policy and, if there are any existing \ensuremath{holdbacks}, those that
+ will fall outside of the
+ cancelled policy interval are recreated so that their interval remains
+ within the policy
+ interval. Since policies may have gaps in coverage the new policy end date
+ will be less
+ than or equal to the cancellation date, and this end date is determined from
+ the set of
+ valid policy characteristics.
+\end{cpar}%
+\end{lcom}%
+\@x{ cancelPolicy ( t ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{<} maxPc}%
+\@x{\@s{16.4} \.{\land} policy . end\_ts \.{>} policy . start\_ts}%
+\@x{\@s{16.4} \.{\land} t \.{\geq} policy . start\_ts}%
+\@x{\@s{16.4} \.{\land} t \.{<} policy . end\_ts}%
+ \@x{\@s{16.4} \.{\land} \.{\LET} cancelInt \.{\defeq} [ start\_ts \.{\mapsto}
+ t ,\, end\_ts \.{\mapsto} policy . end\_ts ]}%
+ \@x{\@s{47.91} nextPolicyChs \.{\defeq} reducedChs ( policyChs ,\, cancelInt
+ ,\, pc )}%
+ \@x{\@s{47.91} delHoldbacks \.{\defeq} overlapsAll ( holdbacks ,\, cancelInt
+ )}%
+ \@x{\@s{47.91} nextMaxT \.{\defeq} maxOf ( \{ ch . end\_ts \.{:} ch \.{\in}
+ nextPolicyChs \} )}%
+ \@x{\@s{27.51} \.{\IN} \.{\land} Assert ( nextMaxT \.{\leq} t ,\, {\langle}
+ nextMaxT ,\, t {\rangle} )}%
+ \@x{\@s{47.91} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} .
+ end\_ts \.{=} nextMaxT ]}%
+\@x{\@s{47.91} \.{\land} policyChs \.{'} \.{=} nextPolicyChs}%
+\@x{\@s{47.91} \.{\land} cancelQ \.{'} \.{=} Append (}%
+\@x{\@s{71.32} cancelQ ,\,}%
+ \@x{\@s{71.32} [ start\_ts \.{\mapsto} t ,\, end\_ts \.{\mapsto} policy .
+ end\_ts ,\, pc \.{\mapsto} pc \.{+} 1 ] )}%
+\@x{\@s{47.91} \.{\land} holdbacks \.{'} \.{=} {\UNION} \{}%
+\@x{\@s{71.32} ( holdbacks \.{\,\backslash\,} delHoldbacks ) ,\,}%
+\@x{\@s{71.32} \{ [}%
+\@x{\@s{88.62} start\_ts \.{\mapsto} policy . start\_ts ,\,}%
+\@x{\@s{88.62} end\_ts\@s{4.56} \.{\mapsto} nextMaxT ,\,}%
+\@x{\@s{88.62} amount \.{\mapsto} policy . end\_ts \.{-} t ,\,}%
+\@x{\@s{88.62} pc \.{\mapsto} pc \.{+} 1}%
+\@x{\@s{71.32} ] \} ,\,}%
+ \@x{\@s{71.32} \{ [ dh {\EXCEPT} {\bang} . start\_ts \.{=} policy . start\_ts
+ ,\,}%
+ \@x{\@s{132.11} {\bang} . end\_ts \.{=} nextMaxT ] \.{:} dh \.{\in}
+ delHoldbacks \} \}}%
+\@x{\@s{47.91} \.{\land} pc \.{'} \.{=} pc \.{+} 1}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ An abstract creation or renewal is extended by adding a characteristic.
+ Creations and
+ renewals never create new \ensuremath{holdbacks}.
+\end{cpar}%
+\end{lcom}%
+\@x{ extendPolicy ( t ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{<} maxPc}%
+\@x{\@s{16.4} \.{\land} t \.{>} policy . end\_ts}%
+\@x{\@s{16.4} \.{\land} Len ( cancelQ ) \.{=} 0}%
+ \@x{\@s{16.4} \.{\land} \.{\LET} addCh \.{\defeq} mkDfltCh ( policy . end\_ts
+ ,\, t ,\, pc \.{+} 1 )}%
+ \@x{\@s{27.51} \.{\IN} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT}
+ {\bang} . end\_ts \.{=} t ]}%
+ \@x{\@s{47.91} \.{\land} policyChs \.{'} \.{=} policyChs \.{\cup} \{ addCh
+ \}}%
+\@x{\@s{47.91} \.{\land} pc \.{'} \.{=} pc \.{+} 1}%
+ \@x{\@s{47.91} \.{\land} {\UNCHANGED} {\langle} cancelQ ,\, holdbacks
+ {\rangle}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ An abstract reinstatment. When we reinstate we check if there are any
+ \ensuremath{holdbacks
+ } associated with the reinstatements cancellation. If there are then we can
+ invalidate
+ those previous \ensuremath{holdbacks}, as a reinstatement must reverse the
+ effects of its
+ cancellation. When a reinstatement changes the start date of a policy, we
+ may also
+ have to rewrite valid holdback to maintain holdback intervals within the
+ policy
+ interval.
+\end{cpar}%
+\end{lcom}%
+\@x{ reinstatePolicy ( t ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{<} maxPc}%
+\@x{\@s{16.4} \.{\land} Len ( cancelQ ) \.{\neq} 0}%
+\@x{\@s{16.4} \.{\land} \.{\LET} last \.{\defeq} cancelQ [ Len ( cancelQ ) ]}%
+ \@x{\@s{47.91} addCh \.{\defeq} mkDfltCh ( t ,\, last . end\_ts ,\, pc \.{+}
+ 1 )}%
+ \@x{\@s{47.91} delHb\@s{3.43} \.{\defeq} \{ hb \.{\in} holdbacks \.{:} hb .
+ pc \.{=} last . pc \}}%
+ \@x{\@s{47.91} policyStart \.{\defeq} {\IF} policy . start\_ts \.{=} policy .
+ end\_ts \.{\THEN} t \.{\ELSE} policy . start\_ts}%
+ \@x{\@s{27.51} \.{\IN} \.{\land} t \.{\geq} last . start\_ts \.{\land} t
+ \.{<} last . end\_ts}%
+ \@x{\@s{47.91} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} .
+ start\_ts \.{=} policyStart ,\, {\bang} . end\_ts \.{=} last . end\_ts ]}%
+ \@x{\@s{47.91} \.{\land} policyChs \.{'} \.{=} filter ( isNotZeroWidth ,\, (
+ {\UNION} \{ policyChs ,\, \{ addCh \} \} ) )}%
+\@x{\@s{47.91} \.{\land} holdbacks \.{'}\@s{0.76} \.{=} \{}%
+ \@x{\@s{71.32} [ hb {\EXCEPT} {\bang} . start\_ts \.{=} max ( hb . start\_ts
+ ,\, policyStart ) ,\,}%
+ \@x{\@s{126.46} {\bang} . end\_ts \.{=} max ( hb . end\_ts ,\, policyStart )
+ ] \.{:} hb \.{\in} ( holdbacks \.{\,\backslash\,} delHb )}%
+\@x{\@s{71.32} \}}%
+ \@x{\@s{47.91} \.{\land} cancelQ \.{'} \.{=} [ n \.{\in} 1 \.{\dotdot} ( Len
+ ( cancelQ ) \.{-} 1 ) \.{\mapsto} cancelQ [ n ] ]}%
+\@x{\@s{47.91} \.{\land} pc \.{'} \.{=} pc \.{+} 1}%
+\@pvspace{8.0pt}%
+\@x{ term \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{\geq} maxPc}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} policy ,\, policyChs ,\,
+ holdbacks ,\, pc ,\, cancelQ {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{ Init \.{\defeq}}%
+ \@x{\@s{16.4} \.{\land} policy \.{=} [ start\_ts \.{\mapsto} 0 ,\, end\_ts
+ \.{\mapsto} 0 ]}%
+\@x{\@s{16.4} \.{\land} policyChs \.{=} \{ \}}%
+\@x{\@s{16.4} \.{\land} holdbacks\@s{0.76} \.{=} \{ \}}%
+\@x{\@s{16.4} \.{\land} cancelQ \.{=} {\langle} {\rangle}}%
+\@x{\@s{16.4} \.{\land} pc \.{=} 0}%
+\@pvspace{8.0pt}%
+\@x{ Next \.{\defeq}}%
+\@x{\@s{16.4} \.{\lor} \exists\, t \.{\in} 0 \.{\dotdot} maxT \.{:}}%
+\@x{\@s{48.01} \.{\lor} extendPolicy ( t )}%
+\@x{\@s{48.01} \.{\lor} cancelPolicy ( t )}%
+\@x{\@s{48.01} \.{\lor} reinstatePolicy ( t )}%
+ \@x{\@s{16.4} \.{\lor} \exists\, ts ,\, te \.{\in} 0 \.{\dotdot} maxT \.{:}
+ endorsePolicy ( ts ,\, te )}%
+\@x{\@s{16.4} \.{\lor} term}%
+\@pvspace{8.0pt}%
+ \@x{ Spec \.{\defeq} Init \.{\land} {\Box} [ Next ]_{ {\langle} policy ,\,
+ policyChs ,\, holdbacks ,\, pc ,\, cancelQ {\rangle}}}%
+\@pvspace{8.0pt}%
 \@x{}\bottombar\@xx{}%
 \setboolean{shading}{false}
 \begin{lcom}{0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-\ensuremath{\.{\,\backslash\,}}* Modification History
+\ensuremath{\.{\,\backslash\,}\.{*} Modification} History
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Tue}
- \ensuremath{Dec} 15 15:53:25 \ensuremath{PST} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}\.{*}} Last modified \ensuremath{Fri}
+ \ensuremath{Apr} 02 12:06:16 \ensuremath{PDT} 2021 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
- \ensuremath{Jul} 16 16:33:53 \ensuremath{PDT} 2020 by \ensuremath{marco
+ \ensuremath{\.{\,\backslash\,}\.{*}} Last modified \ensuremath{Mon}
+ \ensuremath{Feb} 15 11:44:51 \ensuremath{PST} 2021 by \ensuremath{marcderosa
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Created Sat \ensuremath{Jun} 27 21:12:19
- \ensuremath{PDT} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}\.{*}} Created \ensuremath{Mon}
+ \ensuremath{Feb} 15 10:49:49 \ensuremath{PST} 2021 by \ensuremath{marcderosa
 }%
 \end{cpar}%
 \end{lcom}%

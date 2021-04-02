@@ -2,9 +2,9 @@
 \begin{figure}[b]
   \begin{tikzpicture}[->,>=stealth']
 
-    \node[state] (ConfigManager) {
+    \node[state] (ConfigEditor) {
       \begin{tabular}{l}
-        \textbf{Config Manager}\\
+        \textbf{Config Editor}\\
         \parbox{4cm}{
           \begin{itemize}
           \item Product Configuration Editor
@@ -22,10 +22,10 @@
     };
 
     \node[state,
-      below of=ConfigManager,
-      node distance=5cm](PolicyEditor) {
+      below of=ConfigEditor,
+      node distance=5cm](PolicyManager) {
       \begin{tabular}{l}
-        \textbf{Policy Editor}\\
+        \textbf{Policy Manager}\\
         \parbox{4cm}{
           \begin{itemize}
           \item Policy Management Tool
@@ -43,7 +43,7 @@
     };
 
     \node[state,
-      right of=ConfigManager,
+      right of=ConfigEditor,
       node distance=7cm](LoadAssets) {
       \begin{tabular}{l}
         \textbf{Load Assets}\\
@@ -145,9 +145,9 @@
     };
 
     \path
-    (ConfigManager) edge node[anchor=south,above]{$sends *.zip \; to$} (LoadAssets)
+    (ConfigEditor) edge node[anchor=south,above]{$sends *.zip \; to$} (LoadAssets)
     (LoadAssets) edge node[anchor=left,right]{$deploys \; products \; via$} (SocotraApi)
-    (PolicyEditor) edge[bend left] node[anchor=south,above]{$uses \; public \; Api$} (SocotraApi)
+    (PolicyManager) edge[bend left] node[anchor=south,above]{$uses \; public \; Api$} (SocotraApi)
     (SocotraApi) edge[bend right=10] node[anchor=south,above]{$requests \; script \; eval$} (Socol)
     (SocotraApi) edge[bend left=5] (MySql)
     (SocotraApi) edge[bend left=60] (Dynamo)

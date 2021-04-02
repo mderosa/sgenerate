@@ -27,5 +27,38 @@ to intervals
 
 \import{ch03/}{CancellationCalculations-sa.tex}
 
+\section{Intervals}
+As you work with framework objects, you will soon come to see that most objects cover
+an interval from $start\_timestamp$ to $end\_timestamp$. These times delineate an extent of
+a coverage interval or in the case of a modification the times delineate the time range for
+which a coverage change was requested.
 
+There is also a second type of framework object which is very common and interval like. These
+are temporal objects and are identifiable by the fields $issued\_timestamp$ and $replaced\_timestamp$.
+More commonly you may have seen these fields in other frameworks by the names $valid\_from$ and
+$valid\_to$. This simple structure is used to record an audit history and allow easy aquision of the current set
+of valid objects with a filter of the form
+\begin{equation*}
+issuedTimestamp \neq null \land replacedTimestamp = null
+\end{equation*}
+
+Here are some standard interval functions that are available for use in the framework.
+\import{ch03/}{IntervalOps-sa.tex}
+
+\section{Holdbacks}
+\label{sec:03:3}
+\subsection{Concept}
+
+\begin{figure}[b]
+  \begin{tikzpicture}[->,>=stealth']
+    \end{tikzpicture}
+  \caption{
+    A policy cancellation
+  }
+  \label{fig:3:1}
+\end{figure}
+
+\subsection{Specification}
+\import{ch03/}{ProrationCtx2-sa.tex}
+\import{ch03/}{ProrationMch2-sa.tex}
 

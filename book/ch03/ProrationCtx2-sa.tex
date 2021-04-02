@@ -1,0 +1,94 @@
+\tlatex
+\setboolean{shading}{true}
+\@x{}\moduleLeftDash\@xx{ {\MODULE} ProrationCtx2}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Integers ,\, Reals}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ A generica interval type to be used as a short form for any of the formal
+ framework
+ objects below.
+\end{cpar}%
+\end{lcom}%
+\@x{ Interval \.{\defeq} [}%
+\@x{\@s{16.4} start\_ts \.{:} Int ,\,}%
+\@x{\@s{16.4} end\_ts \.{:} Int}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Below we model serveral objects in the framework, each of which is an
+ interval. All
+ characteristics are represented as a rate, premium, carrying object. The
+ \ensuremath{pc},
+ program counter, element gives the element a uuid which the spec uses to
+ track
+ objects.
+\end{cpar}%
+\end{lcom}%
+\@x{ Characteristic \.{\defeq} [}%
+\@x{\@s{16.4} start\_ts \.{:} Int ,\,}%
+\@x{\@s{16.4} end\_ts \.{:} Int ,\,}%
+\@x{\@s{16.4} premium \.{:} Int ,\,}%
+\@x{\@s{16.4} monthPremium \.{:} 1 \.{\dotdot} 2 ,\,}%
+\@x{\@s{16.4} pc \.{:} Int}%
+\@y{\@s{0}%
+ program counter
+}%
+\@xx{}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ A rough analog of the data that we might keep in the
+ \ensuremath{policy\_modification} table. The spec
+ place this data in the \ensuremath{cancelQ}.
+\end{cpar}%
+\end{lcom}%
+\@x{ Modification \.{\defeq} [}%
+\@x{\@s{16.4} start\_ts \.{:} Int ,\,}%
+\@x{\@s{16.4} end\_ts \.{:} Int ,\,}%
+\@x{\@s{16.4} pc \.{:} Int}%
+\@x{ ]}%
+\@pvspace{16.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Holdbacks are penalty charges that can be assessed when the coverage interval
+ of a
+ policy is reducted. Holdbacks, currently, can only happen for cancellations.
+\end{cpar}%
+\end{lcom}%
+\@x{ Holdback \.{\defeq} [}%
+\@x{\@s{16.4} start\_ts \.{:} Int ,\,}%
+\@x{\@s{16.4} end\_ts\@s{4.56} \.{:} Int ,\,}%
+\@x{\@s{16.4} amount \.{:} Int ,\,}%
+\@x{\@s{16.4} pc \.{:} Int}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
+\@x{}\bottombar\@xx{}%
+\setboolean{shading}{false}
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{\.{\,\backslash\,}\.{*} Modification} History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}\.{*}} Last modified \ensuremath{Fri}
+ \ensuremath{Apr} 02 12:31:50 \ensuremath{PDT} 2021 by \ensuremath{marco
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}\.{*}} Last modified Sun \ensuremath{Feb} 28
+ 21:28:02 \ensuremath{PST} 2021 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}\.{*}} Last modified \ensuremath{Mon}
+ \ensuremath{Feb} 15 10:50:16 \ensuremath{PST} 2021 by \ensuremath{marcderosa
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}\.{*}} Created \ensuremath{Mon}
+ \ensuremath{Feb} 15 10:49:27 \ensuremath{PST} 2021 by \ensuremath{marcderosa
+}%
+\end{cpar}%
+\end{lcom}%

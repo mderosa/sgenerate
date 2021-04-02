@@ -951,16 +951,16 @@
  Interval Predicates
 }%
 \@xx{}%
-\begin{lcom}{0}%
-\begin{cpar}{0}{T}{F}{7.5}{0}{}%
- Since characteristics are intervals, making decisions on them is facilitated
- by a
-\end{cpar}%
-\begin{cpar}{1}{F}{F}{0}{0}{}%
- fundamental set of predicate combinators over intervals. The fundamental
- interval
- combinators sufficient for all characteristic decisions at
- \ensuremath{Socotra} are listedbelow. Most
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Since almost every object in the framework is an interval (characteristics,
+ fees,
+ \ensuremath{holdbacks}, policies, modifications) making computations in
+ framework code is facilitated
+ by a fundamental set of predicate combinators over intervals. The
+ fundamental interval
+ combinators sufficient for all interval computations at \ensuremath{Socotra}
+ are listedbelow. Most
  of them are implemented in the framework Duration class (or when not, are
  implemented in
  an ad-hoc manner).
@@ -1010,21 +1010,23 @@
  Interval Functions
 }%
 \@xx{}%
-\begin{lcom}{0}%
-\begin{cpar}{0}{T}{F}{7.5}{0}{}%
- There are two inverval functions which are the fundamental combinators on
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ There are three inverval functions which are the fundamental combinators on
  which all
-\end{cpar}%
-\begin{cpar}{1}{F}{F}{0}{0}{}%
-characteristic functions are based. These are:
+ interval functions are based. These are:
  (1) subtract: \ensuremath{Interval \.{\rightarrow} Interval \.{\rightarrow}}
  Set \ensuremath{Interval}, returns the parts of the first interval
  that do not overlap with the second interval. And will be a set of
  cardinality between
  0 and 2.
- (2) union: \ensuremath{Interval \.{\rightarrow} Inteval \.{\rightarrow}} Set
- \ensuremath{Interval}, returns the part of the first and second
- intervals that overlap. And will be a set of cardinality between 0 and 1.
+ (2) intersect: \ensuremath{Interval \.{\rightarrow} Interval
+ \.{\rightarrow}} Set \ensuremath{Interval}, returns the part of the first and
+ second intervals that overlap. And will be a set of cardinality between 0
+ and 1.
+ (3) extend: \ensuremath{Interval \.{\rightarrow} Interval \.{\rightarrow}
+ Interval}, returns a single interval that minimally
+ contains the input intervals.
 \end{cpar}%
 \end{lcom}%
 \@x{ subtract ( chA ,\, chB ) \.{\defeq}}%
@@ -1076,6 +1078,11 @@ characteristic functions are based. These are:
 \begin{lcom}{0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
 \ensuremath{\.{\,\backslash\,}\.{*} Modification} History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}\.{*}} Last modified \ensuremath{Fri}
+ \ensuremath{Apr} 02 13:21:29 \ensuremath{PDT} 2021 by \ensuremath{marco
+}%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  \ensuremath{\.{\,\backslash\,}\.{*}} Last modified \ensuremath{Wed}

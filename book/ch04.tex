@@ -18,6 +18,8 @@
 \section{Structure of the Overall System}
 \label{sec:03:1}
 
+\import{ch04/}{SystemOrganization.tex}
+
 Figure 3.1 shows the overall system. The Config Editor is a policy designer. From within Config
 Editor product experts can define insurance products as a combination of json configuration
 files, tables for value lookup, and script files for dynamic policy calculations. Once a product
@@ -30,9 +32,10 @@ Socotra API exposes. The Socotra API is then a very standard API application. It
 a few external databases. And it relies on a javascript executor called Socol to do dynamic calculations,
 for instance fees or taxes.
 
-\import{ch04/}{SystemOrganization.tex}
-
 \section{Structure of Socotra API}
+
+\import{ch04/}{ApiOrganization.tex}
+
 The Socotra API application is a simple layered application built on the Spring Framework. The
 layering is somewhat unconventional; however, which makes the structure not immediately evident.
 Figure 3.2 shows the current API structure with a generic application structure for comparison. The
@@ -43,6 +46,6 @@ more circumspect layering to organize code and developer thinking. It's likely t
 will evolve over time to look more and more like the generic application structure on the right.
 In fact, its unlikely that anything more nuanced could be needed.
 
-\import{ch04/}{ApiOrganization.tex}
+
 
 

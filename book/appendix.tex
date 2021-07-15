@@ -7,20 +7,22 @@
 \section{Engineering Practices}
 \label{sec:A1}
 Over the years of doing engineering, we all come away with different learnings and a view of the task shaped by our experiences.
-Below are some thoughts I have about engineering which have grow out of my experiences condensed into overall topics. Perhaps some
+Below are some thoughts I have about engineering which have grow out of my experiences and condensed into topics. Perhaps some
 of the topics will resonate with you and become part of your experience. The summary is below and details follow:
 \begin{enumerate}
 \item Define the problem. The problem you have isn't the problem you think you have.
 \item Build in minimal commits.
-\item If you don't understand all observations, then something is wrong.
+\item If you don't understand all observations, then your understanding is wrong.
 \item If code is not being used, then it doesn't work.
+\item System problems can not be solved with single solutions, or by efforts at a single time.
+\item Change one thing at a time.
 \item There is no right way. There are only trade offs.
 \item Build your personal rule set.
 \item If you don't know what to do, then do something anyways.
 \item Theory and practice.
 \end{enumerate}
 
-\subsection{Define the Problem}
+\subsection{Define the Problem.}
 \label{sec:A2}
 It should be axiomatic that if one cant define a problem, one cant solve it. It should be equally clear that if one defines a
 problem incorrectly, then regardless of the quality of the solution one provides, the solution provides no value in the context of
@@ -42,15 +44,16 @@ mechanism (with flags in database tables) is inelegant.
 \end{description}
 Perhaps no one has made exactly this feature flag problem statement. But statements like this have been thrown about and, of course as
 developers, we love to disparage the technologically ugly with variants of this statement. Now, I am not sure what the official engineering
-definition of inelegant is. If it had an engineering definition, I am not convinced that such a label would be sufficient establish the
+definition of inelegant is. If it had an engineering definition, I am not convinced that such a label would be sufficient to establish the
 existence of a problem. Inelegant is an aesthetic, emotional judgment, and while there is room for aesthetics in engineering, we should be
 on our guard. Feature flags presumably would fulfill a functional need and not an aesthetic, emotional need. Let's try again.
 
 \begin{description}
 \item[Problem] Lets investigate the Launch Darkly feature flag functionality to see how it could be used in our current systems.
 \end{description}
-This statement is an example of a solution with an assumed problem. The problems is there, but the solution is so obvious and perfect that
-we do not have to consider trivialities like problems. As an engineer you should sensitize yourself to solutions that eclipse their problems.
+This statement is an example of a solution with an assumed problem. The problem could exist, but for the author of the statement above
+it seems his solution is so obvious and perfect that he
+has skipped the trivial formality mentioning it. As an engineer you should sensitize yourself to solutions that eclipse their problems.
 ``We should build new functionality as micro services'' or
 ``We should use Amazon Lambda for X, because Lambda is scalable and the future of software development'' are other examples. I am sure Launch Darkly is wonderful,
 as well as micro services and Amazon Lambda, and yet their wonderfulness does not mandate their use. As an engineer, when technical discussion 
@@ -111,7 +114,7 @@ essentials. In your career as an Engineer it is important that you be successful
 be done, and assist co-workers with business skill sets is the ability to clearly and correctly define what the problem is.
 
 
-\subsubsection{Minimal Commits}
+\subsubsection{Build in minimal commits.}
 I am often surprised, when I model a system with a computer checked tool, by how difficult it is to get the model correct. Usually the model
 is highly abstracted and simplified, a toy compared to the real thing. And yet the tools find corner cases that I would never have discovered with
 human reasoning skills. The reason for the surprise is that as engineers, and more so for non engineers, we have only a passing feeling for the
@@ -140,7 +143,7 @@ it was foolish, because you have grown. I am saying if you are limited, a precis
 you meet in your career are not going to tell you. Minimal commits. Precisely define the minimal problem, write just that code, and commit. A lot of tasks
 become better executed, a lot of systems improve, and you will be more successful if you can just repeat that process.
 
-\subsection{If you don't completely understand what you have observed, then your understanding wrong.}
+\subsection{If you don't understand all observations, then your understanding is wrong.}
 One of the traits of a good theory is that when you apply it to a phenomena you are investigating, then it explains all of the observations you have made, not 90\%
 of your observations, not 95\% of you observations, all of your observations. One of the traits of a bad theory is that it explains enough to
 satisfy you. The classic example of a bad theory is Ptolemy's geocentric model of the universe. It explained almost all heavenly observations and served as the basis
@@ -154,7 +157,7 @@ detailing the case for an impending famine in the US. Back in the 70's it was al
 In retrospect,
 National Geographic knew essentially nothing about famine. Assured knowledge knew essentially nothing about the availability of energy resources on the planet. And yet
 the theories accounted for most to the facts. How can that be? What you have to realize is that mismatches between observations and theories have to
-drop you confidence in your theory a lot. If you have 10 observations and your theory explains 9 of those observations. As much as you'd like to,
+drop your confidence in your theory a lot. If you have 10 observations and your theory explains 9 of those observations. As much as you'd like to,
 you should not have 90\% confidence in your theory. You should have more like 50\% confidence. If you can explain 8 observations, you should have more like 25\%
 confidence in your theory. Put another way you need more explanatory power than you think before you know more than nothing.
 
@@ -180,13 +183,13 @@ Warming are on the front page of CNN as I write this.) Then come back to this pa
 
 \subsection{If code is not being used, then it doesn't work.}
 When building systems its common to have unused code: sub-systems that are finished, waiting to go live or code that is not
-executed on a regular basis. Any code that one expects to work must prove it works on a regular basis. If the code does not prove it works, you best assumption
+executed on a regular basis. Any code that one expects to work must prove it works on a regular basis. If the code does not prove it works, your best assumption
 is that it does not.
 
 \subsection{System problems can not be solved with single solutions, or by efforts at a single time.}
 In a recent engineering meeting development quality was evaluated in terms of the number of customer bug reports per month.
 One tentative suggestion from the graphs was that there was a large number of latent bugs in existing code waiting to be exposed by
-new customers doing new things. This prompted the question of how can we remove bugs from the existing code and the response
+new customers doing new things. This prompted the question of how can we remove bugs from the existing code and the response was
 ``we have to write more tests''. How likely is that to be a solution for uncovering latent bugs in code?
 
 We can answer questions like this by making a quick engineering estimates. How many state items are there in the configuration plus
@@ -195,14 +198,14 @@ that all states are binary and
 that processing is never influenced by the confluence of more than three data items. The system then has a lower bound of $10^6$ state combinations.
 If not properly handling some of those $10^6$ states would lead to a bug, then we can say that to sufficiently
 remove just data bugs, a lower limit on the number of tests necessary would be $10^6$. Further we would still have many other classes of bugs
-to investigate with perhaps equally large state spaces. No team will every write those tens of millions of tests, and if they could then they would
+to investigate with perhaps equally large state spaces. No team will ever write those tens of millions of tests, and if they could then they would
 spend months of time just trying to run their test suite, once. The answer ``we have to write more tests'' does not work in theory. Slightly differently,
-theory tells you that your wrong.
+theory tells you a given solution is wrong.
 
 I am going to give you another answer to the question of how to remove bugs in existing code. But the answer is general to all improvements
 that one seeks to implement in complex systems. You have to accumulate a set of effective attack methods to use towards your goal and
 you have to apply those methods systematically over an extended period of time. The extended period of time varies by the problem domain
-but for software systems a typical value of the extending period of time is on the order of one year.
+but for software systems a typical value of the extended period of time is on the order of one year.
 
 When I started my first job as a software engineer, I worked at a financial institution in Boston with a faulty reporting system. It was a big
 problem because customers expected timely (right now) financial reports and there were ten to fifty failures that had to be resolved every morning. Every
@@ -218,7 +221,7 @@ shot solutions. One applies many simple strategies, consistently over time, and 
 \subsection{Change one thing at a time.}
 Most systems, even simple systems are complex enough to exceed the reasoning ability of the best engineers, and we can see the manifestation of this truth regularly at
 Socotra. We have a moderately complex system and yet its not unknown to see one or more engineers struggle to fix system problems and
-be uncertain about the ultimate fix. Will the fix be correct in all circumstances? It's also not unknown specifications of new functionality
+be uncertain about the ultimate fix. Will the fix be correct in all circumstances? It's also not unknown for specifications of new functionality
 to be incomplete or in need of revision after discussion of system details. Demonstrably, no one can reason about our system with confidence, and
 I would suspect that the most confident are in line to fall the hardest.
 
@@ -239,7 +242,33 @@ values, precise discussion with stakeholders, and hopefully good judgment to pic
 can come up with many possible solutions to any problem and you can explain the trade off for each one.
 
 \subsection{Build you personal rule set.}
+When you work on complex systems try to find rules that can guide you in your interaction with that system. All interactions with complex systems
+that have survived through the ages do precisely this. In human society the rules that guide interaction are called culture. In governance the
+rules that guide interactions will be conventions like parliamentary procedures, rule of law, and freedom of speech. In an economic
+system one rule might be voluntary exchange. The rules exist not because they are perfect but because they have been found to work well most
+of the time. And because human judgment is not sound enough to distinguish the exceptional cases. Similarly when you code or modify systems think about the
+rules that should guide you in your changes. If you create a bug perhaps you should have a rule for each bug you fix you must write a unit
+test. That's a common rule that a lot of engineers have. If you have to make a change to a system you might decide that as a rule you will identify
+the minimal fix, as discussed. And code just that. You might decide that you will never commit a change to source control without actually doing a
+test on a live system and checking output, even when there is no chance you could have made a mistake.
+
+Building a personal rule set is a task of identifying where you fail and where others succeed. In both cases you identify a better way that brings
+you closer to the kind of engineer you want to be and then you stick to that way. You rules don't have to be perfect. They just need to lead you to do the
+right thing most of the time. 
 
 \subsection{If you don't know what to do, then do something anyways.}
+In the course of you career you will have to solve many different kinds of problems. Some of those problems will be very stressful. They may
+seem to be impossible to solve or understand. You may even run out of avenues of attack where you don't know what to try next. When this happens,
+be systematic, don't give up, and do something anyways. Persisting and staying observant often leads to the discovery of a hint that will lead
+you to your solution.
 
 \subsection{Theory and Practice.}
+In the course of my career I have met some very practical engineers who were very serious about doing but who lacked theory to
+discipline their thoughts. Those engineers are seriously deficient and yet unaware of their deficits. I have also met very theoretical
+engineers who lacked the ability to create practical technical artifacts. Those engineers usually dealt in great visions. A piece of
+their great vision perhaps was greater than a real world whole. Those engineers end up disappointed and disillusioned.
+
+Don't be a practitioner and don't be a theoretician. You job as an engineer is to continuously circle back between both theory and practice. Theory tells
+you which avenues will be possible and which will be impossible. It is your first error correction filter. Practice is where you meet
+the real world and you discover the limitations of your technology and your abstractions. This is your second error correction filter. Once
+you have met the real world then you recycle your learnings back into your theory to make it better. And you continue the cycle over and over.

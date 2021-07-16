@@ -15,6 +15,8 @@ def main() -> None:
     Op.mk_standalone_tex('book/ch03/IntervalOps.tex')
     Op.mk_standalone_tex('book/ch03/ProrationCtx2.tex')
     Op.mk_standalone_tex('book/ch03/ProrationMch2.tex')
+    Op.mk_standalone_tex('book/ch03/FeesFlatCtx1.tex')
+    Op.mk_standalone_tex('book/ch03/FeesFlatMch1.tex')    
 
     print("success")
 

@@ -45,10 +45,23 @@ issuedTimestamp \neq null \land replacedTimestamp = null
 Here are some standard interval functions that are available for use in the framework.
 \import{ch03/}{IntervalOps-sa.tex}
 
-\section{Holdbacks}
+\section{Charges}
 \label{sec:03:3}
 
-\subsection{Concept}
+\subsection{Peril Characteristics}
+\subsection{Taxes and Commissions}
+
+\subsection{Fees}
+\subsubsection{Concepts}
+\import{ch03/}{FeeBehavior.tex}
+
+\subsubsection{Specification}
+Below is Socotra mathematical specification for flat fees
+\import{ch03/}{FeesFlatCtx1-sa.tex}
+\import{ch03/}{FeesFlatMch1-sa.tex}
+
+\subsection{Holdbacks}
+\subsubsection{Concept}
 
 \begin{figure}[ht]
   \begin{tikzpicture}
@@ -68,7 +81,7 @@ Here are some standard interval functions that are available for use in the fram
   \caption{
     A policy and a cancellation
   }
-  \label{fig:3:1}
+  \label{fig:3:2}
 \end{figure}
 
 To explain holdbacks consider a policy running from Jan 1st of one year to Jan 1st of the next year, with a
@@ -85,7 +98,7 @@ totalCharges_{Jan01->Feb01} & = & prorated(premium) + holdback \\
 where, here, the customer is charged a ten percent penalty fee on the part of the policy that was cancelled.
 
 
-\subsection{Specification}
+\subsubsection{Specification}
 
 Below is Socotra mathematical specification for holdbacks
 \import{ch03/}{ProrationCtx2-sa.tex}

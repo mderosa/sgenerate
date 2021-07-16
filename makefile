@@ -22,6 +22,8 @@ doc:
 	cp ../../workspace/specsfinancial/IntervalOps.toolbox/IntervalOps.tex book/ch03/IntervalOps.tex
 	cp ../../workspace/specsfinancial/ProrationCtx2.toolbox/ProrationCtx2.tex book/ch03/ProrationCtx2.tex
 	cp ../../workspace/specsfinancial/ProrationMch2.toolbox/ProrationMch2.tex book/ch03/ProrationMch2.tex
+	cp ../../workspace/specsfinancial/FeesFlatCtx1.toolbox/FeesFlatCtx1.tex book/ch03/FeesFlatCtx1.tex
+	cp ../../workspace/specsfinancial/FeesFlatMch1.toolbox/FeesFlatMch1.tex book/ch03/FeesFlatMch1.tex
 
 	cp ../socotra-stack/source/stack-config-manager/README.md book/ch05/ReadMeConfigManager.md
 	pandoc -f gfm -t latex -o book/ch05/ReadMeConfigManager-sa.tex book/ch05/ReadMeConfigManager.md

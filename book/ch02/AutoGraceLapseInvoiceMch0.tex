@@ -942,10 +942,25 @@
  \@x{}\moduleLeftDash\@xx{ {\MODULE}
  AutoGraceLapseInvoiceMch0}\moduleRightDash\@xx{}%
 \@x{ {\EXTENDS} AutoGraceLapseInvoiceCtx0 ,\, FiniteSets ,\, TLC}%
-\@x{ {\CONSTANTS} endTime}%
+\@x{ {\CONSTANTS} endTime ,\, graceDelta}%
 \@pvspace{8.0pt}%
 \@x{ {\VARIABLES} invsIssued ,\, policy ,\, gracesUnsettled ,\, time}%
 \@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Here we model a simple yearly policy to illustrate the interactions between
+ policy
+ modifications, the scheduled grace/lapse jobs, payments, and payment
+ reversal. Since,
+ with yearly policies, all invoices are generated at the time of
+ modification, we have
+ simplified away the complicating factor that scheduled invoicing can, in the
+ most general
+ case, generate outstanding invoices at any time. Therefore this model is a
+ simplest case
+ analysis.
+\end{cpar}%
+\end{lcom}%
 \@x{}\midbar\@xx{}%
 \@x{}%
 \@y{\@s{0}%
@@ -964,25 +979,29 @@
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- A policy is either on policy or off policy. If it is off policy then the
- policy is
- no longer being offered to the customer and there must be no outstanding
- invoices.
+ At the time a policy is fully cancelled we insist that all invoices be
+ settled. We
+ can not establish that as an invariant however as with payment reversals
+ there are no
+ restrictions on what invoices can be subsequently flipped into the
+ outstanding state.
 \end{cpar}%
 \end{lcom}%
-\@x{ InvPolicy \.{\defeq}}%
-\@x{\@s{16.4} \.{\land} policy . startDt \.{\leq} policy . endDt}%
-\@x{\@s{16.4} \.{\land} policy . startDt \.{=} policy . endDt \.{\implies}}%
- \@x{\@s{48.01} ( \{ i \.{\in} invsIssued \.{:} i . settlementStatus
- \.{=}\@w{Outstanding} \} \.{=} \{ \} )}%
+\@x{ InvPolicy \.{\defeq} policy . startDt \.{\leq} policy . endDt}%
 \@pvspace{8.0pt}%
-\@x{}%
-\@y{\@s{0}%
- There must be at most one unsetteled grace record per policy
-}%
-\@xx{}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ There must be at most one unsetteled grace record per policy. This property
+ is due to
+ the data definition of grace. A policy is defined as in grace when it has a
+ record
+ in the grace table that is unsettled.
+\end{cpar}%
+\end{lcom}%
 \@x{ InvGraceRecs \.{\defeq}}%
 \@x{\@s{16.4} \.{\land} Cardinality ( gracesUnsettled ) \.{\leq} 1}%
+ \@x{\@s{16.4} \.{\land} \forall\, g \.{\in} gracesUnsettled \.{:} g \.{\in}
+ Grace}%
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
@@ -1047,8 +1066,11 @@
 \@x{\@s{32.8} \.{\land} i . settlementStatus \.{=}\@w{Outstanding}}%
 \@x{\@s{32.8} \.{\land} i . dueDt \.{\leq} time \}}%
 \@pvspace{8.0pt}%
- \@x{ max ( t1 ,\, t2 ) \.{\defeq} {\IF} t1 \.{>} t2 \.{\THEN} t1 \.{\ELSE}
- t2}%
+ \@x{ minOf ( S ) \.{\defeq} {\CHOOSE} x \.{\in} S \.{:} \A\, y \.{\in} S
+ \.{:} x \.{\leq} y}%
+\@x{ oneOf ( S )\@s{1.53} \.{\defeq} {\CHOOSE} x \.{\in} S \.{:} {\TRUE}}%
+ \@x{ max ( t1 ,\, t2 ) \.{\defeq} {\IF} t1\@s{15.85} \.{>} t2 \.{\THEN} t1
+ \.{\ELSE} t2}%
 \@pvspace{8.0pt}%
 \@x{}\midbar\@xx{}%
 \@x{}%
@@ -1065,23 +1087,36 @@
  \@x{\@s{16.4} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} . endDt
  \.{=} m . endDt ]}%
 \@x{\@s{16.4} \.{\land} invsIssued \.{'} \.{=} invsIssued \.{\cup} \{ [}%
-\@x{\@s{48.01} totalDue \.{\mapsto} 10 ,\,}%
+\@x{\@s{48.01} uid \.{\mapsto} time \.{+} 1 ,\,}%
+\@x{\@s{48.01} totalDue \.{\mapsto} m . endDt \.{-} m . startDt ,\,}%
 \@x{\@s{48.01} startDt \.{\mapsto} m . startDt ,\,}%
- \@x{\@s{48.01} dueDt \.{\mapsto} max ( m . startDt \.{+} 1 ,\, time \.{+} 1 )
- ,\,}%
+\@x{\@s{48.01} endDt \.{\mapsto} m . endDt ,\,}%
+ \@x{\@s{48.01} dueDt\@s{0.25} \.{\mapsto} max ( m . startDt \.{+} 1 ,\, time
+ \.{+} 1 ) ,\,}%
 \@x{\@s{48.01} settlementStatus \.{\mapsto}\@w{Outstanding} ,\,}%
 \@x{\@s{48.01} settlementType \.{\mapsto}\@w{Null}}%
 \@x{\@s{31.61} ] \}}%
 \@x{\@s{16.4} \.{\land} time \.{'} \.{=} time \.{+} 1}%
 \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} gracesUnsettled {\rangle}}%
 \@pvspace{8.0pt}%
+\@x{ innerReduce ( m ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} time \.{<} endTime}%
+\@x{\@s{16.4} \.{\land} m . startDt \.{\geq} policy . startDt}%
+\@x{\@s{16.4} \.{\land} m . endDt \.{=} policy . endDt}%
+\@x{\@s{16.4} \.{\land} m . startDt \.{<} m . endDt}%
+ \@x{\@s{16.4} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} . endDt
+ \.{=} m . startDt ]}%
+\@x{\@s{16.4} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} invsIssued ,\, gracesUnsettled
+ {\rangle}}%
+\@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
 Reduce is a generic operation that reduces a policy range, a cancellation.
- Note that once we go off policy we should clear any grace records. Going off
- policy, by definition, means that policy coverage has been revoked from
- which it
- follows that a revoked policy can not be in grace.
+ For the reduction I dont add any negative invoices as negative invoices dont
+ have a
+ grace date and so are not picked up by the automated jobs, which I am
+ modeling here.
 \end{cpar}%
 \end{lcom}%
 \@x{ reduce ( m ) \.{\defeq}}%
@@ -1092,24 +1127,13 @@ Reduce is a generic operation that reduces a policy range, a cancellation.
 \@x{\@s{16.4} \.{\land} m . startDt \.{<} m . endDt}%
  \@x{\@s{16.4} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT} {\bang} . endDt
  \.{=} m . startDt ]}%
- \@x{\@s{16.4} \.{\land} \.{\LET} outstanding \.{\defeq} \{ i\@s{1.65} \.{\in}
- invsIssued \.{:} i . settlementStatus \.{=}\@w{Outstanding} \}}%
- \@x{\@s{47.91} invalidates\@s{4.15} \.{\defeq} \{ o \.{\in} outstanding \.{:}
- o . startDt \.{\geq} m . startDt \}}%
- \@x{\@s{27.51} \.{\IN} \.{\land} invsIssued \.{'} \.{=} ( invsIssued
- \.{\,\backslash\,} invalidates ) \.{\cup}}%
- \@x{\@s{108.13} \{ [ i {\EXCEPT} {\bang} . settlementStatus \.{=}\@w{Settled}
- ,\,}%
- \@x{\@s{162.01} {\bang} . settlementType \.{=}\@w{WrittenOff} ] \.{:} i
- \.{\in} invalidates \}}%
-\@x{\@s{47.91} \.{\land} time \.{'} \.{=} time \.{+} 1}%
-\@x{\@s{47.91} \.{\land} {\IF} outstanding \.{=} invalidates}%
-\@x{\@s{56.11} \.{\THEN} gracesUnsettled \.{'} \.{=} \{ \}}%
-\@x{\@s{56.11} \.{\ELSE} {\UNCHANGED} {\langle} gracesUnsettled {\rangle}}%
+\@x{\@s{16.4} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} invsIssued ,\, gracesUnsettled
+ {\rangle}}%
 \@pvspace{8.0pt}%
 \@x{}%
 \@y{\@s{0}%
- Change is a generic operations the updates policy coverage, an endorsement.
+ Change is a generic operations that updates policy coverage, an endorsement.
 }%
 \@xx{}%
 \@x{ change ( m ) \.{\defeq}}%
@@ -1120,10 +1144,12 @@ Reduce is a generic operation that reduces a policy range, a cancellation.
 \@x{\@s{16.4} \.{\land} m . endDt \.{=} policy . endDt}%
 \@x{\@s{16.4} \.{\land} m . startDt \.{<} m . endDt}%
 \@x{\@s{16.4} \.{\land} invsIssued \.{'} \.{=} invsIssued \.{\cup} \{ [}%
-\@x{\@s{48.01} totalDue \.{\mapsto} 10 ,\,}%
+\@x{\@s{48.01} uid \.{\mapsto} time \.{+} 1 ,\,}%
+\@x{\@s{48.01} totalDue \.{\mapsto} m . endDt \.{-} m . startDt ,\,}%
 \@x{\@s{48.01} startDt \.{\mapsto} m . startDt ,\,}%
- \@x{\@s{48.01} dueDt \.{\mapsto} max ( m . startDt \.{+} 1 ,\, time \.{+} 1 )
- ,\,}%
+\@x{\@s{48.01} endDt \.{\mapsto} m . endDt ,\,}%
+ \@x{\@s{48.01} dueDt\@s{0.25} \.{\mapsto} max ( m . startDt \.{+} 1 ,\, time
+ \.{+} 1 ) ,\,}%
 \@x{\@s{48.01} settlementStatus \.{\mapsto}\@w{Outstanding} ,\,}%
 \@x{\@s{48.01} settlementType \.{\mapsto}\@w{Null}}%
 \@x{\@s{31.61} ] \}}%
@@ -1145,10 +1171,10 @@ Reduce is a generic operation that reduces a policy range, a cancellation.
 \@x{\@s{16.4} \.{\land} gracesUnsettled \.{=} \{ \}}%
  \@x{\@s{16.4} \.{\land} inv . settlementStatus \.{=}\@w{Outstanding}
  \.{\land} inv . dueDt \.{=} time}%
- \@x{\@s{16.4} \.{\land} gracesUnsettled \.{'} \.{=} gracesUnsettled \.{\cup}
- \{ [}%
-\@x{\@s{48.01} startDt \.{\mapsto} time ,\,}%
-\@x{\@s{48.01} endDt \.{\mapsto} time \.{+} 2}%
+\@x{\@s{16.4} \.{\land} gracesUnsettled \.{'} \.{=} \{ [}%
+\@x{\@s{48.01} invUid \.{\mapsto} inv . uid ,\,}%
+\@x{\@s{48.01} startDt \.{\mapsto} inv . dueDt ,\,}%
+\@x{\@s{48.01} endDt \.{\mapsto} inv . dueDt \.{+} graceDelta}%
 \@x{\@s{31.61} ] \}}%
 \@x{\@s{16.4} \.{\land} time \.{'} \.{=} time \.{+} 1}%
  \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} policy ,\, invsIssued
@@ -1158,29 +1184,78 @@ Reduce is a generic operation that reduces a policy range, a cancellation.
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  Auto lapse will cancel the whole policy and that requires settling all the
  invoices,
- not just 1 particular invoice, associated with the grace record. In the
- implementation
- that invoice cancellation details are handled in the
- \ensuremath{CancellationsService
-}%
+ not just the particular invoice, associated with the grace record. This
+ prevents
+ multiple loops through grace/lapse and also established the grace invariant.
+ In the
+ implementation the invoice cancellation details are handled in the
+ \ensuremath{CancellationsService}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ In the second branch of the \ensuremath{{\IF}} statement below we handle the
+ case where a policy is to
+ lapse after the policy has ended. We really cant cancel the policy as
+ cancellation
+ is a reduction in policy extent. So for this case we just settle all
+ outstanding
+ invoices and clear grace. Clearing all the outstanding invoices helps us
+ maintain the
+ processing invariant that \ensuremath{gracesUnsettled \.{=} \{\}
+ \.{\implies}} there are no outstanding invoices.
 \end{cpar}%
 \end{lcom}%
 \@x{ doAutoLapse ( g ) \.{\defeq}}%
 \@x{\@s{16.4} \.{\land} time \.{<} endTime}%
 \@x{\@s{16.4} \.{\land} g . endDt \.{=} time}%
- \@x{\@s{16.4} \.{\land} policy \.{'}\@s{6.93} \.{=} [ policy {\EXCEPT}
- {\bang} . endDt \.{=} policy . startDt ]}%
- \@x{\@s{16.4} \.{\land} \.{\LET} outstanding \.{\defeq} \{ i \.{\in}
- invsIssued \.{:} i . settlementStatus \.{=}\@w{Outstanding} \}}%
- \@x{\@s{47.91} settled \.{\defeq} \{ i \.{\in} invsIssued \.{:} i .
- settlementStatus \.{=}\@w{Settled} \}}%
-\@x{\@s{27.51} \.{\IN} invsIssued \.{'} \.{=} settled \.{\cup}}%
- \@x{\@s{72.51} \{ [ i {\EXCEPT} {\bang} . settlementStatus \.{=}\@w{Settled}
+\@x{\@s{16.4} \.{\land} {\IF} g . endDt \.{<} policy . endDt}%
+\@x{\@s{27.51}}%
+\@y{\@s{0}%
+ \ensuremath{invalidates \.{=}} invoices written off if grace/lapsed looped
+ multiple times at \ensuremath{t
+}}%
+\@xx{}%
+ \@x{\@s{27.51} \.{\THEN} \.{\LET} invalidates \.{\defeq} \{ i \.{\in}
+ invsIssued \.{:} \.{\land} i . settlementStatus \.{=}\@w{Outstanding}}%
+\@x{\@s{220.94} \.{\land} ( \.{\lor} i . uid \.{=} g . invUid}%
+\@x{\@s{236.16} \.{\lor} i . dueDt \.{+} graceDelta \.{\leq} time ) \}}%
+ \@x{\@s{79.22} overdues \.{\defeq} \{ i \.{\in} invsIssued \.{:} \.{\land} i
+ . settlementStatus \.{=}\@w{Outstanding}}%
+\@x{\@s{211.87} \.{\land} i . dueDt \.{\leq} time}%
+\@x{\@s{211.87} \.{\land} i . dueDt \.{+} graceDelta \.{>} time \}}%
+ \@x{\@s{58.82} \.{\IN} \.{\land} policy \.{'} \.{=} [ policy {\EXCEPT}
+ {\bang} . endDt \.{=} g . endDt ]}%
+ \@x{\@s{79.22} \.{\land} invsIssued \.{'} \.{=} ( invsIssued
+ \.{\,\backslash\,} invalidates )}%
+\@x{\@s{151.48} \.{\cup}}%
+ \@x{\@s{151.48} \{ [ i {\EXCEPT} {\bang} . settlementStatus \.{=}\@w{Settled}
  ,\,}%
- \@x{\@s{126.39} {\bang} . settlementType \.{=}\@w{WrittenOff} ] \.{:} i
- \.{\in} outstanding \}}%
-\@x{\@s{16.4} \.{\land} gracesUnsettled \.{'} \.{=} \{ \}}%
-\@x{\@s{16.4} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+ \@x{\@s{205.36} {\bang} . settlementType \.{=}\@w{WrittenOff} ] \.{:} i
+ \.{\in} invalidates \}}%
+ \@x{\@s{79.22} \.{\land} gracesUnsettled \.{'} \.{=} {\IF} overdues \.{=} \{
+ \}}%
+\@x{\@s{98.53} \.{\THEN} \{ \}}%
+\@x{\@s{98.53} \.{\ELSE} \.{\LET} anOverdue \.{\defeq} oneOf ( overdues )}%
+\@x{\@s{129.84} \.{\IN} \{ [}%
+\@x{\@s{167.54} invUid \.{\mapsto} anOverdue . uid ,\,}%
+\@x{\@s{167.54} startDt \.{\mapsto} anOverdue . dueDt ,\,}%
+\@x{\@s{167.54} endDt \.{\mapsto} anOverdue . dueDt \.{+} graceDelta}%
+\@x{\@s{150.24} ] \}}%
+\@x{\@s{79.22} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+ \@x{\@s{27.51} \.{\ELSE} \.{\LET} invalidates \.{\defeq} \{ i \.{\in}
+ invsIssued \.{:} i . settlementStatus \.{=}\@w{Outstanding} \}}%
+ \@x{\@s{58.82} \.{\IN} \.{\land} Assert ( invalidates \.{\neq} \{ \}
+ ,\,\@w{bad\ empty\ invalidates\ set} )}%
+ \@x{\@s{79.22} \.{\land} invsIssued \.{'} \.{=} ( invsIssued
+ \.{\,\backslash\,} invalidates )}%
+\@x{\@s{151.48} \.{\cup}}%
+ \@x{\@s{151.48} \{ [ i {\EXCEPT} {\bang} . settlementStatus \.{=}\@w{Settled}
+ ,\,}%
+ \@x{\@s{205.36} {\bang} . settlementType \.{=}\@w{WrittenOff} ] \.{:} i
+ \.{\in} invalidates \}}%
+\@x{\@s{79.22} \.{\land} gracesUnsettled \.{'} \.{=} \{ \}}%
+\@x{\@s{79.22} \.{\land} time \.{'} \.{=} time \.{+} 1}%
+\@x{\@s{79.22} \.{\land} {\UNCHANGED} {\langle} policy {\rangle}}%
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
@@ -1246,7 +1321,6 @@ Reduce is a generic operation that reduces a policy range, a cancellation.
 \end{lcom}%
 \@x{ doRevPayment ( inv ) \.{\defeq}}%
 \@x{\@s{16.4} \.{\land} {\lnot} autoJobCanRun ( time )}%
-\@x{\@s{16.4} \.{\land} policy . startDt \.{<} policy . endDt}%
 \@x{\@s{16.4} \.{\land} time \.{<} endTime}%
 \@x{\@s{16.4} \.{\land} inv . settlementStatus \.{=}\@w{Settled}}%
  \@x{\@s{16.4} \.{\land} invsIssued \.{'} \.{=} ( invsIssued
@@ -1278,9 +1352,12 @@ Reduce is a generic operation that reduces a policy range, a cancellation.
 \@x{\@s{48.01} \.{\land} policy \.{=} p}%
 \@x{\@s{16.4} \.{\land} time \.{=} 0}%
 \@x{\@s{16.4} \.{\land} invsIssued \.{=} \{ [}%
-\@x{\@s{48.01} totalDue \.{\mapsto} 10 ,\,}%
+\@x{\@s{48.01} uid \.{\mapsto} 0 ,\,}%
+ \@x{\@s{48.01} totalDue \.{\mapsto} policy . endDt \.{-} policy . startDt
+ ,\,}%
 \@x{\@s{48.01} startDt \.{\mapsto} policy . startDt ,\,}%
-\@x{\@s{48.01} dueDt \.{\mapsto} policy . startDt \.{+} 1 ,\,}%
+\@x{\@s{48.01} endDt \.{\mapsto} policy . endDt ,\,}%
+\@x{\@s{48.01} dueDt\@s{0.25} \.{\mapsto} policy . startDt \.{+} 1 ,\,}%
 \@x{\@s{48.01} settlementStatus \.{\mapsto}\@w{Outstanding} ,\,}%
 \@x{\@s{48.01} settlementType \.{\mapsto}\@w{Null}}%
 \@x{\@s{31.61} ] \}}%
@@ -1308,8 +1385,8 @@ Reduce is a generic operation that reduces a policy range, a cancellation.
 \ensuremath{\.{\,\backslash\,}}* \ensuremath{Modification} History
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
- \ensuremath{Dec} 23 15:54:04 \ensuremath{PST} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Mon} May 17
+ 17:22:50 \ensuremath{PDT} 2021 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%

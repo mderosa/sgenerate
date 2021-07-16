@@ -939,162 +939,321 @@
 \begin{document}
 \tlatex
 \setboolean{shading}{true}
-\@x{}\moduleLeftDash\@xx{ {\MODULE} IntervalOps}\moduleRightDash\@xx{}%
-\@x{ {\EXTENDS} Integers ,\, Reals}%
+\@x{}\moduleLeftDash\@xx{ {\MODULE} FeesFlatMch1}\moduleRightDash\@xx{}%
+ \@x{ {\EXTENDS} FeesFlatCtx1 ,\, IntervalOps ,\, TLC ,\, Sequences ,\,
+ FiniteSets}%
 \@pvspace{8.0pt}%
-\@x{ max ( a ,\, b ) \.{\defeq} {\IF} a \.{\geq} b \.{\THEN} a \.{\ELSE} b}%
- \@x{ min ( a ,\, b )\@s{1.49} \.{\defeq} {\IF} a \.{\leq} b \.{\THEN} a
- \.{\ELSE} b}%
+\@x{ {\CONSTANTS} maxSteps}%
+\@x{ {\VARIABLES} policy ,\, chs ,\, fees ,\, cancelQ ,\, pc}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ In this specification we consider the behavior of a single flat fee as it is
+ acted on
+ by cancellations and reinstatements. The flat fee is modeled by list where
+ the first
+ element records the fee state as it was initially created. Policy
+ modifications change
+ this initial state by appending records to the list. The last element then
+ records
+ the latest state of the fee.
+ As the width of the flat fee changes we would like the amount to stay
+ constant. The
+ only exception to this expectation is when the width is equal to zero. In
+ the zero
+ width case modifications have move the fee outside the policy range and
+ setting it to
+ zero removes all charges associated with it.
+\end{cpar}%
+\end{lcom}%
+\@x{}\midbar\@xx{}%
+\@x{ oneOf ( set ) \.{\defeq} {\CHOOSE} x \.{\in} set \.{:} {\TRUE}}%
+\@pvspace{8.0pt}%
+ \@x{ leastOf ( pchs ) \.{\defeq} {\CHOOSE} x \.{\in} pchs \.{:} ( \A\, ch
+ \.{\in} pchs \.{:} x . start\_ts \.{\leq} ch . start\_ts )}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Do an interval subtraction. If the result is the empty set then return a zero
+ width
+ fee.
+\end{cpar}%
+\end{lcom}%
+ \@x{ safeSubtract ( fee ,\, mod ) \.{\defeq} \.{\LET} tmpSet \.{\defeq}
+ subtract ( fee ,\, mod )}%
+\@x{\@s{16.4} \.{\IN} {\IF} tmpSet \.{=} \{ \}}%
+ \@x{\@s{36.79} \.{\THEN} [ fee {\EXCEPT} {\bang} . amount \.{=} 0 ,\, {\bang}
+ . end\_ts \.{=} fee . start\_ts ]}%
+\@x{\@s{36.79} \.{\ELSE} oneOf ( tmpSet )}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Try to expand a fee extent stoping when we either hit the \ensuremath{max}
+ extent of the fee or a
+ gap in the policy coverage.
+\end{cpar}%
+\end{lcom}%
+\@x{ extendOnReinstate ( latest ,\, first ,\, mod ) \.{\defeq}}%
+\@x{\@s{16.4} {\IF} latest . start\_ts \.{=} latest . end\_ts}%
+\@x{\@s{16.4} \.{\THEN} \.{\LET} is \.{\defeq} intersect ( first ,\, mod )}%
+\@x{\@s{47.71} \.{\IN} {\IF} is \.{=} \{ \}}%
+\@x{\@s{68.11} \.{\THEN} latest}%
+\@x{\@s{68.11} \.{\ELSE} oneOf ( is )}%
+\@x{\@s{16.4} \.{\ELSE} {\IF} latest . start\_ts \.{<} latest . end\_ts}%
+ \@x{\@s{47.71} \.{\THEN} {\CASE} latest . end\_ts \.{<} mod . start\_ts
+ \.{\rightarrow} latest}%
+\@x{\@s{79.02} {\Box} latest . end\_ts \.{=} mod . start\_ts \.{\rightarrow}}%
+ \@x{\@s{87.22} \.{\LET} is2\@s{4.26} \.{\defeq} intersect ( first ,\, [
+ start\_ts \.{\mapsto} latest . start\_ts ,\,}%
+\@x{\@s{212.60} end\_ts \.{\mapsto} mod . end\_ts ] )}%
+ \@x{\@s{107.62} tmp \.{\defeq} Assert ( Cardinality ( is2 ) \.{=} 1
+ ,\,\@w{cardinality\ should\ be\ 1} )}%
+\@x{\@s{87.22} \.{\IN} oneOf ( is2 )}%
+ \@x{\@s{79.02} {\Box} {\OTHER} \.{\rightarrow} Assert ( {\FALSE} ,\,\@w{bad\
+ case} )}%
+\@x{\@s{47.71} \.{\ELSE} Assert ( {\FALSE} ,\,\@w{bad\ if} )}%
+\@pvspace{8.0pt}%
+\@x{}\midbar\@xx{}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ The policy characteristics set has one or more non overlapping coverage
+ intervals,
+ and characteristic is contained within the policy bounds. For the special
+ case where
+ the width of the policy is zero, there should be one zero width
+ characteristic.
+\end{cpar}%
+\end{lcom}%
+\@x{ invPolicy \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} policy \.{\in} Interval}%
+\@x{\@s{16.4} \.{\land} policy . start\_ts \.{\leq} policy . end\_ts}%
+ \@x{\@s{16.4} \.{\land} policy . start\_ts \.{=} policy . end\_ts
+ \.{\implies} Cardinality ( chs ) \.{=} 1}%
+ \@x{\@s{16.4} \.{\land} \A\, ch \.{\in} chs \.{:} ch . start\_ts \.{\leq} ch
+ . end\_ts}%
+ \@x{\@s{16.4} \.{\land} \A\, ch1 ,\, ch2 \.{\in} chs \.{:} \.{\lor} ch1 \.{=}
+ ch2}%
+\@x{\@s{108.08} \.{\lor} notOverlaps ( ch1 ,\, ch2 )}%
+\@x{\@s{16.4} \.{\land} \A\, ch \.{\in} chs \.{:} contains ( policy ,\, ch )}%
 \@pvspace{8.0pt}%
 \@x{}%
 \@y{\@s{0}%
- Interval Predicates
+ If there are no unreinstated cancellations then the policy must have a
+ non-zero width.
 }%
 \@xx{}%
-\begin{lcom}{0}%
-\begin{cpar}{0}{T}{F}{7.5}{0}{}%
- Since characteristics are intervals, making decisions on them is facilitated
- by a
-\end{cpar}%
-\begin{cpar}{1}{F}{F}{0}{0}{}%
- fundamental set of predicate combinators over intervals. The fundamental
- interval
- combinators sufficient for all characteristic decisions at
- \ensuremath{Socotra} are listedbelow. Most
- of them are implemented in the framework Duration class (or when not, are
- implemented in
- an ad-hoc manner).
+ \@x{ invQ \.{\defeq} ( cancelQ \.{=} \{ \} \.{\land} pc \.{\neq} 0 )
+ \.{\implies} policy . start\_ts \.{<} policy . end\_ts}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ A flat fee must always be contained within the bounds of the initial fee
+ version. If
+ the policy is fully cancelled then the amount of the fee must be zero,
+ though a zero
+ amount fee does not imply that the policy is fully cancelled.
 \end{cpar}%
 \end{lcom}%
- \@x{ notOverlaps ( chA ,\, chB ) \.{\defeq} chB . end\_ts \.{\leq} chA .
+\@x{ invFees \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} \.{\LET} latest \.{\defeq} fees [ Len ( fees ) ]}%
+ \@x{\@s{27.51} \.{\IN} \.{\land} width ( latest ) \.{=} 0 \.{\equiv} latest .
+ amount \.{=} 0}%
+ \@x{\@s{47.91} \.{\land} width ( latest ) \.{\neq} 0 \.{\equiv} latest .
+ amount \.{=} 4}%
+ \@x{\@s{47.91} \.{\land} latest . start\_ts \.{\geq} Head ( fees ) .
  start\_ts}%
-\@x{\@s{16.4} \.{\lor} chB . start\_ts \.{\geq} chA . end\_ts}%
+\@x{\@s{47.91} \.{\land} latest . end\_ts \.{\leq} Head ( fees ) . end\_ts}%
+\@x{\@s{47.91} \.{\land} width ( latest )\@s{0.07} \.{\neq} 0 \.{\implies} (}%
+\@x{\@s{71.32} \.{\lor} latest . end\_ts \.{\leq} policy . end\_ts}%
+\@x{\@s{71.32} \.{\lor} latest . start\_ts \.{\geq} policy . start\_ts )}%
 \@pvspace{8.0pt}%
-\@x{ overlaps ( chA ,\, chB ) \.{\defeq} {\lnot} notOverlaps ( chA ,\, chB )}%
-\@pvspace{8.0pt}%
- \@x{ starts ( chA ,\, chB ) \.{\defeq} chA . start\_ts \.{=} chB . start\_ts
- \.{\land} chA . end\_ts \.{<} chB . end\_ts}%
-\@pvspace{8.0pt}%
- \@x{ contains ( chA ,\, chB ) \.{\defeq} chA . start\_ts \.{\leq} chB .
- start\_ts \.{\land} chB . end\_ts \.{\leq} chA . end\_ts}%
-\@pvspace{8.0pt}%
-\@x{ equals ( chA ,\, chB ) \.{\defeq}}%
-\@x{\@s{16.4} \.{\land} chA . start\_ts \.{=} chB . start\_ts}%
-\@x{\@s{16.4} \.{\land} chA . end\_ts \.{=} chB . end\_ts}%
-\@pvspace{8.0pt}%
-\@x{ width ( ch ) \.{\defeq} ch . end\_ts \.{-} ch . start\_ts}%
-\@pvspace{8.0pt}%
- \@x{ within ( tm ,\, ch ) \.{\defeq} ch . start\_ts \.{<} tm \.{\land} tm
- \.{<} ch . end\_ts}%
-\@pvspace{8.0pt}%
-\@x{ {\RECURSIVE} overlapsAny ( \_ ,\, \_ )}%
-\@x{ overlapsAny ( ch ,\, chs ) \.{\defeq}}%
-\@x{\@s{16.4} {\IF} chs \.{=} \{ \} \.{\THEN} {\FALSE}}%
- \@x{\@s{16.4} \.{\ELSE} \.{\LET} tmp \.{\defeq} {\CHOOSE} x \.{\in} chs \.{:}
- {\TRUE}}%
-\@x{\@s{47.71} \.{\IN} {\IF} overlaps ( ch ,\, tmp ) \.{\THEN} {\TRUE}}%
- \@x{\@s{68.11} \.{\ELSE} overlapsAny ( ch ,\, chs \.{\,\backslash\,} \{ tmp
- \} )}%
-\@pvspace{8.0pt}%
-\@x{ {\RECURSIVE} startsAny ( \_ ,\, \_ )}%
-\@x{ startsAny ( ch ,\, chs ) \.{\defeq}}%
-\@x{\@s{16.4} {\IF} chs \.{=} \{ \} \.{\THEN} {\FALSE}}%
- \@x{\@s{16.4} \.{\ELSE} \.{\LET} tmp \.{\defeq} {\CHOOSE} x \.{\in} chs \.{:}
- {\TRUE}}%
-\@x{\@s{47.71} \.{\IN} {\IF} starts ( ch ,\, tmp ) \.{\THEN} {\TRUE}}%
- \@x{\@s{68.11} \.{\ELSE} startsAny ( ch ,\, chs \.{\,\backslash\,} \{ tmp \}
- )}%
-\@pvspace{8.0pt}%
-\@x{}%
-\@y{\@s{0}%
- Interval Functions
-}%
-\@xx{}%
-\begin{lcom}{0}%
-\begin{cpar}{0}{T}{F}{7.5}{0}{}%
- There are two inverval functions which are the fundamental combinators on
- which all
-\end{cpar}%
-\begin{cpar}{1}{F}{F}{0}{0}{}%
-characteristic functions are based. These are:
- (1) subtract: Interval \ensuremath{\.{\rightarrow}} Interval
- \ensuremath{\.{\rightarrow}} Set Interval, returns the parts of the first
- interval
- that do not overlap with the second interval. And will be a set of
- cardinality between
- 0 and 2.
- (2) union: Interval \ensuremath{\.{\rightarrow} Inteval \.{\rightarrow}} Set
- Interval, returns the part of the first and second
- intervals that overlap. And will be a set of cardinality between 0 and 1.
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+When a policy is fully cancelled then all of its flat fees must also be fully
+ cancelled. If a policy has an extent and any of its policy characteristics
+ overlap
+ the initial state of the fee, then the latest state of the fee must have an
+ extent
+ and its amount must be equal to the amount of the initial state. Lastly, if
+ latest
+ state of a fee is zero then it must be the case that it does not overlap any
+ of the
+ policy characteristics.
 \end{cpar}%
 \end{lcom}%
-\@x{ subtract ( chA ,\, chB ) \.{\defeq}}%
-\@x{\@s{16.4} {\CASE} notOverlaps ( chA ,\, chB ) \.{\rightarrow} \{ chA \}}%
-\@x{\@s{16.4} {\Box} {\OTHER} \.{\rightarrow}}%
-\@x{\@s{27.97} {\IF} within ( chB . start\_ts ,\, chA ) \.{\THEN}}%
-\@x{\@s{44.22} {\IF} within ( chB . end\_ts ,\, chA ) \.{\THEN} \{}%
- \@x{\@s{60.48} [ chA {\EXCEPT} {\bang} . start\_ts \.{=} chA . start\_ts ,\,
- {\bang} . end\_ts \.{=} chB . start\_ts ] ,\,}%
- \@x{\@s{60.48} [ chA {\EXCEPT} {\bang} . start\_ts \.{=} chB . end\_ts ,\,
- {\bang} . end\_ts \.{=} chA . end\_ts ]}%
-\@x{\@s{60.48} \}}%
-\@x{\@s{44.22} \.{\ELSE}}%
- \@x{\@s{60.62} \{ [ chA {\EXCEPT} {\bang} . start\_ts \.{=} chA . start\_ts
- ,\, {\bang} . end\_ts \.{=} chB . start\_ts ] \}}%
-\@x{\@s{27.97} \.{\ELSE}}%
-\@x{\@s{44.37} {\IF} within ( chB . end\_ts ,\, chA ) \.{\THEN}}%
- \@x{\@s{60.62} \{ [ chA {\EXCEPT} {\bang} . start\_ts \.{=} chB . end\_ts ,\,
- {\bang} . end\_ts \.{=} chA . end\_ts ] \}}%
-\@x{\@s{44.37} \.{\ELSE}}%
-\@x{\@s{60.77} \{ \}}%
+\@x{ invPolicyFees \.{\defeq}}%
+\@x{\@s{16.4} \.{\LET} latest \.{\defeq} fees [ Len ( fees ) ]}%
+ \@x{\@s{16.4} \.{\IN} \.{\land} policy . start\_ts \.{=} policy . end\_ts
+ \.{\implies} latest . amount \.{=} 0}%
+ \@x{\@s{36.79} \.{\land} ( width ( policy ) \.{>} 0\@s{4.1} \.{\land}
+ \exists\, ch \.{\in} chs \.{:} overlaps ( ch ,\, Head ( fees ) ) )}%
+\@x{\@s{75.82} \.{\implies} latest . amount \.{=} 4}%
+ \@x{\@s{36.79} \.{\land} latest . amount \.{=} 0 \.{\implies} {\lnot} (
+ \exists\, ch \.{\in} chs \.{:} overlaps ( ch ,\, latest ) )}%
 \@pvspace{8.0pt}%
-\@x{ union ( chA ,\, chB ) \.{\defeq}}%
- \@x{\@s{16.4} {\IF} overlaps ( chA ,\, chB ) \.{\lor} chA . end\_ts \.{=} chB
- . start\_ts \.{\lor} chB . end\_ts \.{=} chA . start\_ts}%
- \@x{\@s{16.4} \.{\THEN} \{ [ chA {\EXCEPT} {\bang} . start\_ts \.{=} min (
- chA . start\_ts ,\, chB . start\_ts ) ,\,}%
- \@x{\@s{114.65} {\bang} . end\_ts \.{=} max ( chA . end\_ts ,\, chB . end\_ts
- ) ] \}}%
-\@x{\@s{16.4} \.{\ELSE} \{ \}}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ A new version of a fee should always differ in some way from the version that
+ it
+ replaces.
+\end{cpar}%
+\end{lcom}%
+\@x{ invRepeatFree \.{\defeq}}%
+\@x{\@s{16.4} \.{\LET} len \.{\defeq} Len ( fees )}%
+ \@x{\@s{16.4} \.{\IN} len \.{\geq} 2 \.{\implies} {\lnot} ( \.{\land} fees [
+ len\@s{0.21} \.{-} 1 ] . start\_ts \.{=} fees [ len ] . start\_ts}%
+ \@x{\@s{95.00} \.{\land} fees [ len \.{-} 1 ] . end\_ts \.{=} fees [ len ] .
+ end\_ts )}%
+\@x{}\midbar\@xx{}%
 \@pvspace{8.0pt}%
-\@x{ intersect ( chA ,\, chB ) \.{\defeq}}%
-\@x{\@s{16.4} {\IF} notOverlaps ( chA ,\, chB )}%
-\@x{\@s{16.4} \.{\THEN} \{ \}}%
- \@x{\@s{16.4} \.{\ELSE} \{ [ chA {\EXCEPT} {\bang} . start\_ts \.{=} max (
- chA . start\_ts ,\, chB . start\_ts ) ,\,}%
- \@x{\@s{114.65} {\bang} . end\_ts \.{=} min ( chA . end\_ts ,\, chB . end\_ts
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ On reinstatment we would like to restore any reduced flat fees back to their
+ initial
+ width. This in not always possible though for a variety of reason. The
+ reinstatement
+ may not expand the policy range to encompass the initial extent of the fee
+ or there
+ could be gaps in the policy coverage. Because of this, in determining the
+ extent of
+ a fee after a reinstatment we take the coverage period of the policy as an
+ ordered
+ list of intervals separated by gaps and examine their ordered intersections
+ with the
+ initial fee. At a high level, after any reinstatement the restored fee
+ extent should
+ equal the first of the above ordered intersections.
+ The high level intent is realized below with an iterative calculation, that,
+ to a first
+ approximation, trys to expand the current fee\mbox{'}s extent as long as the
+ reinstatement
+ starts at the lastest fee version\mbox{'}s end timestamp.
+\end{cpar}%
+\end{lcom}%
+\@x{ reinstateOp ( m ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{<} maxSteps}%
+\@x{\@s{16.4} \.{\land} m . type \.{\in} \{\@w{Reinstate} \}}%
+\@x{\@s{16.4} \.{\land} cancelQ \.{\neq} \{ \}}%
+\@x{\@s{16.4} \.{\land} \.{\LET} prevMod \.{\defeq} leastOf ( cancelQ )}%
+ \@x{\@s{27.51} \.{\IN} prevMod . start\_ts \.{\leq} m . start\_ts \.{\land}
+ prevMod . end\_ts \.{=} m . end\_ts \.{\land} m . start\_ts \.{<} m .
+ end\_ts}%
+ \@x{\@s{16.4} \.{\land} \.{\LET} nextStartTs \.{\defeq} {\IF} policy .
+ start\_ts \.{=} policy . end\_ts}%
+\@x{\@s{118.64} \.{\THEN} m . start\_ts}%
+\@x{\@s{118.64} \.{\ELSE} policy . start\_ts}%
+ \@x{\@s{47.91} nextPolicy \.{\defeq} [ policy {\EXCEPT} {\bang} . start\_ts
+ \.{=} nextStartTs ,\, {\bang} . end\_ts \.{=} m . end\_ts ]}%
+ \@x{\@s{47.91} nextChs \.{\defeq} {\IF} policy . start\_ts \.{=} policy .
+ end\_ts}%
+ \@x{\@s{102.15} \.{\THEN} \{ [ start\_ts \.{\mapsto} m . start\_ts ,\,
+ end\_ts \.{\mapsto} m . end\_ts ] \}}%
+\@x{\@s{102.15} \.{\ELSE} {\UNION} \{}%
+\@x{\@s{137.56} chs ,\,}%
+ \@x{\@s{137.56} \{ [ start\_ts \.{\mapsto} m . start\_ts ,\, end\_ts
+ \.{\mapsto} m . end\_ts ] \}}%
+\@x{\@s{110.35} \}}%
+\@x{\@s{47.91} latestV\@s{3.09} \.{\defeq} fees [ Len ( fees ) ]}%
+\@x{\@s{47.91} firstV \.{\defeq} fees [ 1 ]}%
+ \@x{\@s{47.91} nextD \.{\defeq} extendOnReinstate ( latestV ,\, firstV ,\, m
  )}%
-\@x{\@s{47.71} ] \}}%
+\@x{\@s{27.51} \.{\IN} \.{\land} policy \.{'} \.{=} nextPolicy}%
+\@x{\@s{47.91} \.{\land} chs \.{'} \.{=} nextChs}%
+ \@x{\@s{47.91} \.{\land} cancelQ \.{'} \.{=} cancelQ \.{\,\backslash\,} \{
+ leastOf ( cancelQ ) \}}%
+\@x{\@s{47.91} \.{\land} pc \.{'} \.{=} pc \.{+} 1}%
+ \@x{\@s{47.91} \.{\land} {\IF} nextD . start\_ts \.{\neq} latestV . start\_ts
+ \.{\lor} nextD . end\_ts \.{\neq} latestV . end\_ts}%
+ \@x{\@s{59.02} \.{\THEN} fees \.{'} \.{=} Append ( fees ,\, [ firstV
+ {\EXCEPT} {\bang} . pc \.{=} pc ,\,}%
+\@x{\@s{254.63} {\bang} . start\_ts \.{=} nextD . start\_ts ,\,}%
+\@x{\@s{254.63} {\bang} . end\_ts \.{=} nextD . end\_ts ] )}%
+\@x{\@s{59.02} \.{\ELSE} {\UNCHANGED} {\langle} fees {\rangle}}%
 \@pvspace{8.0pt}%
-\@x{ extend ( chA ,\, chB ) \.{\defeq}}%
- \@x{\@s{16.4} [ chA {\EXCEPT} {\bang} . start\_ts \.{=} min ( chA . start\_ts
- ,\, chB . start\_ts ) ,\,}%
- \@x{\@s{78.34} {\bang} . end\_ts \.{=} max ( chA . end\_ts ,\, chB . end\_ts
- ) ]}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ On cancellation if a flat fee is shrunk to zero width then its amount shrinks
+ to zero.
+ Otherwise the amount will be a constant value and the range of the fee will
+ be in the
+ policy range.
+\end{cpar}%
+\end{lcom}%
+\@x{ cancelOp ( m ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{<} maxSteps}%
+\@x{\@s{16.4} \.{\land} m . type \.{\in} \{\@w{Cancel} \}}%
+\@x{\@s{16.4} \.{\land} m . start\_ts \.{<} m . end\_ts}%
+\@x{\@s{16.4} \.{\land} m . start\_ts \.{\geq} policy . start\_ts}%
+\@x{\@s{16.4} \.{\land} m . end\_ts \.{=} policy . end\_ts}%
+\@x{\@s{16.4} \.{\land} \.{\LET} latestV \.{\defeq} fees [ Len ( fees ) ]}%
+ \@x{\@s{47.91} nextV \.{\defeq} [ safeSubtract ( latestV ,\, m ) {\EXCEPT}
+ {\bang} . pc \.{=} pc ]}%
+ \@x{\@s{47.91} nextPolicy \.{\defeq} [ policy {\EXCEPT} {\bang} . end\_ts
+ \.{=} m . start\_ts ]}%
+\@x{\@s{47.91} nextChs \.{\defeq} subtractAll ( chs ,\, m )}%
+\@x{\@s{27.51} \.{\IN} \.{\land} policy \.{'} \.{=} nextPolicy}%
+\@x{\@s{47.91} \.{\land} chs \.{'} \.{=} {\IF} nextChs \.{=} \{ \}}%
+ \@x{\@s{89.78} \.{\THEN} \{ [ start\_ts \.{\mapsto} policy . start\_ts ,\,
+ end\_ts \.{\mapsto} policy . start\_ts ] \}}%
+\@x{\@s{89.78} \.{\ELSE} nextChs}%
+\@x{\@s{47.91} \.{\land} cancelQ \.{'} \.{=} cancelQ \.{\cup} \{ m \}}%
+\@x{\@s{47.91} \.{\land} pc \.{'} \.{=} pc \.{+} 1}%
+ \@x{\@s{47.91} \.{\land} {\IF} nextV . start\_ts \.{\neq} latestV . start\_ts
+ \.{\lor} nextV . end\_ts \.{\neq} latestV . end\_ts}%
+\@x{\@s{59.02} \.{\THEN} fees \.{'} \.{=} Append ( fees ,\, nextV )}%
+\@x{\@s{59.02} \.{\ELSE} {\UNCHANGED} {\langle} fees {\rangle}}%
 \@pvspace{8.0pt}%
- \@x{ subtractAll ( chs ,\, chB ) \.{\defeq} {\UNION} \{ subtract ( chA ,\,
- chB ) \.{:} chA \.{\in} chs \}}%
+\@x{ done \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} pc \.{=} maxSteps}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} policy ,\, chs ,\, fees ,\,
+ cancelQ ,\, pc {\rangle}}%
 \@pvspace{8.0pt}%
- \@x{ intersectAll ( chs ,\, chB ) \.{\defeq} {\UNION} \{ intersect ( chA ,\,
- chB ) \.{:} chA \.{\in} chs \}}%
+\@x{}\midbar\@xx{}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ We start of with a generalized policy and its single policy characteristic
+ and a
+ single fee which may reside anywhere inside the policy interval. Without
+ loss of
+ generality, we can deduce the behavior of all fees from this starting point.
+\end{cpar}%
+\end{lcom}%
+ \@x{ Init\@s{4.12} \.{\defeq} \exists\, t1 ,\, t2 \.{\in} 0 \.{\dotdot}
+ maxTime \.{:}}%
+\@x{\@s{56.23} \.{\land} t1 \.{<} t2}%
+ \@x{\@s{56.23} \.{\land} policy \.{=} [ start\_ts \.{\mapsto} 0 ,\, end\_ts
+ \.{\mapsto} maxTime ]}%
+ \@x{\@s{56.23} \.{\land} chs \.{=} \{ [ start\_ts \.{\mapsto} 0 ,\, end\_ts
+ \.{\mapsto} maxTime ] \}}%
+ \@x{\@s{56.23} \.{\land} fees \.{=} {\langle} [ pc \.{\mapsto} 0 ,\, amount
+ \.{\mapsto} 4 ,\, start\_ts \.{\mapsto} t1 ,\, end\_ts \.{\mapsto} t2 ]
+ {\rangle}}%
+\@x{\@s{56.23} \.{\land} cancelQ \.{=} \{ \}}%
+\@x{\@s{56.23} \.{\land} pc \.{=} 1}%
 \@pvspace{8.0pt}%
- \@x{ overlapsAll ( chs ,\, int ) \.{\defeq} \{ ch \.{\in} chs \.{:} overlaps
- ( ch ,\, int ) \}}%
+\@x{ Next \.{\defeq}}%
+ \@x{\@s{16.4} \.{\lor} \exists\, m \.{\in} Modification \.{:} \.{\lor}
+ cancelOp ( m )}%
+\@x{\@s{119.80} \.{\lor} reinstateOp ( m )}%
+\@x{\@s{16.4} \.{\lor} done}%
+\@pvspace{8.0pt}%
+ \@x{ Spec \.{\defeq} Init \.{\land} {\Box} [ Next ]_{ {\langle} policy ,\,
+ chs ,\, fees ,\, cancelQ ,\, pc {\rangle}}}%
 \@pvspace{8.0pt}%
 \@x{}\bottombar\@xx{}%
 \setboolean{shading}{false}
 \begin{lcom}{0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-\ensuremath{\.{\,\backslash\,}}* Modification History
+\ensuremath{\.{\,\backslash\,}}* \ensuremath{Modification} History
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
- \ensuremath{Jul} 14 21:11:27 \ensuremath{PDT} 2021 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
+ \ensuremath{Jul} 15 16:11:29 \ensuremath{PDT} 2021 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Created \ensuremath{Mon} \ensuremath{Dec} 28
- 09:50:41 \ensuremath{PST} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* Created \ensuremath{Wed} \ensuremath{Jul} 14
+ 19:53:26 \ensuremath{PDT} 2021 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \end{lcom}%

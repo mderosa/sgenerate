@@ -12,16 +12,16 @@
  Interval Predicates
 }%
 \@xx{}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- Since almost every object in the framework is an interval (characteristics,
- fees,
- \ensuremath{holdbacks}, policies, modifications) making computations in
- framework code is facilitated
- by a fundamental set of predicate combinators over intervals. The
- fundamental interval
- combinators sufficient for all interval computations at \ensuremath{Socotra}
- are listedbelow. Most
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ Since characteristics are intervals, making decisions on them is facilitated
+ by a
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ fundamental set of predicate combinators over intervals. The fundamental
+ interval
+ combinators sufficient for all characteristic decisions at
+ \ensuremath{Socotra} are listedbelow. Most
  of them are implemented in the framework Duration class (or when not, are
  implemented in
  an ad-hoc manner).
@@ -71,23 +71,22 @@
  Interval Functions
 }%
 \@xx{}%
-\begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- There are three inverval functions which are the fundamental combinators on
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ There are two inverval functions which are the fundamental combinators on
  which all
- interval functions are based. These are:
- (1) subtract: \ensuremath{Interval \.{\rightarrow} Interval \.{\rightarrow}}
- Set \ensuremath{Interval}, returns the parts of the first interval
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+characteristic functions are based. These are:
+ (1) subtract: Interval \ensuremath{\.{\rightarrow}} Interval
+ \ensuremath{\.{\rightarrow}} Set Interval, returns the parts of the first
+ interval
  that do not overlap with the second interval. And will be a set of
  cardinality between
  0 and 2.
- (2) intersect: \ensuremath{Interval \.{\rightarrow} Interval
- \.{\rightarrow}} Set \ensuremath{Interval}, returns the part of the first and
- second intervals that overlap. And will be a set of cardinality between 0
- and 1.
- (3) extend: \ensuremath{Interval \.{\rightarrow} Interval \.{\rightarrow}
- Interval}, returns a single interval that minimally
- contains the input intervals.
+ (2) union: Interval \ensuremath{\.{\rightarrow} Inteval \.{\rightarrow}} Set
+ Interval, returns the part of the first and second
+ intervals that overlap. And will be a set of cardinality between 0 and 1.
 \end{cpar}%
 \end{lcom}%
 \@x{ subtract ( chA ,\, chB ) \.{\defeq}}%
@@ -109,6 +108,15 @@
  {\bang} . end\_ts \.{=} chA . end\_ts ] \}}%
 \@x{\@s{44.37} \.{\ELSE}}%
 \@x{\@s{60.77} \{ \}}%
+\@pvspace{8.0pt}%
+\@x{ union ( chA ,\, chB ) \.{\defeq}}%
+ \@x{\@s{16.4} {\IF} overlaps ( chA ,\, chB ) \.{\lor} chA . end\_ts \.{=} chB
+ . start\_ts \.{\lor} chB . end\_ts \.{=} chA . start\_ts}%
+ \@x{\@s{16.4} \.{\THEN} \{ [ chA {\EXCEPT} {\bang} . start\_ts \.{=} min (
+ chA . start\_ts ,\, chB . start\_ts ) ,\,}%
+ \@x{\@s{114.65} {\bang} . end\_ts \.{=} max ( chA . end\_ts ,\, chB . end\_ts
+ ) ] \}}%
+\@x{\@s{16.4} \.{\ELSE} \{ \}}%
 \@pvspace{8.0pt}%
 \@x{ intersect ( chA ,\, chB ) \.{\defeq}}%
 \@x{\@s{16.4} {\IF} notOverlaps ( chA ,\, chB )}%
@@ -138,21 +146,16 @@
 \setboolean{shading}{false}
 \begin{lcom}{0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-\ensuremath{\.{\,\backslash\,}\.{*} Modification} History
+\ensuremath{\.{\,\backslash\,}}* Modification History
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}\.{*}} Last modified \ensuremath{Fri}
- \ensuremath{Apr} 02 13:21:29 \ensuremath{PDT} 2021 by \ensuremath{marco
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
+ \ensuremath{Jul} 14 21:11:27 \ensuremath{PDT} 2021 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}\.{*}} Last modified \ensuremath{Wed}
- \ensuremath{Mar} 31 10:48:32 \ensuremath{PDT} 2021 by \ensuremath{ASUS
-}%
-\end{cpar}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}\.{*}} Created \ensuremath{Mon}
- \ensuremath{Dec} 28 09:50:41 \ensuremath{PST} 2020 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* Created \ensuremath{Mon} \ensuremath{Dec} 28
+ 09:50:41 \ensuremath{PST} 2020 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \end{lcom}%

@@ -18,7 +18,7 @@ find that it is correct and brings out two important points.
   of an insurance insurance policy, the $onIssue$ event is the only one that changes real world liabilities.
 \end{itemize}
 
-\begin{figure}[b]
+\begin{figure}[h]
   \begin{tikzpicture}[->,>=stealth']
 
     \filldraw
@@ -34,42 +34,27 @@ find that it is correct and brings out two important points.
 
     \draw[-, dotted] (tm) -- (bm);
 
-    \node[circle,
-      fill=black
-    ](BeginA) {};
+    \node[circle, fill=black] (BeginA) {};
 
-    \node[state,
-      below of=BeginA,
-      node distance=2.25cm
-    ](DraftedA) {
+    \node[state, below of=BeginA, node distance=2.25cm](DraftedA) {
       \begin{tabular}{l}
         \textbf{Drafted}
       \end{tabular}
     };
 
-    \node[state,
-      below of=DraftedA,
-      node distance=2cm
-    ] (AcceptedA) {
+    \node[state, below of=DraftedA,node distance=2cm] (AcceptedA) {
       \begin{tabular}{l}
         \textbf{Accepted}
       \end{tabular}
     };
 
-    \node[state,
-      below of=AcceptedA,
-      node distance=2cm
-    ] (IssuedA) {
+    \node[state, below of=AcceptedA, node distance=2cm] (IssuedA) {
       \begin{tabular}{l}
         \textbf{Issued}
       \end{tabular}
     };
 
-    \node[circle,
-      fill=black,
-      right of=BeginA,
-      node distance=6cm
-    ](BeginB) {};
+    \node[circle, fill=black,right of=BeginA, node distance=6cm](BeginB) {};
 
     \node[state,
       below of=BeginB,

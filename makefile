@@ -14,8 +14,6 @@ doc:
 	cp ../../workspace/specsfinancial/Policy.toolbox/Policy.tex book/ch01/Policy.tex
 	cp ../../workspace/specsfinancial/CancellationCtx1.toolbox/CancellationCtx1.tex book/ch02/CancellationCtx1.tex
 	cp ../../workspace/specsfinancial/CancellationMch1.toolbox/CancellationMch1.tex book/ch02/CancellationMch1.tex
-	cp ../../workspace/specsfinancial/AutoGraceLapseInvoiceCtx0.toolbox/AutoGraceLapseInvoiceCtx0.tex book/ch02/AutoGraceLapseInvoiceCtx0.tex
-	cp ../../workspace/specsfinancial/AutoGraceLapseInvoiceMch0.toolbox/AutoGraceLapseInvoiceMch0.tex book/ch02/AutoGraceLapseInvoiceMch0.tex
 
 	cp ../../workspace/specsfinancial/CharacteristicsSplitCtx0.toolbox/CharacteristicsSplitCtx0.tex book/ch03/CharacteristicsSplitCtx0.tex
 	cp ../../workspace/specsfinancial/CharacteristicsSplitMch0.toolbox/CharacteristicsSplitMch0.tex book/ch03/CharacteristicsSplitMch0.tex
@@ -24,6 +22,11 @@ doc:
 	cp ../../workspace/specsfinancial/ProrationMch2.toolbox/ProrationMch2.tex book/ch03/ProrationMch2.tex
 	cp ../../workspace/specsfinancial/FeesFlatCtx1.toolbox/FeesFlatCtx1.tex book/ch03/FeesFlatCtx1.tex
 	cp ../../workspace/specsfinancial/FeesFlatMch1.toolbox/FeesFlatMch1.tex book/ch03/FeesFlatMch1.tex
+
+	cp ../../workspace/specsfinancial/AutoGraceLapseInvoiceCtx0.toolbox/AutoGraceLapseInvoiceCtx0.tex book/chJobs/AutoGraceLapseInvoiceCtx0.tex
+	cp ../../workspace/specsfinancial/AutoGraceLapseInvoiceMch0.toolbox/AutoGraceLapseInvoiceMch0.tex book/chJobs/AutoGraceLapseInvoiceMch0.tex
+	cp ../../workspace/specsfinancial/DocConsolidateCtx0.toolbox/DocConsolidateCtx0.tex book/chJobs/DocConsolidateCtx0.tex
+	cp ../../workspace/specsfinancial/DocConsolidateMch0.toolbox/DocConsolidateMch0.tex book/chJobs/DocConsolidateMch0.tex
 
 	cp ../socotra-stack/source/stack-config-manager/README.md book/ch05/ReadMeConfigManager.md
 	pandoc -f gfm -t latex -o book/ch05/ReadMeConfigManager-sa.tex book/ch05/ReadMeConfigManager.md

@@ -1,14 +1,24 @@
-\motto{}
-\chapter{Pervasive Concepts}
-\label{intro03} % Always give a unique label
+\motto{As a practitioner, you want the simplest possible strategy; the one 
+  that has the smallest amount of side effects; the minimum possible hidden complications \dots Your strategy to survive isn't 
+  the same as ability to impress colleagues.}
+\chapter{Practice}
+\label{intro:03} % Always give a unique label
 % use \chaptermark{}
 % to alter or adjust the chapter heading in the running head
 
 \abstract{
 }
 
-\section{Characteristics}
+\section{The Simplified Schema}
 \label{sec:03:1}
+\import{ch03/}{TheSimplifiedSchema.tex}
+
+\section{The Basic State Model}
+\label{sec:01:2}
+\import{ch03/}{TheBasicStateModel.tex}
+
+\section{Characteristics}
+\label{sec:03:3}
 
 Characteristics are containers that record a set of attribute values
 (ex: number\_of\_drivers = 2, make\_of\_car = Honda, resale\_value=10000)
@@ -23,7 +33,7 @@ to intervals
 \import{ch03/}{CharacteristicsSplitMch0-sa.tex}
 
 \section{Liquid Calculations}
-\label{sec:03:2}
+\label{sec:03:4}
 
 \import{ch03/}{CancellationCalculations-sa.tex}
 
@@ -37,13 +47,13 @@ Here are some standard interval functions that are available for use in the fram
 \import{ch03/}{IntervalOps-sa.tex}
 
 \section{Charges}
-\label{sec:03:3}
+\label{sec:03:5}
 
 There are currently five types of charges in the Socotra framework premiums (represented as PerilCharacteristics), taxes,
 commissions, fees, and holdbacks. All these charges are represented by the same basic structure, a closed-open
 interval, traditionally represented by $[start\_timestamp, end\_timestamp)$, and a currency amount. It is
 always assumed that $start\_timestamp \leq end\_timestamp$. Moreover if we have a description of the
-coverage time periods of the policy respresented as a set of periods, then the range of a charge must always
+coverage time periods of the policy represented as a set of periods, then the range of a charge must always
 fall inside of a coverage period.
 \begin{equation*}
 \forall c \in Charge \cdot \exists p \in CoveragePeriods \cdot p.contains(c)
@@ -51,12 +61,12 @@ fall inside of a coverage period.
 This requirement is not strictly required to bill properly but it is established behavior, that has a natural
 interpretation. Every charge can be directly traced to a period of contracted coverage.
 
-Amounts can have a different interpretations depending on the type of charge and how it is calculated.
+Amounts can have different interpretations depending on the type of charge and how it is calculated.
 Premium amounts are always calculated from an original rate, usually in units of currency per month. Usually, then,
 tax, commission, and rate fee amounts are calculated from the premium amounts by multiplying them by a percentage.
-When the charges above are scaled to a new time period, that is done by converting the amount back into
-some rate with units of currency per time unit of interest and then multiplying by the new time period. Its a bit
-round about and round trip conversion looses precision but that is the process. Flat fee and holdback amounts are
+When the charges, above, are scaled to a new time period, the amount is converted back into
+a rate with units of currency per time unit of interest and multiplied by the new time period. It's a bit
+round about and round trip conversion looses precision but that is the legacy process. Flat fee and holdback amounts are
 not interpreted as being derived from a rate. As one might expect their amounts remain constant no
 matter what their associated interval is and the associated interval just indicates over what period of coverage the
 charge was assessed.
@@ -69,23 +79,25 @@ coverage at any time, t, with a filter of the form
 \begin{equation*}
 issued\_timestamp \leq t < (replaced\_timestamp || infinity)
 \end{equation*}
-The history of fees in a much less convinient form. Each fee is connnected to a linear list of fee\_versions, where
-the latest fee amount is always the last version in the list. Needless to say, a fee must have at least one version.
+The history of fees is recorded in a much less convenient form. Each fee is connected to a linear list of fee\_versions, where
+the latest fee\_version describes the currently assessed charges. Needless to say, a fee must have at least one version.
 To find the coverage at time, t, one has to calculate
 \begin{equation*}
 min \lbrace v \in Version : t < (v.replaced\_timestamp || infinity) \rbrace
 \end{equation*}
 
-\subsection{Fees in Depth}
+\subsection{Fees in Detail}
 To give a better feeling for fees and how they behave under modification to a policy consider the following
 graphical descriptions.
 \import{ch03/}{FeeBehavior.tex}
+\newpage
 
-Below is Socotra mathematical specification for flat fees
+Below is Socotra mathematical specification which details the maintenance of for flat fees as modifications are applied to a
+policy. The important points are captured in the comments.
 \import{ch03/}{FeesFlatCtx1-sa.tex}
 \import{ch03/}{FeesFlatMch1-sa.tex}
 
-\subsection{Holdbacks in Depth}
+\subsection{Holdbacks in Detail}
 
 \begin{figure}[ht]
   \begin{tikzpicture}
@@ -119,10 +131,10 @@ charge scenario, for our example, might be:
 totalCharges_{Jan01->Feb01} & = & prorated(premium) + holdback \\
                           & = & (\frac{1}{12}) premium + 0.1(\frac{11}{12})(premium)
 \end{eqnarray*}
-where, here, the customer is charged a ten percent penalty fee on the part of the policy that was cancelled.
+where, here, the customer is charged a ten percent penalty fee on the part of the policy that was canceled.
 
 
-Below is Socotra mathematical specification for holdbacks
+Below is Socotra mathematical specification for maintaining holdbacks. The important points are captured in
+the comments.
 \import{ch03/}{ProrationCtx2-sa.tex}
 \import{ch03/}{ProrationMch2-sa.tex}
-

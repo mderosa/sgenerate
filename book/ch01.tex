@@ -1,44 +1,224 @@
-
-\motto{As a practitioner, you want the simplest possible strategy; the one 
-  that has the smallest amount of side effects; the minimum possible hidden complications \dots Your strategy to survive isn't 
-  the same as ability to impress colleagues.}
-\chapter{Fundamental Concepts}
-\label{intro} % Always give a unique label
+\motto{Science is  a means whereby learning is  achieved, not by mere theoretical speculation on the one hand, nor
+by the undirected accumulation of practical facts on the other, but rather by a motivated iteration between theory
+and practice.}
+\chapter{Theory}
+\label{intro:01} % Always give a unique label
 % use \chaptermark{}
 % to alter or adjust the chapter heading in the running head
 
 \abstract{
-  Below we discuss some fundamental structuring ideas at Socotra.
+  Before we begin the process of discussing actual software, we consider how we might structure a financial contract
+  in the insurance industry. What might be the fundamental operations on those contract and what properties should
+  those operations satisfy.
 }
+\lstset{style=mystyle}
 
-\section{The Simplified Schema}
+\section{Contracts}
 \label{sec:01:1}
-\import{ch01/}{TheSimplifiedSchema.tex}
+Consider a insurance contract, such as medical insurance. If we wanted describe such contracts in a general way
+in code we might come up with an initial simple descriptive framework like that below:
+\begin{lstlisting}
+type Name = String
 
-\section{Fundamental Objects}
-Of the objects in the simplified schema products, policies and modifications are the most common topics
-of discussion. A $Product$ is merely a compound, tree structured definition object. It is mostly static,
-configuration data, not very computationally exciting. A $Policy$ and its $Modification$ set is much more
-interesting and dynamic. And at Socotra the two are used very much like the common functional list type
+data Interval = Interval Integer Integer
+
+data Contract = 
+    SimpleContract Name Interval (M.Map String String) |
+    CompoundContract Contract Contract |
+    And Contract Contract |
+    Zero
+\end{lstlisting}
+There would be a name that describes the contract. It would also be necessary to define the interval from the
+date that the contract starts to the date that it ends. Strictly, this interval would be a closed open interval
+with Integers representing Unix timestamps, $[from\_timestamp, to\_timestamp)$. Since we are trying to be
+general also need a way to describe attributes of policies. For medical insurance, these attributes could
+be numerical like co-pay amounts or deductible amounts, but they could also be non numerical attributes like
+a customers primary care physician or information on family members covered by the contract. All of this information
+I will collect as a $SimpleContract$ as shown above. I might also want to structure contracts in some way. For
+instance, my medical insurance might be issued by an insurance company as two distinct contract, one for
+domestic and one for international medical insurance. I could describe this contract as the contract
+$ And domestic international $. We can get still fancier in how we structure contracts. Socotra likes to structure
+its contracts like trees. The most general attributes and time intervals are specified at the root of the
+contract tree and the details of the contract get more specific as one moves towards the leaves. Here is
+an example of a empty contract structured in the Socotra style:
+\begin{lstlisting}
+peril :: Contract
+peril = SimpleContract "collision" (Interval 1 100) M.empty
+
+exposure :: Contract
+exposure = SimpleContract "vehicle" (Interval 1 100) M.empty
+
+policy :: Contract
+policy = SimpleContract "auto" (Interval 1 100) M.empty
+
+example :: Contract
+example = CompoundContract policy (
+            CompoundContract exposure (
+                CompoundContract (And peril peril) Zero))
+\end{lstlisting}
+Don't worry about the details of policies, exposures, and perils right now, just note that the constructor $CompoundContract$
+is sufficient to support any structuring need, tree or otherwise. Lastly, I have added a $Zero$ contract, this is nothing more
+than what all customers start off with when they initiate a contract with the insurance company. It has not content, cost, or other observables
+associated with it.
+
+\section{Charges}
+\label{sec:01:2}
+In pricing of a contract it's necessary to have a way of delineating all of the charges associated with the contract. We can
+define this idea as
+\begin{lstlisting}
+type Refundable = Bool
+
+data Units = 
+    Currency | 
+    CurrencyPerMonth | 
+    CurrencyPerYear | 
+    CurrencyPerInstallment
+
+data Charge= 
+    Premium Interval Double Units Refundable |
+    Tax Interval Double Units Refundable |
+    Commission Interval Double Units Refundable |
+    Fee Interval Double Units Refundable
+\end{lstlisting}
+The above is a minimal definition of some of the concepts that we will need to properly describe charges,
+but it's sufficient to touch on some of the essential points. We will want to finely describe our charges, and
+for each of charge type we will track the
+interval over which the charge is assessed, some numerical value and its units, and lastly a Boolean value
+indicating whether the charge is refundable or not. At the moment Socotra does not track what the numerical
+amount of a charge represents in units or the refundability of the charge. So the definitions above are more
+complete than in practice. That does not mean the concepts are optional however. Tracking the units and
+refundability of charges is required to properly price policies in all their complexity.
+
+\section{Observables}
+\label{sec:01:3}
+Now that we have our contract structures defined and the basic idea of charges we can start to compute
+observables. These observables are any external, objective values which are of interest to both parties
+to the contract. In a functional language observables will be calculated by evaluating recursively down
+the structure of the contract using pattern matching. In an object oriented scenario one would accomplish
+the same objective using a object or functional based visitor pattern. At Socotra with a Java backend, the
+second approach is very roughly the one that is taken.
+
+One important observable is $rate$ which is defined as
+\begin{lstlisting}
+rate :: Contract -> [Charge]
+\end{lstlisting}
+which takes a contract and calculates all of the charges associated with the contract. At socotra the $rate$
+function takes the form of a function written in liquid or a plugin written in JavaScript. Other observables
+are
+\begin{lstlisting}
+underwrite :: Contract -> (Bool, String)
+\end{lstlisting}
+to provide an underwriting decision and a possible rejection reason on the contract, and
+\begin{lstlisting}
+invoice :: Contract -> [Invoice]
+\end{lstlisting}
+which takes a contract and greedily generates all of the invoices that will be payable on the contract. The
+greedy behavior of the $invoice$ function may seem contrived but Socotra actually generates invoice information
+greedily and, as we will see later, we will use this behavior as a convenience in describing the necessary properties
+of $invoice$ functions in general.
+
+Before, we get there though, given what we have so far, we can make a few statements on the properties that we can
+expect from out observable functions. Given contracts, c1, c2, c3, we expect that observables will be commutative and associative
+\begin{eqnarray*}
+Obs(c1 \, { ^\backprime}An{d^\backprime} \, c2) &  = & Obs(c2 \, { ^\backprime}An{d^\backprime} \, c1) \\
+Obs(c1 \, { ^\backprime}An{d^\backprime} \, c2) \oplus Obs(c3) & = & Obs(c1) \oplus Obs(c2 \, { ^\backprime}An{d^\backprime} \, c3)
+\end{eqnarray*}
+We also want all observations to comply with the meaning of the $Zero$ contract
 \begin{equation*}
-  data \; List \; a = Nil | Cons \; a
+Obs(Zero \, { ^\backprime}An{d^\backprime} \, c) = Obs(c) = Obs(c \, { ^\backprime}An{d^\backprime} \, Zero)
 \end{equation*}
-To make the analogy more explicit, I will rewrite the above as
+
+\section{Modifications}
+\label{sec:01:4}
+Once a policy has been created, it will continue to undergo changes over its lifetime. Managing these changes is a large part of
+what the Socotra API project does. There are three base functions which comprise any modification. These are:
+\begin{lstlisting}
+extend :: Interval -> Contract -> Contract
+
+reduce :: Interval -> Contract -> Contract
+
+override :: Interval ->  Map String String -> Contract -> Contract
+\end{lstlisting}
+$extend$ moves the upper bound of the contract interval into the future maintaining the existing attributes of the contract. In
+the Socotra API, this function is, in code and in conversation, variously referred to as create, renew, or reinstate. $reduce$ move
+the upper bound of the contract interval to a new value, $t^\prime$, such that $contract.start \leq t^\prime < contract.end$.
+In the Socotra API, this function is variously referred to as cancel or lapse. Lastly, the $override$ function should be roughly
+associated with the Socotra concept of an endorsement. The meaning of $override$ is very close to that of relational override in mathematics.
+Here is an example of its use:
+\begin{eqnarray*}
+\{make: GM, value: 5000\} & \\
+& { ^\backprime}overrid{e^\backprime} \{make: Ford, model: F150, value: null\} \\
+& = \{make: Ford, model: F150\}
+\end{eqnarray*}
+This example contains an update, an addition, and a deletion. And you will find that this simple example carries
+over to endorsement code that you will eventually see, although in the actually code base the updates,
+addition, and deletes are much more explicit.
+
+You may rightly wonder, especially if you are familiar with the Socotra framework, why I have abstracted this
+way over existing modifications like create, renew, endorse, cancel, and reinstate. I have done this point out
+the compositional nature of modifications which are currently implemented as one off behaviors. Take for instance
+a contract from $t_1$ to $t_3$ which we plan on endorsing with added attributes, while also changing the end date
+to some $t_2 < t_3$. This operation can be expressed monolithicly and non reusably as
 \begin{equation*}
-  data \; Policy \; a = Init | Modification  \; a
+endorse \: (Interval \: t_1 \: t_3) \: policy_{t_1}^{t_3} \: fields \: \{newEnd = t_2\}
 \end{equation*}
-The analogy is not quite exact but it brings out an important idea that the meat of what a $Policy$ is and
-how it behaves during computation is determined by the time ordered list of modifications that it is made up
-of.
+or it can be expressed compositionally as
+\begin{equation*}
+reduce \: (Interval \: t_2 \: t_3) \: \$ \: override \: (Interval \: t_1 \: t_3) \: fields \: policy_{t_1}^{t_3}
+\end{equation*}
+There is all the difference in the world between writing monolithic functions for every modification and variation
+there of, and writing three functions that achieve the same effect through functional composition.
+
+Now that we have our basic modification combinators, I am going to use them to define which behaviors must be true
+for our code to be correct. There is no particular order to the properties they are merely ideas which are important
+or non obvious. I will state the properties in Socotra terminology and write the details in generalized terminology.
+That way the idea will not get lost in abstraction.
+
+\begin{description}
+
+\item[Cancellation reinstatement inversion]
+Under an observation, a contract that is canceled followed by a full reinstatement must
+equal the original contract.
+\begin{equation*}
+extend \: (Interval \: t_2 \: t_3) \: \$ reduce \: (Interval \: t_2 \: t_3) \: c = c
+\end{equation*}
+If we designate the left hand side of the equation as $c^\prime$. Then we certainly want $rate \: c^\prime = rate \: c$
+Invoicing is slightly more complicated and it turns out we would like to following to be true:
+\begin{equation*}
+\sum \{i.amount | i \in invoice c^\prime if \, i.status \neq writtenOff\} = \sum \{i.amount | i \in invoice c\}
+\end{equation*}
+The amount of all the invoices that have not been written off must be equal.
+
+\item[Invoice invariance on cancellation]
+When a partial cancellation happens on a policy, all invoiced periods that are fully within the remaining,
+uncanceled range must not incur any modifications to their total amount or component amounts.
+\begin{eqnarray*}
+is & = & invoice \: contract_{t_1}^{t_3} \\
+is^\prime & = & invoice \: \$ \: reduce \: (Interval \: t_2 \: t_3) \: contract_{t_1}^{t_3} \\
+\{i \in is : within \: i \: (Interval \: t_1 \: t_2)\} & = & \{i^\prime \in is^\prime : within \: i^\prime (Interval \: t_1 \: t_2)\}
+\end{eqnarray*}
+This should make intuitive sense. If one has a monthly policy and its is canceled after one month, barring cancellation charges,
+the amount calculated and owed for the first month should not change.
+
+\item[Endorsement commutativity] Under observation, renewals and reinstatements commute with simple endorsements
+\begin{eqnarray*}
+c_{t_1}^{t_4} & = & extend \: (Interval \: t_3 \: t_4) \: \$ \: override \: (Interval \: t_2 \: t_3) \: fields \: c_{t_1}^{t_3} \\
+            & = & override \: (Interval \: t_2 \: t_4) \: fields \: \$ \: extend \: (Interval \: t_3 \: t_4) \: c_{t_1}^{t_3}
+\end{eqnarray*}
+Endorsements also commute when the field maps of the two endorsements are disjoint or when the endorsement intervals are
+disjoint.
+
+\end{description}
+
+One can get more involved in creating more intricate equalities, but from the simple examples the main points should be clear.
+If a contract has a content a particular start and end dates. The modification path that got it to those start and end dates
+often should not effects observables calculated on the contract. If a contract is reduced, often observables related to the
+remaining part of the policy should not be affected.
+
 
 Below I have added some additional notes, to give a more detailed, but still simplified, understanding of
 the structure of policies and modifications.
 \label{sec:01:2}
 \import{ch01/}{Policy-sa.tex}
-
-\section{The Basic State Model}
-\label{sec:01:3}
-\import{ch01/}{TheBasicStateModel.tex}
-
 
 

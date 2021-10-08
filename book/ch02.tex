@@ -1,5 +1,5 @@
 \motto{Seek not to have things happen as you choose them, but rather choose them to happen as they do.}
-\chapter{Cancellation and Renewal}
+\chapter{Cancellation and Reinstatement}
 \label{intro} % Always give a unique label
 % use \chaptermark{}
 % to alter or adjust the chapter heading in the running head
@@ -26,7 +26,7 @@ These new modifications are similar to modifications we already
 know, with slight differences. Reinstatements are different from previous modifications in that they have two unique
 fields, auto\_reinstate and deadline\_timestamp, which we will describe shortly. Cancellations differ from previous
 modifications in that their state lifecycle only has the two events onCreate and onIssue. Below is an abstraction which
-describes the structural elements of cancellation and reinstatement data items
+describes the structural elements of cancellation and reinstatement data items.
 
 \import{ch02/}{CancellationCtx1-sa.tex}
 
@@ -36,15 +36,6 @@ With some understanding of the data in our two new modifications, we below, lay 
 state centric way. 
 
 \import{ch02/}{CancellationMch1-sa.tex}
-
-\section{Scheduled Grace and Lapse Jobs}
-In addition to cancellations that can happen through the API, it's also possible to policies to be canceled automatically by
-the system. This automated cancellation happens when a policy has outstanding invoices which have not been payed. The system
-scheduled grace job flags outstanding invoices and the scheduled lapse job after some time will eventually cancel the policies
-associated with those flagged invoices. Below is a simplified model of the process, which details the essential points of
-understanding for the jobs.
-\import{ch02/}{AutoGraceLapseInvoiceCtx0-sa.tex}
-\import{ch02/}{AutoGraceLapseInvoiceMch0-sa.tex}
 
 \section{Interaction with other Modifications}
 The development of quotes for Endorsement and Renewals and the development of Cancellation and Reinstatements functionality

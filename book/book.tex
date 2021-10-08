@@ -31,6 +31,20 @@
 \usepackage{import}
 \usepackage[retainorgcmds]{IEEEtrantools}
 
+\usepackage{listings}
+\lstdefinestyle{mystyle}{
+    language=Haskell,
+    basicstyle={\ttfamily\footnotesize},
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbersep=4pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
 % see the list of further useful packages
 % in the Reference Guide
 
@@ -1057,8 +1071,9 @@
 \mainmatter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \include{partConcepts}
 \include{ch01}
-\include{ch02}
 \include{ch03}
+\include{ch02}
+\include{chJobs}
 
 \include{partPractice}
 \include{ch04}

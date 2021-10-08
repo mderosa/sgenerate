@@ -1,0 +1,20 @@
+\motto{}
+\chapter{Scheduled Jobs}
+\label{intro} % Always give a unique label
+
+\abstract{}
+
+\section{Grace and Lapse}
+\label{sec:jobs:1}
+In addition to cancellations that can happen through the API, it's also possible to policies to be canceled automatically by
+the system. This automated cancellation happens when a policy has outstanding invoices which have not been paid. The system
+scheduled grace job flags outstanding invoices and the scheduled lapse job after some time will eventually cancel the policies
+associated with those flagged invoices. Below is a simplified model of the process, which details the essential points of
+understanding for the jobs.
+\import{chJobs/}{AutoGraceLapseInvoiceCtx0-sa.tex}
+\import{chJobs/}{AutoGraceLapseInvoiceMch0-sa.tex}
+
+\section{Document Consolidation}
+\label{sec:jobs:2}
+\import{chJobs/}{DocConsolidateCtx0-sa.tex}
+\import{chJobs/}{DocConsolidateMch0-sa.tex}

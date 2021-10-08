@@ -1,0 +1,89 @@
+\tlatex
+\setboolean{shading}{true}
+\@x{}\moduleLeftDash\@xx{ {\MODULE} DocConsolidateCtx0}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Integers}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ The minimal status codes necessary to track the progress of async jobs.
+}%
+\@xx{}%
+ \@x{ ProcessStatus \.{\defeq} \{\@w{InProcess} ,\,\@w{Error} ,\,\@w{Success}
+ \}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{2.5}%
+\begin{cpar}{0}{T}{F}{5.0}{0}{}%
+ We specify each document as being either a single document or a composite
+ document
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+made up of multiple single documents.
+\end{cpar}%
+\end{lcom}%
+\@x{ CollationType \.{\defeq} \{\@w{Single} ,\,\@w{Multiple} \}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{2.5}%
+\begin{cpar}{0}{T}{F}{5.0}{0}{}%
+ There are two processes. One that generates a document in some format and a
+ second
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ type of process that takes existing pdf documents and consolidates them into
+ a single
+ pdf document.
+\end{cpar}%
+\end{lcom}%
+\@x{ Process \.{\defeq} \{\@w{DocGen} ,\,\@w{DocConsolidate} \}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{2.5}%
+\begin{cpar}{0}{T}{F}{5.0}{0}{}%
+ The document requests that end up creating documents in large object storage
+ are
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ similiar. The difference for the specification is that a consolidation
+ request supplies
+ a list of component document locators.
+\end{cpar}%
+\end{lcom}%
+\@x{ DocRequest \.{\defeq} [}%
+\@x{\@s{16.4} id \.{:} Int ,\,}%
+\@x{\@s{16.4} process \.{:} Process ,\,}%
+\@x{\@s{16.4} componentDocs \.{:} {\SUBSET} Int ,\,}%
+\@x{\@s{16.4} processCount \.{:} Int}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
+\begin{lcom}{2.5}%
+\begin{cpar}{0}{T}{F}{5.0}{0}{}%
+ Record, below, represents a document record that has been added to the
+ \ensuremath{policy\_document
+}%
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+table in the database. The below record includes just the fields needed by the
+ processing specification.
+\end{cpar}%
+\end{lcom}%
+\@x{ Record \.{\defeq} [}%
+\@x{\@s{16.4} id \.{:} Int ,\,}%
+\@x{\@s{16.4} collationType \.{:} CollationType ,\,}%
+\@x{\@s{16.4} processStatus\@s{0.31} \.{:} ProcessStatus}%
+\@x{ ]}%
+\@pvspace{8.0pt}%
+\@x{}\bottombar\@xx{}%
+\setboolean{shading}{false}
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{\.{\,\backslash\,}}* \ensuremath{Modification} History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
+ \ensuremath{Oct} 06 12:57:41 \ensuremath{PDT} 2021 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Created \ensuremath{Fri} \ensuremath{Sep} 17
+ 18:39:27 \ensuremath{PDT} 2021 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\end{lcom}%

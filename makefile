@@ -11,13 +11,14 @@ test: mypy
 .PHONY: doc
 doc: export PYTHONPATH=./
 doc:
-	cp ../../workspace/specsfinancial/Policy.toolbox/Policy.tex book/ch01/Policy.tex
+	cp ../../workspace/specsfinancial/IntervalOps.toolbox/IntervalOps.tex book/ch01/IntervalOps.tex
+
 	cp ../../workspace/specsfinancial/CancellationCtx1.toolbox/CancellationCtx1.tex book/ch02/CancellationCtx1.tex
 	cp ../../workspace/specsfinancial/CancellationMch1.toolbox/CancellationMch1.tex book/ch02/CancellationMch1.tex
 
+	cp ../../workspace/specsfinancial/Policy.toolbox/Policy.tex book/ch03/Policy.tex
 	cp ../../workspace/specsfinancial/CharacteristicsSplitCtx0.toolbox/CharacteristicsSplitCtx0.tex book/ch03/CharacteristicsSplitCtx0.tex
 	cp ../../workspace/specsfinancial/CharacteristicsSplitMch0.toolbox/CharacteristicsSplitMch0.tex book/ch03/CharacteristicsSplitMch0.tex
-	cp ../../workspace/specsfinancial/IntervalOps.toolbox/IntervalOps.tex book/ch03/IntervalOps.tex
 	cp ../../workspace/specsfinancial/ProrationCtx2.toolbox/ProrationCtx2.tex book/ch03/ProrationCtx2.tex
 	cp ../../workspace/specsfinancial/ProrationMch2.toolbox/ProrationMch2.tex book/ch03/ProrationMch2.tex
 	cp ../../workspace/specsfinancial/FeesFlatCtx1.toolbox/FeesFlatCtx1.tex book/ch03/FeesFlatCtx1.tex

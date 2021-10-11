@@ -6,7 +6,8 @@
 % use \chaptermark{}
 % to alter or adjust the chapter heading in the running head
 
-\abstract{
+\abstract{In the previous chapter we discussed contracts at a very abstract level. Here we move from the previous abstract discussion
+closer to the specific realization of those abstractions in the framework. 
 }
 
 \section{The Simplified Schema}
@@ -14,40 +15,18 @@
 \import{ch03/}{TheSimplifiedSchema.tex}
 
 \section{The Basic State Model}
-\label{sec:01:2}
+\label{sec:03:2}
 \import{ch03/}{TheBasicStateModel.tex}
 
-\section{Characteristics}
+\section{Policies}
 \label{sec:03:3}
+Below I have added some additional notes, to give a more detailed, but still simplified, understanding of
+the structure of policies and modifications.
 
-Characteristics are containers that record a set of attribute values
-(ex: number\_of\_drivers = 2, make\_of\_car = Honda, resale\_value=10000)
-which a policy contract is based on, and additionally a time interval over which
-those attribute values are valid. Abstractly, it's a combination of a map and a time
-interval. 
-
-Below we just consider the time interval part of a characteristics and detail
-how those intervals split as the standard modification operations are applied
-to intervals
-\import{ch03/}{CharacteristicsSplitCtx0-sa.tex}
-\import{ch03/}{CharacteristicsSplitMch0-sa.tex}
-
-\section{Liquid Calculations}
-\label{sec:03:4}
-
-\import{ch03/}{CancellationCalculations-sa.tex}
-
-\section{Intervals}
-As you work with framework objects, you will soon come to see that most objects cover
-an interval from $start\_timestamp$ to $end\_timestamp$. These times delineate an extent of
-a coverage interval or in the case of a modification the times delineate the time range for
-which a coverage change was requested.
-
-Here are some standard interval functions that are available for use in the framework.
-\import{ch03/}{IntervalOps-sa.tex}
+\import{ch03/}{Policy-sa.tex}
 
 \section{Charges}
-\label{sec:03:5}
+\label{sec:03:6}
 
 There are currently five types of charges in the Socotra framework premiums (represented as PerilCharacteristics), taxes,
 commissions, fees, and holdbacks. All these charges are represented by the same basic structure, a closed-open
@@ -138,3 +117,25 @@ Below is Socotra mathematical specification for maintaining holdbacks. The impor
 the comments.
 \import{ch03/}{ProrationCtx2-sa.tex}
 \import{ch03/}{ProrationMch2-sa.tex}
+
+
+\section{Characteristics}
+\label{sec:03:4}
+
+Characteristics are containers that record a set of attribute values
+(ex: number\_of\_drivers = 2, make\_of\_car = Honda, resale\_value=10000)
+which a policy contract is based on, and additionally a time interval over which
+those attribute values are valid. Abstractly, it's a combination of a map and a time
+interval. 
+
+Below we just consider the time interval part of a characteristics and detail
+how those intervals split as the standard modification operations are applied
+to intervals
+\import{ch03/}{CharacteristicsSplitCtx0-sa.tex}
+\import{ch03/}{CharacteristicsSplitMch0-sa.tex}
+
+\section{Liquid Calculations}
+\label{sec:03:5}
+
+\import{ch03/}{CancellationCalculations-sa.tex}
+

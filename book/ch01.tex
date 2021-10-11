@@ -8,15 +8,15 @@ and practice.}
 
 \abstract{
   Before we begin the process of discussing actual software, we consider how we might structure a financial contract
-  in the insurance industry. What might be the fundamental operations on those contract and what properties should
-  those operations satisfy.
+  in the insurance industry, what might be the fundamental operations on those contracts, and what properties
+  those operations should satisfy.
 }
 \lstset{style=mystyle}
 
 \section{Contracts}
 \label{sec:01:1}
-Consider a insurance contract, such as medical insurance. If we wanted describe such contracts in a general way
-in code we might come up with an initial simple descriptive framework like that below:
+Consider an insurance contract, such as medical insurance. If we wanted describe such contracts generally,
+in code, we might come up with a simple descriptive framework like that below:
 \begin{lstlisting}
 type Name = String
 
@@ -28,16 +28,17 @@ data Contract =
     And Contract Contract |
     Zero
 \end{lstlisting}
-There would be a name that describes the contract. It would also be necessary to define the interval from the
-date that the contract starts to the date that it ends. Strictly, this interval would be a closed open interval
-with Integers representing Unix timestamps, $[from\_timestamp, to\_timestamp)$. Since we are trying to be
-general also need a way to describe attributes of policies. For medical insurance, these attributes could
+There would be a standard $Name$ that would designate the particular insurance product offered by the insurance
+company. In addition the contract would need to have an associated $Interval$ to define the
+date that the contract coverage starts and the date that coverage ends. This interval would be a closed open interval
+with integers representing the start and end times as unix timestamps. Since we are trying to be
+general we would also need a way to describe attributes of policies. For medical insurance, these attributes could
 be numerical like co-pay amounts or deductible amounts, but they could also be non numerical attributes like
 a customers primary care physician or information on family members covered by the contract. All of this information
-I will collect as a $SimpleContract$ as shown above. I might also want to structure contracts in some way. For
-instance, my medical insurance might be issued by an insurance company as two distinct contract, one for
+I collect as a map from strings to strings in $SimpleContract$ above. I might also want to structure contracts in some way. For
+instance, my medical insurance might be issued by an insurance company as two distinct contracts, one for
 domestic and one for international medical insurance. I could describe this contract as the contract
-$ And domestic international $. We can get still fancier in how we structure contracts. Socotra likes to structure
+$ And \: domestic \: international $. We can get still fancier in how we structure contracts. Socotra currently likes to structure
 its contracts like trees. The most general attributes and time intervals are specified at the root of the
 contract tree and the details of the contract get more specific as one moves towards the leaves. Here is
 an example of a empty contract structured in the Socotra style:
@@ -56,10 +57,10 @@ example = CompoundContract policy (
             CompoundContract exposure (
                 CompoundContract (And peril peril) Zero))
 \end{lstlisting}
-Don't worry about the details of policies, exposures, and perils right now, just note that the constructor $CompoundContract$
-is sufficient to support any structuring need, tree or otherwise. Lastly, I have added a $Zero$ contract, this is nothing more
-than what all customers start off with when they initiate a contract with the insurance company. It has not content, cost, or other observables
-associated with it.
+Don't worry about the contract nomenclature of policies, exposures, and perils right now, just note that the constructor $CompoundContract$
+is sufficient to support any structuring need, tree or otherwise. Lastly, I have added a $Zero$ contract; this is the minimal contract that
+a customer can have and is conceptually the contract that all customers start off with and from which we build more complicated
+contracts.
 
 \section{Charges}
 \label{sec:01:2}
@@ -80,19 +81,18 @@ data Charge=
     Commission Interval Double Units Refundable |
     Fee Interval Double Units Refundable
 \end{lstlisting}
-The above is a minimal definition of some of the concepts that we will need to properly describe charges,
-but it's sufficient to touch on some of the essential points. We will want to finely describe our charges, and
-for each of charge type we will track the
-interval over which the charge is assessed, some numerical value and its units, and lastly a Boolean value
-indicating whether the charge is refundable or not. At the moment Socotra does not track what the numerical
+We will want to describe the origin of each charge, whether it is a premium, tax, commission or other
+fee. For each charge we will also need to track the
+interval over which the charge is assessed, some numerical currency value with its units, and lastly a boolean value
+indicating whether the charge is refundable or not. At the moment the framework does not track what the numerical
 amount of a charge represents in units or the refundability of the charge. So the definitions above are more
 complete than in practice. That does not mean the concepts are optional however. Tracking the units and
-refundability of charges is required to properly price policies in all their complexity.
+refundability of charges will eventually be required to properly price policies over the full range of possible charges.
 
 \section{Observables}
 \label{sec:01:3}
-Now that we have our contract structures defined and the basic idea of charges we can start to compute
-observables. These observables are any external, objective values which are of interest to both parties
+With contract structure defined and a basic idea of charges we can start to compute
+observables. Observables are any external, objective values which are of interest to both parties
 to the contract. In a functional language observables will be calculated by evaluating recursively down
 the structure of the contract using pattern matching. In an object oriented scenario one would accomplish
 the same objective using a object or functional based visitor pattern. At Socotra with a Java backend, the
@@ -108,7 +108,7 @@ are
 \begin{lstlisting}
 underwrite :: Contract -> (Bool, String)
 \end{lstlisting}
-to provide an underwriting decision and a possible rejection reason on the contract, and
+to provide an underwriting decision and a possible rejection reason on the contract. Then there is $invoice$
 \begin{lstlisting}
 invoice :: Contract -> [Invoice]
 \end{lstlisting}
@@ -130,8 +130,8 @@ Obs(Zero \, { ^\backprime}An{d^\backprime} \, c) = Obs(c) = Obs(c \, { ^\backpri
 
 \section{Modifications}
 \label{sec:01:4}
-Once a policy has been created, it will continue to undergo changes over its lifetime. Managing these changes is a large part of
-what the Socotra API project does. There are three base functions which comprise any modification. These are:
+Once a policy has been created, it will continue to undergo modifications over its lifetime. Managing these modifications
+is a large part of what the Socotra API does. There are three base functions which comprise any modification. These are:
 \begin{lstlisting}
 extend :: Interval -> Contract -> Contract
 
@@ -140,11 +140,11 @@ reduce :: Interval -> Contract -> Contract
 override :: Interval ->  Map String String -> Contract -> Contract
 \end{lstlisting}
 $extend$ moves the upper bound of the contract interval into the future maintaining the existing attributes of the contract. In
-the Socotra API, this function is, in code and in conversation, variously referred to as create, renew, or reinstate. $reduce$ move
-the upper bound of the contract interval to a new value, $t^\prime$, such that $contract.start \leq t^\prime < contract.end$.
-In the Socotra API, this function is variously referred to as cancel or lapse. Lastly, the $override$ function should be roughly
-associated with the Socotra concept of an endorsement. The meaning of $override$ is very close to that of relational override in mathematics.
-Here is an example of its use:
+the Socotra API, this extension is, in code and in conversation, variously referred to as one of the functions $create$, $renew$, or
+$reinstate$. $reduce$ moves the upper bound of the contract interval to a new value, $t^\prime$, such that $contract.start \leq t^\prime < contract.end$.
+In the Socotra API, this function is variously referred to as one of the functions $cancel$ or $lapse$. Lastly, the $override$
+function should be roughly associated with the Socotra concept of an endorsement. The meaning of $override$ is very close to
+that of relational override in mathematics. Here is an example of its use:
 \begin{eqnarray*}
 \{make: GM, value: 5000\} & \\
 & { ^\backprime}overrid{e^\backprime} \{make: Ford, model: F150, value: null\} \\
@@ -158,7 +158,7 @@ You may rightly wonder, especially if you are familiar with the Socotra framewor
 way over existing modifications like create, renew, endorse, cancel, and reinstate. I have done this point out
 the compositional nature of modifications which are currently implemented as one off behaviors. Take for instance
 a contract from $t_1$ to $t_3$ which we plan on endorsing with added attributes, while also changing the end date
-to some $t_2 < t_3$. This operation can be expressed monolithicly and non reusably as
+to some $t_2 < t_3$. This operation can be, and is, expressed monolithicly and non reusably in the framework as:
 \begin{equation*}
 endorse \: (Interval \: t_1 \: t_3) \: policy_{t_1}^{t_3} \: fields \: \{newEnd = t_2\}
 \end{equation*}
@@ -187,7 +187,8 @@ Invoicing is slightly more complicated and it turns out we would like to followi
 \begin{equation*}
 \sum \{i.amount | i \in invoice c^\prime if \, i.status \neq writtenOff\} = \sum \{i.amount | i \in invoice c\}
 \end{equation*}
-The amount of all the invoices that have not been written off must be equal.
+After a cancellation followed by a reinstatement, the amount of all invoices that have not been written off must be equal
+to the amount of the invoices that originally existed.
 
 \item[Invoice invariance on cancellation]
 When a partial cancellation happens on a policy, all invoiced periods that are fully within the remaining,
@@ -205,20 +206,24 @@ the amount calculated and owed for the first month should not change.
 c_{t_1}^{t_4} & = & extend \: (Interval \: t_3 \: t_4) \: \$ \: override \: (Interval \: t_2 \: t_3) \: fields \: c_{t_1}^{t_3} \\
             & = & override \: (Interval \: t_2 \: t_4) \: fields \: \$ \: extend \: (Interval \: t_3 \: t_4) \: c_{t_1}^{t_3}
 \end{eqnarray*}
-Endorsements also commute when the field maps of the two endorsements are disjoint or when the endorsement intervals are
+Additionally, two endorsements will commute when the field maps of the two endorsements are disjoint or when the endorsement intervals are
 disjoint.
 
 \end{description}
 
 One can get more involved in creating more intricate equalities, but from the simple examples the main points should be clear.
-If a contract has a content a particular start and end dates. The modification path that got it to those start and end dates
-often should not effects observables calculated on the contract. If a contract is reduced, often observables related to the
+If a contract has a content and particular start and end dates. The modification path that got it to those start and end dates
+should, in most cases, not effect observables calculated on the contract. If a contract is reduced, in most cases, observables related to the
 remaining part of the policy should not be affected.
 
 
-Below I have added some additional notes, to give a more detailed, but still simplified, understanding of
-the structure of policies and modifications.
-\label{sec:01:2}
-\import{ch01/}{Policy-sa.tex}
+\section{Intervals}
+\label{sec:01:5}
+You may have noted that contracts, charges, and modification functions all use intervals in their definition. As such, intervals are unsurprisingly
+a pervasive concept throughout framework objects as well as the database. There interval end points are commonly expressed with the
+variable names $start\_timestamp$ and $end\_timestamp$, and, in the framework, intervals and their operations are expressed with the $Duration$
+and $Durations$ classes. You should be familiar with the common interval predicates, like $overlaps()$ and $contains()$, and also the
+standard interval operations, like $union()$, and $intersect()$. Below are some of the predicates and operations that you will find
+can simplify your work and clarify your code.
 
-
+\import{ch01/}{IntervalOps-sa.tex}

@@ -122,19 +122,32 @@
 
 \end{tikzpicture}
 \caption{A simple, overview of the Socotra data schema}
-\label{fig:1}
+\label{ch03:fig:1}
 \end{figure}
 
-The Socotra object model is built around the concepts of products and policies. A $Product$ at its
-simplest is a set of $(Field, Type)$ tuples. These $(Field, Type)$ tuples define the data that are
-valid attributes of an instance of a $Product$. A $Policy$ is then an instance of this $Product$ definition where,
-for each $(Field, Type)$ in the $Product$ definition, there will be a corresponding $(Field, Value)$ in the
-Policy instance. Both of these sets, the $(Field, Type)$ set and the $(Field, Value)$ set, are then
-grouped for organization into $Exposure$s and $Peril$s, as shown in Figure 1.1. Note that $(Field, Type)$ elements
-are called configuration elements and $(Field, Value)$ elements are called $Characteristics$.
+In the previous chapter we described a contract as the combination of a product name, an interval, and a set of attributes.
+In the actual Socotra implementation, contracts are called policies. Each policy has an associated interval and a set of attributes,
+which are called characteristics. The idea of a product name is expanded into the concept of a product. This product is
+best thought of as metadata describing the policy. You can think of a product as a parallel to the familiar idea of metadata in the
+database world. In the database world metadata is a set of relation and field definitions. Records in the database are then instances
+of those relations and field definitions. In the Socotra object model the product is the definition of possible attributes (characteristics)
+and product behaviors. A policy is then, like a database record, a specific data instance that complies with the definitions set out in
+the product (metadata).
 
-Another concept in the Socotra object model is that policies are formed by a series of modifications. A
-policy starts empty. Its first issued $Modification$ is a creation $Modification$ and further modifications
-can follow from there in any logical order. A $Policy$ can best be thought of as having two parts, a summary state
-which is part of the $Policy$ proper, plus a detail state consisting of all issued modifications in their
-time order.
+In the framework, policies are contracts that are instances of what I have called a $CompoundContract$ in the previous chapter. In
+particular Socotra has decided to organize policy data in the form of a three level tree. The root of the tree is called the
+policy. The nodes at second level of the tree are called exposures and the nodes at the third level of the tree are called perils.
+Attributes become more specialized as one moves down the tree towards the perils. The span of an interval at any node in the tree
+is always contained within the interval of its parent. And the interval of the policy, at the root, defines the total time span of
+the contract itself. \footnote {Trees are useful data structures to assist a computer in sorting and searching. As technologists
+  we are proud to have trained ourselves to be comfortable thinking in and manipulating trees. But must users are not computers
+  nor have they been trained to think in tree structures. In the real world, it is a classic design failure to expose users to trees
+  and I have seen that design choice lose to simpler designs in the market over and over again. Trees are always the wrong data structure to expose
+  to non technical users. There are no exceptions to this rule. Store that knowledge in your future design toolbox.}
+
+Lastly, in addition to policy and product data, the framework organizes it's data to track change history. You remember from the previous
+chapter that the operations $extend$, $reduce$, and $override$ can be applied to contracts. The applications of these functions are
+tracked in the frameworks policy\_modification table. In the policy\_modification table the first change to a policy is tracked
+as a create modification and further modifications are tracked in order from there. This whole organization of data with labeled
+relationships on the data is shown in stylized form in image \ref{ch03:fig:1}.
+

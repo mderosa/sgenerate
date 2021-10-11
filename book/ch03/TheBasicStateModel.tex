@@ -1,22 +1,23 @@
 
-At Socotra we like to draw large complex state machines depicting the lifecycle of a $Policy$. There is really no need
-for such extravagances, though, as the system can be succinctly and accurately described using the
-standard notation of hierarchical state diagrams. Figure 1.2 shows a state machine for a set of modifications. The vertical
+So far I have described the main modification functions $extend$, $reduce$, $override$, or to use the actual system
+functions $create$, $renew$, $reinstate$, $cancel$, $endorse$, as monolithic functions, but that is not quite the case
+in the framework. In fact, the modification functions are behaviors, a collection of functions which bring the policy
+in steps to a final target state. These steps, in order, are generally called $draft$, $quote$, $accept$, and $issue$.
+I think the best way to to succinctly and accurately described this behavioral flow is with the 
+standard notation of hierarchical state diagrams. Figure \ref{ch03:fig:2} depicts the modification state machine for all current
+framework modifications. The vertical
 dotted line indicates that each $Modification$ in the set is operating in parallel with other modifications in the set. The
 $*$ appended to each $Modification$ type indicates that there can be zero or many modifications of any type. In the
 specifications ahead we often abstract further on this idea of many modifications by letting a policy's initial
-modification set consist of the universe of all $Drafted$ modifications. Surprisingly this allows us to reduce the
+modification set consist of the universe of all $Draft$ modifications. In our specifications this allows us to reduce the
 state space in our developments without loss of generality.
 
-Lastly in Figure 1.3 we have a hierarchical state machine for a $Policy$. This diagram is probably
-a bit surprising if one is used to thinking casually about policies. Yet on examination you will
-find that it is correct and brings out two important points.
-\begin{itemize}
-\item It is a bit sloppy to describe a $Policy$ as being in the $Accepted$ or some other state.
-  Most of the time when we do that we should be talking about modifications. 
-\item The state changes of significance for policies happen on $onIssue$ events. For an issuer and a purchaser
-  of an insurance insurance policy, the $onIssue$ event is the only one that changes real world liabilities.
-\end{itemize}
+As a supplement to the modification state machine. I am also going to add one more state machine showing the interaction between the modification
+state machine and the policy state machine, figure \ref{ch03:fig:3}. What I want to stress here is that it is essential
+for clear thinking to separate modification state from policy state. Often as developers we get sloppy and describe policies
+as being in the $Accepted$ or some other state when actually we talking about a particular modification. The other point to stress is
+that state changes of significance for policies only happen on $onIssue$ events. For an issuer and a purchaser
+of an insurance insurance policy, the $onIssue$ event is the only one that changes real world liabilities.
 
 \begin{figure}[h]
   \begin{tikzpicture}[->,>=stealth']
@@ -90,7 +91,7 @@ find that it is correct and brings out two important points.
     concurrently in the modifications set. Each modification transitions between
     its states, isolated from the effects of other modifications.
   }
-  \label{fig:2}
+  \label{ch03:fig:2}
 \end{figure}
 
 \begin{figure}[b]
@@ -144,5 +145,5 @@ find that it is correct and brings out two important points.
     The Socotra $Policy$ state model. A $Policy$ starts out as $OffRisk$ and its effective
     state changes whenever an $onIssue$ event fires.
   }
-  \label{fig:3}
+  \label{ch03:fig:3}
 \end{figure}    

@@ -5,10 +5,8 @@
 % to alter or adjust the chapter heading in the running head
 
 \abstract{During the course of a policy's lifetime it may be necessary to cancel a policy because invoices have not been paid or for other
-  business reasons. These same policies may then need to be restored to their state before the cancellation. The cancellation and
-  renewal functionality in the Socotra system handles these policy changes. \newline\indent
-  The functionality operates through two distinct mechanism. The first is though API which customers use to trigger cancellations or reinstatements.
-  There is also a group of automated jobs which can cancel a policy or reinstate it when a policies state satisfies certain lifecycle conditions.
+  business reasons. These same policies may then need to be restored once the business reasons that caused the cancellation have been resolved.
+  The frameworks cancellation and reinstatement functionality effects these policy changes.
 }
 
 \section{Structure of Cancellations and Reinstatements}
@@ -17,8 +15,7 @@ In our discussion of policies so far we dealt with the modifications
 \begin{equation*}
   \{Creation, Endorsement, Renewal\}.
 \end{equation*}
-To this set we now
-add the modifications
+To this set we now add the modifications
 \begin{equation*}
   \{Cancellation, Reinstatement\}.
 \end{equation*}

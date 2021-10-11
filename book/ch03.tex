@@ -20,22 +20,23 @@ closer to the specific realization of those abstractions in the framework.
 
 \section{Policies}
 \label{sec:03:3}
-Below I have added some additional notes, to give a more detailed, but still simplified, understanding of
-the structure of policies and modifications.
+Now that we have talked a bit about policies and modifications, below is a data structure overview of the same. The mathematical notation my not be
+that familiar to you and if so dont be too put off. As with all mathematical notation in this book, there are comments to go with the notation
+and the comments cover all of the important points. If you are interested you should be able to go from the comments to the notation and that
+might be useful where you feel there are ambiguities. The mathematics is always correct and exists specifically to remove any abiguity.
 
 \import{ch03/}{Policy-sa.tex}
 
 \section{Charges}
-\label{sec:03:6}
-
+\label{sec:03:4}
 There are currently five types of charges in the Socotra framework premiums (represented as PerilCharacteristics), taxes,
 commissions, fees, and holdbacks. All these charges are represented by the same basic structure, a closed-open
-interval, traditionally represented by $[start\_timestamp, end\_timestamp)$, and a currency amount. It is
+interval, the data fields $[start\_timestamp, end\_timestamp)$, and a currency amount. It is
 always assumed that $start\_timestamp \leq end\_timestamp$. Moreover if we have a description of the
-coverage time periods of the policy represented as a set of periods, then the range of a charge must always
-fall inside of a coverage period.
+policy coverage times as a set of intervals, then the range of a charge must always
+fall inside the range of one of those intervals.
 \begin{equation*}
-\forall c \in Charge \cdot \exists p \in CoveragePeriods \cdot p.contains(c)
+\forall c \in Charge \cdot \exists i \in CoverageIntervals \cdot i.contains(c)
 \end{equation*}
 This requirement is not strictly required to bill properly but it is established behavior, that has a natural
 interpretation. Every charge can be directly traced to a period of contracted coverage.
@@ -44,14 +45,15 @@ Amounts can have different interpretations depending on the type of charge and h
 Premium amounts are always calculated from an original rate, usually in units of currency per month. Usually, then,
 tax, commission, and rate fee amounts are calculated from the premium amounts by multiplying them by a percentage.
 When the charges, above, are scaled to a new time period, the amount is converted back into
-a rate with units of currency per time unit of interest and multiplied by the new time period. It's a bit
+a rate with units of currency per time and multiplied by the new time period. It's a bit
 round about and round trip conversion looses precision but that is the legacy process. Flat fee and holdback amounts are
 not interpreted as being derived from a rate. As one might expect their amounts remain constant no
 matter what their associated interval is and the associated interval just indicates over what period of coverage the
 charge was assessed.
 
 Since the charges associated with a policy change over time, all charges have additional structure to track their
-change history. Premium, tax, commission, and holdbacks are temporal objects containing the temporal fields $issued\_timestamp$ and $replaced\_timestamp$.
+change history. Premium, tax, commission, and holdbacks are all modeled as temporal objects containing the temporal
+fields $issued\_timestamp$ and $replaced\_timestamp$.
 More commonly, you may have seen these fields in other frameworks by the names $valid\_from$ and
 $valid\_to$. This simple structure is used to record an audit history and allow easy determination of the
 coverage at any time, t, with a filter of the form
@@ -71,7 +73,7 @@ graphical descriptions.
 \import{ch03/}{FeeBehavior.tex}
 \newpage
 
-Below is Socotra mathematical specification which details the maintenance of for flat fees as modifications are applied to a
+Below is Socotra mathematical specification which details the maintenance of flat fees as modifications are applied to a
 policy. The important points are captured in the comments.
 \import{ch03/}{FeesFlatCtx1-sa.tex}
 \import{ch03/}{FeesFlatMch1-sa.tex}
@@ -96,7 +98,7 @@ policy. The important points are captured in the comments.
   \caption{
     A policy and a cancellation
   }
-  \label{fig:3:2}
+  \label{ch03:fig:3:2}
 \end{figure}
 
 To explain holdbacks consider a policy running from Jan 1st of one year to Jan 1st of the next year, with a
@@ -118,9 +120,13 @@ the comments.
 \import{ch03/}{ProrationCtx2-sa.tex}
 \import{ch03/}{ProrationMch2-sa.tex}
 
+\section{Observables}
+\label{sec:03:6}
+
+\import{ch03/}{CancellationCalculations-sa.tex}
 
 \section{Characteristics}
-\label{sec:03:4}
+\label{sec:03:5}
 
 Characteristics are containers that record a set of attribute values
 (ex: number\_of\_drivers = 2, make\_of\_car = Honda, resale\_value=10000)
@@ -133,9 +139,3 @@ how those intervals split as the standard modification operations are applied
 to intervals
 \import{ch03/}{CharacteristicsSplitCtx0-sa.tex}
 \import{ch03/}{CharacteristicsSplitMch0-sa.tex}
-
-\section{Liquid Calculations}
-\label{sec:03:5}
-
-\import{ch03/}{CancellationCalculations-sa.tex}
-

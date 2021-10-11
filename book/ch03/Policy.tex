@@ -946,11 +946,13 @@
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- Socotra has several ways of generating invoices. When a modification is
- accepted,
- once a month, and, for premium reporting, on client request. For sufficient
- variety
- I have defined a incomplete set of the billing policy below.
+ Socotra has several ways of generating invoices. It can generate invoices
+ when a
+ modification is accepted, on a schedule like once a month, and, for premium
+ reporting,
+ on client request. To give a sense that there is some variety, I have
+ defined a
+ incomplete set of the billing policies below.
 \end{cpar}%
 \end{lcom}%
  \@x{ BillingPolicy \.{\defeq} \{\@w{BySystemOnFinalize}
@@ -971,29 +973,42 @@
 \begin{cpar}{0}{F}{F}{0}{0}{}%
 The linear lifecycle of a \ensuremath{Modification} from start to issue is:
 \end{cpar}%
+\vshade{5.0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-(a) Created - Drafted
+(a) Draft - also commonly referred to as Create
 \end{cpar}%
+\vshade{5.0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-(b) Accepted - \ensuremath{Finalized
+(\ensuremath{b}) Accepted - also commonly referred to as \ensuremath{Finalized
 }%
 \end{cpar}%
+\vshade{5.0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- (c) Issued. These are the common states that are usually discussed at
- \ensuremath{Socotr} along with
- their synonyms.
+(c) Issued.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ There are a few other states which pop up with modifications as well but are
+ less often
+ seen. Expired is particular to reinstatements which have an associated
+ lifetime. If the
+ reinstatement is not issued before its expiration. Then it expires.
+ Invalidation moves
+ a modification from the accepted state back into the draft state. And
+ rescind completely
+ discards a modification.
 \end{cpar}%
 \end{lcom}%
  \@x{ ModificationState \.{\defeq} \{\@w{Created} ,\,\@w{Finalized}
- ,\,\@w{Issued} ,\,\@w{Expired} ,\,\@w{Invalidated} \}}%
+ ,\,\@w{Issued} ,\,\@w{Expired} ,\,\@w{Invalidated} ,\,\@w{Rescind} \}}%
 \@pvspace{8.0pt}%
 \@x{ TimeRange \.{\defeq} policyMinTs \.{\dotdot} policyMaxTs}%
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
-\begin{cpar}{0}{F}{F}{0}{0}{}%
- There are more modification types than are listed below. Consider this listed
- just
- a sample of commonly discussed modification
+\begin{cpar}{0}{T}{F}{0}{2.5}{}%
+ There are more modification types than are listed below. These are just three
+ that will
+ represent the extend, reduce, override possibilities.
 \end{cpar}%
 \end{lcom}%
  \@x{ ModificationType \.{\defeq} \{\@w{Endorsement} ,\,\@w{Renewal}
@@ -1001,11 +1016,16 @@ The linear lifecycle of a \ensuremath{Modification} from start to issue is:
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- Modifcation all have the basic structure below. It is often convinient to
- think of
- them as an elaborated time interval and the action of applying a
+Modifcations all have the basic structure below. It is convinient to think of
+ modifications as a elaborated time interval and the action of applying a
  modification to
- a policy is in some respects a kind of interval addition.
+ a policy as an interval extension or reduction. Note that in the database the
+ \ensuremath{policy\_modification} table does not include an
+ \ensuremath{end\_timestamp}. This absence turns out to
+ be very problematical as in many places in the framework it is a crucial
+ piece of
+ information too have handy. Maybe this data mishap will get fixed in the
+ future.
 \end{cpar}%
 \end{lcom}%
 \@x{ Modification \.{\defeq} [}%
@@ -1021,25 +1041,35 @@ The linear lifecycle of a \ensuremath{Modification} from start to issue is:
 \@pvspace{8.0pt}%
 \begin{lcom}{7.5}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- Surprisingly, policies are not a particularly important structure in our
- specifications
- they are convinient for holding summary information. Fields like
- \ensuremath{revision\_start\_ts
- } and \ensuremath{renewal\_start\_timestamp} are examples of such summary
- information. They facilitate
- specification tasks later on and in fact dont correspond to any structures
- in our
- software implementation.
- On the other hand the \ensuremath{pending\_modification} field is used to
- represent the fact that
- a policy can have either no modifications in the accepted state or it can
- have
- one modification in the accepted state. This is an important constraint on
- the
- operation of our software at the moment. It is also exactly an specific case
- of the
- general concept of pessimistic locking used to achieve before and after
- atomicity.
+ In retrospect, the simple policy representation below is not all that good
+ for a
+ discussion of policies, so here are some of facets of policy data to be
+ familiar with.
+ \ensuremath{original\_start\_timestamp} will be the start date when the
+ policy issued, and will be
+ \ensuremath{\.{\leq}} to the \ensuremath{effective\_start\_timestamp}. The
+ \ensuremath{effective\_end\_timestamp} is always the date when
+ the policy ends. The policy state is not explicitly tracked in policy data.
+ But
+ implicitly when the \ensuremath{effective\_start\_ts \.{=}
+ effective\_end\_ts} then the policy is off policy
+ and when \ensuremath{effective\_start\_ts \.{>} effective\_end\_ts} then the
+ policy is on policy.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ The \ensuremath{pending\_modification} is also not part of the policy data.
+ Rather, here, it represents
+ an important concept in dealing with policies that a policy must have either
+ no
+ modifications in the accepted state or one modification in the accepted
+ state. An
+ accepted modification acts like a global lock on the policy. No modifications
+ can advance into the accepted state when another modification holds that
+ ``accept lock''.
+ The existing accepted modification must either be issued or invalidated for
+ other
+ modifications to be issued.
 \end{cpar}%
 \end{lcom}%
 \@x{ Policy \.{\defeq} [}%
@@ -1061,8 +1091,8 @@ The linear lifecycle of a \ensuremath{Modification} from start to issue is:
 \ensuremath{\.{\,\backslash\,}}* \ensuremath{Modification} History
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
- \ensuremath{Jul} 16 16:25:57 \ensuremath{PDT} 2020 by \ensuremath{marco
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Mon}
+ \ensuremath{Oct} 11 14:08:06 \ensuremath{PDT} 2021 by \ensuremath{marco
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%

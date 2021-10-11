@@ -1,12 +1,16 @@
 
-\subsection{Premiums, Taxes, Commissions}
-Premiums, taxes and commissions are calculated at the peril level via the framework Rater.getPricedCharacteristics function
+\subsection{Rating Premiums, Taxes, Commissions}
+Premiums, taxes and commissions are calculated at the peril level via the framework function, Rater.getPricedCharacteristics,
 which has the simplified signature:
 \begin{equation*}
   getPricedCharacteristics: RaterPriceRequest \to Map \; Locator \; PerilCharacteristics
 \end{equation*}
 The RaterPriceRequest contains a collection of unpriced (policy characteristic, exposure characteristic, peril characteristic) triplets
-which have the appropriate field values which one intends to price. The triplet is formed such that the interval of the
+which have the appropriate field values which one intends to price.
+\begin{equation*}
+triple: (PolicyCharacteristics, \; ExposureCharacteristics, \; PerilCharacteristics)
+\end{equation*}
+The triplet is formed such that the interval of the
 exposure characteristic contains the peril characteristics and the interval of the policy characteristic contains the
 peril characteristic. This containment property, which has been discussed, dictates how peril characteristics split
 their parent characteristics and how parent characteristics split peril characteristics. One can see that the containment property
@@ -16,40 +20,32 @@ Perils do not compare to one another as most generally a peril characteristic in
 peril characteristics in another peril.
 
 The RaterPriceRequest also contains a policy object. The policy object should satisfy the condition that for any
-characteristics triplet that exists in the RaterPriceRequest each of those characteristics can also be discovered by
+characteristics triplet that exists in the RaterPriceRequest each of those characteristics must also be discoverable by
 iterating through the policy, exposure, peril tree. Also any policy\_modification that can be discovered on any
-characteristics triplet can be be found in the policy.getModifications() collection.
+characteristics triplet must be discoverable in the policy.getModifications() collection.
 
-Once the Rater.getPricedCharacterisitcs function is called, then the following operations are performed. Each
-characteristics triplet is taken in turn
+With the request object formed, $req: (policy, \; triple)$, the base $rater$ function is called on each triple to obtain
+a premium, commission, and tax
 \begin{equation*}
-Let \; obj_{peril} = (peril.policy.characteristics, \; peril.exposure.characteristics, \; peril.characteristics)
+premium = \Delta t \cdot rater(policy, triple_{peril}).premium
 \end{equation*}
-Then the liquid file is accessed for the peril and a premium is calculated
-\begin{equation*}
-GrossPremium = \sum_{p \in Perils} \Delta t \cdot p.liquid.premium(obj_p) 
-\end{equation*}
-Similarly for commissions
-\begin{equation*}
-GrossCommission = \sum_{p \in Perils} \Delta t \cdot p.liquid.commission(obj_p)
-\end{equation*}
-Premiums and commissions are then placed on the peril characteristic and tax calculations are made
-\begin{equation*}
-  GrossTax = \sum_{p \in Perils} \sum_{tx \in Taxes} tx.liquid.tax(obj'_p) 
-\end{equation*}
-Lastly, as can be seen from the signature of getPricedCharacteristics, above, the rater returns each of the fully priced peril characteristics, indexed
-by locator.
+Similarly for commissions and taxes
+\begin{eqnarray*}
+commission & = & \Delta t \cdot rater(policy, triple_{peril}).commission \\
+tax & = & rater(policy, triple_{peril}).tax
+\end{eqnarray*}
+Lastly, the $getPricedCharacteristics$ function assembles and returns new priced characteristics indexed by locator.
 
-\subsection{Fees}
-Fees are calculated at the policy level via the framework LiquidRenderClient.renderPolicyCalculations function, which has the
+\subsection{Rating Fees}
+Fees are calculated at the policy level via the framework function, LiquidRenderClient.renderPolicyCalculations, which has the
 simplified signature:
 \begin{equation*}
   renderPolicyCalculations: Context \to List \; Fee
 \end{equation*}
-The context contains a policy and an indicator of the in process policy modification. The function expects the policy object to
-have to modification applied in all detail, including having the above fully calculated premiums, commission, and taxes.
-Then with this fully formed policy fees are calculated by accessing the policy.liquid file and calculating:
+The context contains a policy and the in process policy modification. The policy must contain fully calculated premiums, commission, and taxes
+on all its characteristics. And the policy modification must have all gross premium and gross tax amounts calculated.
+Then, a list of fees are calculated by calling the rater function as:
 \begin{equation*}
-GrossFee = \sum_{f \in Fees} f.liquid.fee(policy', policyModification')
+renderPolicyCalculations = rater(policy', policyModification')
 \end{equation*}
 

@@ -1,0 +1,138 @@
+\tlatex
+\setboolean{shading}{true}
+\@x{}\moduleLeftDash\@xx{ {\MODULE} Policy}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Integers ,\, Product ,\, PolicyCtx}%
+\@pvspace{8.0pt}%
+\@x{ {\CONSTANT} NoModification}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Socotra has several ways of generating invoices. When a modification is
+ accepted,
+ once a month, and, for premium reporting, on client request. For sufficient
+ variety
+ I have defined a incomplete set of the billing policy below.
+\end{cpar}%
+\end{lcom}%
+ \@x{ BillingPolicy \.{\defeq} \{\@w{BySystemOnFinalize}
+ ,\,\@w{ByClientOnRequest} \}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ It is useful to see policies has having just two states. They start off in
+ the \ensuremath{OffRisk
+ } state and transition to \ensuremath{OnRisk} with their first issued
+ modifications. Policies can
+ also transition back to \ensuremath{OffRisk} when they are fully cancelled.
+\end{cpar}%
+\end{lcom}%
+\@x{ PolicyState \.{\defeq} \{\@w{OnRisk} ,\,\@w{OffRisk} \}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+The linear lifecycle of a \ensuremath{Modification} from start to issue is:
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+(a) Created - Drafted
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+(b) Accepted - \ensuremath{Finalized
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ (c) Issued. These are the common states that are usually discussed at
+ \ensuremath{Socotr} along with
+ their synonyms.
+\end{cpar}%
+\end{lcom}%
+ \@x{ ModificationState \.{\defeq} \{\@w{Created} ,\,\@w{Finalized}
+ ,\,\@w{Issued} ,\,\@w{Expired} ,\,\@w{Invalidated} \}}%
+\@pvspace{8.0pt}%
+\@x{ TimeRange \.{\defeq} policyMinTs \.{\dotdot} policyMaxTs}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ There are more modification types than are listed below. Consider this listed
+ just
+ a sample of commonly discussed modification
+\end{cpar}%
+\end{lcom}%
+ \@x{ ModificationType \.{\defeq} \{\@w{Endorsement} ,\,\@w{Renewal}
+ ,\,\@w{Cancellation} \}}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Modifcation all have the basic structure below. It is often convinient to
+ think of
+ them as an elaborated time interval and the action of applying a
+ modification to
+ a policy is in some respects a kind of interval addition.
+\end{cpar}%
+\end{lcom}%
+\@x{ Modification \.{\defeq} [}%
+\@x{\@s{16.4} type \.{:} ModificationType ,\,}%
+\@x{\@s{16.4} state \.{:} ModificationState ,\,}%
+\@x{\@s{16.4} start\_timestamp \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} end\_timestamp \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} product\_revision \.{:} 0 \.{\dotdot} maxRevision}%
+\@x{\@s{16.4} ]}%
+\@pvspace{8.0pt}%
+\@x{ InvModification ( mod ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} mod . start\_timestamp \.{\leq} mod . end\_timestamp}%
+\@pvspace{8.0pt}%
+\begin{lcom}{7.5}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ Surprisingly, policies are not a particularly important structure in our
+ specifications
+ they are convinient for holding summary information. Fields like
+ \ensuremath{revision\_start\_ts
+ } and \ensuremath{renewal\_start\_timestamp} are examples of such summary
+ information. They facilitate
+ specification tasks later on and in fact dont correspond to any structures
+ in our
+ software implementation.
+ On the other hand the \ensuremath{pending\_modification} field is used to
+ represent the fact that
+ a policy can have either no modifications in the accepted state or it can
+ have
+ one modification in the accepted state. This is an important constraint on
+ the
+ operation of our software at the moment. It is also exactly an specific case
+ of the
+ general concept of pessimistic locking used to achieve before and after
+ atomicity.
+\end{cpar}%
+\end{lcom}%
+\@x{ Policy \.{\defeq} [}%
+\@x{\@s{16.4} original\_start\_ts \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} effective\_end\_ts \.{:} TimeRange ,\,}%
+\@x{\@s{16.4} billing\_policy \.{:} BillingPolicy ,\,}%
+\@x{\@s{16.4} state \.{:} PolicyState ,\,}%
+ \@x{\@s{16.4} revision\_start\_timestamps \.{:} {\SUBSET} ( ( 0 \.{\dotdot}
+ maxRevision ) \.{\times} TimeRange ) ,\,}%
+\@x{\@s{16.4} renewal\_start\_timestamps \.{:} {\SUBSET} ( TimeRange ) ,\,}%
+ \@x{\@s{16.4} pending\_modification \.{:} Modification \.{\cup} \{
+ NoModification \}}%
+\@x{\@s{16.4} ]}%
+\@pvspace{8.0pt}%
+\@x{}\bottombar\@xx{}%
+\setboolean{shading}{false}
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{\.{\,\backslash\,}}* \ensuremath{Modification} History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Thu}
+ \ensuremath{Jul} 16 16:25:57 \ensuremath{PDT} 2020 by \ensuremath{marco
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Mon}
+ \ensuremath{Jul} 13 20:22:48 \ensuremath{PDT} 2020 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* \ensuremath{Created} Sat \ensuremath{Jun} 27
+ 14:05:18 \ensuremath{PDT} 2020 by marcderosa
+\end{cpar}%
+\end{lcom}%

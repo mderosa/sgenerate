@@ -1,0 +1,185 @@
+\tlatex
+\setboolean{shading}{true}
+\@x{}\moduleLeftDash\@xx{ {\MODULE} IntervalOps}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Integers ,\, Reals}%
+\@pvspace{8.0pt}%
+\@x{ max ( a ,\, b ) \.{\defeq} {\IF} a \.{\geq} b \.{\THEN} a \.{\ELSE} b}%
+ \@x{ min ( a ,\, b )\@s{1.49} \.{\defeq} {\IF} a \.{\leq} b \.{\THEN} a
+ \.{\ELSE} b}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Interval Predicates
+}%
+\@xx{}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+Making decisions on intervals is facilitated by a fundamental set of predicate
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ combinators over intervals. The fundamental interval combinators sufficient
+ for all
+ interval computations at \ensuremath{Socotra} are listed below. Most of them
+ are implemented in the
+ framework Duration class. As others predicates become necessary that class
+ is the best
+ place to add new ones.
+\end{cpar}%
+\end{lcom}%
+ \@x{ notOverlaps ( chA ,\, chB ) \.{\defeq} chB . end\_ts \.{\leq} chA .
+ start\_ts}%
+\@x{\@s{16.4} \.{\lor} chB . start\_ts \.{\geq} chA . end\_ts}%
+\@pvspace{8.0pt}%
+\@x{ overlaps ( chA ,\, chB ) \.{\defeq} {\lnot} notOverlaps ( chA ,\, chB )}%
+\@pvspace{8.0pt}%
+ \@x{ starts ( chA ,\, chB ) \.{\defeq} chA . start\_ts \.{=} chB . start\_ts
+ \.{\land} chA . end\_ts \.{<} chB . end\_ts}%
+\@pvspace{8.0pt}%
+ \@x{ contains ( chA ,\, chB ) \.{\defeq} chA . start\_ts \.{\leq} chB .
+ start\_ts \.{\land} chB . end\_ts \.{\leq} chA . end\_ts}%
+\@pvspace{8.0pt}%
+\@x{ equals ( chA ,\, chB ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} chA . start\_ts \.{=} chB . start\_ts}%
+\@x{\@s{16.4} \.{\land} chA . end\_ts \.{=} chB . end\_ts}%
+\@pvspace{8.0pt}%
+\@x{ width ( ch ) \.{\defeq} ch . end\_ts \.{-} ch . start\_ts}%
+\@pvspace{8.0pt}%
+ \@x{ within ( tm ,\, ch ) \.{\defeq} ch . start\_ts \.{<} tm \.{\land} tm
+ \.{<} ch . end\_ts}%
+\@pvspace{8.0pt}%
+\@x{ {\RECURSIVE} overlapsAny ( \_ ,\, \_ )}%
+\@x{ overlapsAny ( ch ,\, chs ) \.{\defeq}}%
+\@x{\@s{16.4} {\IF} chs \.{=} \{ \} \.{\THEN} {\FALSE}}%
+ \@x{\@s{16.4} \.{\ELSE} \.{\LET} tmp \.{\defeq} {\CHOOSE} x \.{\in} chs \.{:}
+ {\TRUE}}%
+\@x{\@s{47.71} \.{\IN} {\IF} overlaps ( ch ,\, tmp ) \.{\THEN} {\TRUE}}%
+ \@x{\@s{68.11} \.{\ELSE} overlapsAny ( ch ,\, chs \.{\,\backslash\,} \{ tmp
+ \} )}%
+\@pvspace{8.0pt}%
+\@x{ {\RECURSIVE} startsAny ( \_ ,\, \_ )}%
+\@x{ startsAny ( ch ,\, chs ) \.{\defeq}}%
+\@x{\@s{16.4} {\IF} chs \.{=} \{ \} \.{\THEN} {\FALSE}}%
+ \@x{\@s{16.4} \.{\ELSE} \.{\LET} tmp \.{\defeq} {\CHOOSE} x \.{\in} chs \.{:}
+ {\TRUE}}%
+\@x{\@s{47.71} \.{\IN} {\IF} starts ( ch ,\, tmp ) \.{\THEN} {\TRUE}}%
+ \@x{\@s{68.11} \.{\ELSE} startsAny ( ch ,\, chs \.{\,\backslash\,} \{ tmp \}
+ )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Interval Functions
+}%
+\@xx{}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{T}{F}{7.5}{0}{}%
+ There are three fundamental inverval functions used commonly in the framework
+ and
+\end{cpar}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+specified below.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ (1) subtract: Interval \ensuremath{\.{\rightarrow}} Interval
+ \ensuremath{\.{\rightarrow}} Set Interval, returns the parts of the first
+ interval
+ that do not overlap with the second interval. And will be a set of
+ cardinality between
+ 0 and 2.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ (2) union: Interval \ensuremath{\.{\rightarrow} Inteval \.{\rightarrow}} Set
+ Interval, returns the combination of the first and
+ second intervals as long as the intervals overlap. And will be a set of
+ cardinality between
+ 0 and 1.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ (3) intersect: Interval \ensuremath{\.{\rightarrow}} Interval
+ \ensuremath{\.{\rightarrow}} Set Interval, returns the part of the first and
+ second interval that overlap.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ The fundamental interval functions are implemented in the framework\mbox{'}s
+ Durations class
+ along with some additional common interval functions.
+\end{cpar}%
+\end{lcom}%
+\@x{ subtract ( chA ,\, chB ) \.{\defeq}}%
+\@x{\@s{16.4} {\CASE} notOverlaps ( chA ,\, chB ) \.{\rightarrow} \{ chA \}}%
+\@x{\@s{16.4} {\Box} {\OTHER} \.{\rightarrow}}%
+\@x{\@s{27.97} {\IF} within ( chB . start\_ts ,\, chA ) \.{\THEN}}%
+\@x{\@s{44.22} {\IF} within ( chB . end\_ts ,\, chA ) \.{\THEN} \{}%
+ \@x{\@s{60.48} [ chA {\EXCEPT} {\bang} . start\_ts \.{=} chA . start\_ts ,\,
+ {\bang} . end\_ts \.{=} chB . start\_ts ] ,\,}%
+ \@x{\@s{60.48} [ chA {\EXCEPT} {\bang} . start\_ts \.{=} chB . end\_ts ,\,
+ {\bang} . end\_ts \.{=} chA . end\_ts ]}%
+\@x{\@s{60.48} \}}%
+\@x{\@s{44.22} \.{\ELSE}}%
+ \@x{\@s{60.62} \{ [ chA {\EXCEPT} {\bang} . start\_ts \.{=} chA . start\_ts
+ ,\, {\bang} . end\_ts \.{=} chB . start\_ts ] \}}%
+\@x{\@s{27.97} \.{\ELSE}}%
+\@x{\@s{44.37} {\IF} within ( chB . end\_ts ,\, chA ) \.{\THEN}}%
+ \@x{\@s{60.62} \{ [ chA {\EXCEPT} {\bang} . start\_ts \.{=} chB . end\_ts ,\,
+ {\bang} . end\_ts \.{=} chA . end\_ts ] \}}%
+\@x{\@s{44.37} \.{\ELSE}}%
+\@x{\@s{60.77} \{ \}}%
+\@pvspace{8.0pt}%
+\@x{ union ( chA ,\, chB ) \.{\defeq}}%
+ \@x{\@s{16.4} {\IF} overlaps ( chA ,\, chB ) \.{\lor} chA . end\_ts \.{=} chB
+ . start\_ts \.{\lor} chB . end\_ts \.{=} chA . start\_ts}%
+ \@x{\@s{16.4} \.{\THEN} \{ [ chA {\EXCEPT} {\bang} . start\_ts \.{=} min (
+ chA . start\_ts ,\, chB . start\_ts ) ,\,}%
+ \@x{\@s{114.65} {\bang} . end\_ts \.{=} max ( chA . end\_ts ,\, chB . end\_ts
+ ) ] \}}%
+\@x{\@s{16.4} \.{\ELSE} \{ \}}%
+\@pvspace{8.0pt}%
+\@x{ intersect ( chA ,\, chB ) \.{\defeq}}%
+\@x{\@s{16.4} {\IF} notOverlaps ( chA ,\, chB )}%
+\@x{\@s{16.4} \.{\THEN} \{ \}}%
+ \@x{\@s{16.4} \.{\ELSE} \{ [ chA {\EXCEPT} {\bang} . start\_ts \.{=} max (
+ chA . start\_ts ,\, chB . start\_ts ) ,\,}%
+ \@x{\@s{114.65} {\bang} . end\_ts \.{=} min ( chA . end\_ts ,\, chB . end\_ts
+ )}%
+\@x{\@s{47.71} ] \}}%
+\@pvspace{8.0pt}%
+\@x{ extend ( chA ,\, chB ) \.{\defeq}}%
+ \@x{\@s{16.4} [ chA {\EXCEPT} {\bang} . start\_ts \.{=} min ( chA . start\_ts
+ ,\, chB . start\_ts ) ,\,}%
+ \@x{\@s{78.34} {\bang} . end\_ts \.{=} max ( chA . end\_ts ,\, chB . end\_ts
+ ) ]}%
+\@pvspace{8.0pt}%
+ \@x{ subtractAll ( chs ,\, chB ) \.{\defeq} {\UNION} \{ subtract ( chA ,\,
+ chB ) \.{:} chA \.{\in} chs \}}%
+\@pvspace{8.0pt}%
+ \@x{ intersectAll ( chs ,\, chB ) \.{\defeq} {\UNION} \{ intersect ( chA ,\,
+ chB ) \.{:} chA \.{\in} chs \}}%
+\@pvspace{8.0pt}%
+ \@x{ overlapsAll ( chs ,\, int ) \.{\defeq} \{ ch \.{\in} chs \.{:} overlaps
+ ( ch ,\, int ) \}}%
+\@pvspace{8.0pt}%
+\@x{}\bottombar\@xx{}%
+\setboolean{shading}{false}
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{\.{\,\backslash\,}}* Modification History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Mon}
+ \ensuremath{Oct} 11 10:40:53 \ensuremath{PDT} 2021 by \ensuremath{marco
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
+ \ensuremath{Jul} 14 21:11:27 \ensuremath{PDT} 2021 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Created \ensuremath{Mon} \ensuremath{Dec} 28
+ 09:50:41 \ensuremath{PST} 2020 by \ensuremath{ASUS
+}%
+\end{cpar}%
+\end{lcom}%

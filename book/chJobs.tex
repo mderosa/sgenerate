@@ -26,14 +26,14 @@ understanding for the jobs.
 During a modification's transition into the Accepted state, documents associated with that modification are generated.
 The documents are generated from templates written in Liquid code and the templates output either a text or HTML formatted
 string. If desired the system
-can take this string output and convert it into a pdf document. The final form of the document is then stored in Amazon S3.
+can take this string output and convert it into a PDF document. The final form of the document is then stored in Amazon S3.
 
 In addition to generating documents some customers would like to consolidate a subset of the existing documents as well, and this has
 let to the development of the document consolidation plugin and associated consolidation routines. The main consideration in
 developing the consolidation routines has been to avoid generating the consolidated documents synchronously with the accept transition.
-Document generation has historically been a large part of the accept transition's service time so there is some trepedation around adding
+Document generation has historically been a large part of the accept transition's service time so there is some trepidation around adding
 more to what already exists. There is also reason to believe that some customers may have consolidation tasks that are one or two orders of
 magnitude larger than the usual size of the document generation tasks that currently run semi-synchronously. These two considerations have
-let to a asyncronous consolidate implementation which is discussed below.
+let to an asynchronous consolidate implementation which is discussed below.
 \import{chJobs/}{DocConsolidateCtx0-sa.tex}
 \import{chJobs/}{DocConsolidateMch0-sa.tex}

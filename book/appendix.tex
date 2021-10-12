@@ -86,7 +86,7 @@ have witnessed at Socotra
 \end{description}
 For the instance where the above problem came up, Devops could have made incremental physical deployments but since the rollout had
 more than one moving part it was conceptually simpler to put all the pieces in place and then flip a flag to bring everything live.
-A database table, \_env\_feaure, supplied the global, boolean feature flag to bring the new functionality live and that mechanism, in practice, turned out to be
+A database table, \_env\_feature, supplied the global, boolean feature flag to bring the new functionality live and that mechanism, in practice, turned out to be
 simple and sufficient. There were no problems. That said, I can envision a more complex Socotra system where functionality might be
 deployed in independent components in pieces; where one flag to bring all component functionality live at once, would enable conceptually simple deployment;
 and where a flag in a database table would not be available to all the components. That would pose a deployment problem. We would probably
@@ -100,7 +100,7 @@ In contrast, here is another common deployment problem I am aware of at Socotra
   existing policy to be renewed, maybe a year, until their policyholders can all enjoy the new functionality. It's inconvenient for insurance
   companies, their systems, and their policyholders to receive functionality in this one policy by one policy  manner.
 \end{description}
-This is a problem that we anticipate having once product versioning goes live. Today this problem seems more imanent than any other deployment problem Socotra
+This is a problem that we anticipate having once product versioning goes live. Today this problem seems more immanent than any other deployment problem Socotra
 has and as engineers we should have immanent problems clear in our minds. I am going to leave the possible importance of this problem and its solution to the future
 but we might observe that practical engineering, perhaps not elegance and certainly not Launch Darkly, will be involved in the solution. We might also observe
 that, exactly like feature flags, the deployment of configuration zip files is a type of soft deployment. We have an additional, existing soft deployment
@@ -263,11 +263,11 @@ you to your solution.
 
 \subsection{Theory and Practice.}
 In the course of my career I have met some very practical engineers who were very serious about doing but who lacked theory to
-discipline their thoughts. Those engineers are seriously deficient and yet unaware of their deficits. I have also met very theoretical
-engineers who lacked the ability to create practical technical artifacts. Those engineers usually dealt in great visions. A piece of
-their great vision perhaps was greater than a real world whole. Those engineers end up disappointed and disillusioned.
+discipline their thoughts. Those engineers handicapped without theory and yet unaware of their handicap. I have also met very theoretical
+engineers who lacked the applied interest in creating practical technical artifacts. Some of those engineers end up disappointed and disillusioned,
+when their lofty visions where not realized in practice.
 
-Don't be a practitioner and don't be a theoretician. You job as an engineer is to continuously circle back between both theory and practice. Theory tells
+Don't be a practitioner and don't be a theoretician. Your job as an engineer is to continuously circle back between both theory and practice. Theory tells
 you which avenues will be possible and which will be impossible. It is your first error correction filter. Practice is where you meet
-the real world and you discover the limitations of your technology and your abstractions. This is your second error correction filter. Once
+the real world and you learn the limitations of your technology and your abstractions through feedback. This is your second error correction filter. Once
 you have met the real world then you recycle your learnings back into your theory to make it better. And you continue the cycle over and over.

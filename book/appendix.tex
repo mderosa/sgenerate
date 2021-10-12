@@ -34,7 +34,7 @@ In the course of your career, unless you are finding that 90 percent of the time
 then it's probable you are not thinking carefully enough before you work.
 
 Let's think through a current, discussion topic at Socotra, feature flags, to illustrate defining a problem. I don't happen to know what the
-resolution to the feature flag ``problem'' will be and perhaps that is good. You, the future reader with hindsight and proof of time, will
+future resolution to the feature flag ``problem'' will be and perhaps that is good. You, the future reader with hindsight and proof of time, will
 all the better be able to evaluate the usefulness of the thoughts on problem definition that follow.
 
 Lets start with a real life, feature flag problem statement that we can quickly disregard.
@@ -51,14 +51,13 @@ on our guard. Feature flags presumably would fulfill a functional need and not a
 \begin{description}
 \item[Problem] Lets investigate the Launch Darkly feature flag functionality to see how it could be used in our current systems.
 \end{description}
-This statement is an example of a solution with an assumed problem. The problem could exist, but for the author of the statement above
-it seems his solution is so obvious and perfect that he
-has skipped the trivial formality mentioning it. As an engineer you should sensitize yourself to solutions that eclipse their problems.
+This statement is an example of a solution with an assumed problem. A problem could exist, but certainly the author of the statement above
+has skipped the formality mentioning it. As an engineer you should sensitize yourself to solutions that eclipse their problems.
 ``We should build new functionality as micro services'' or
 ``We should use Amazon Lambda for X, because Lambda is scalable and the future of software development'' are other examples. I am sure Launch Darkly is wonderful,
 as well as micro services and Amazon Lambda, and yet their wonderfulness does not mandate their use. As an engineer, when technical discussion 
 leads directly to technical implementation X or a technology Y, that is a tell that perhaps someone had a vague feeling about a
-problem and the source of that feeling was easiest for them to express as the absence of a technology, for instance ``MongoDB''. (And as the joke goes, now
+problem and that vague feeling of discontent was easiest for them to causally assign as due to the absence of a technology, for instance ``MongoDB''. (And as the joke goes, now
 you have two problems).
 
 Since we achieved insufficient clarity with the above problem definitions let's metaphorically go back to the beginning and talk about feature
@@ -87,7 +86,7 @@ have witnessed at Socotra
 \end{description}
 For the instance where the above problem came up, Devops could have made incremental physical deployments but since the rollout had
 more than one moving part it was conceptually simpler to put all the pieces in place and then flip a flag to bring everything live.
-A database table, \_env\_feaure, supplied the global, boolean feature flag to bring the new functionality live and that mechanism was
+A database table, \_env\_feaure, supplied the global, boolean feature flag to bring the new functionality live and that mechanism, in practice, turned out to be
 simple and sufficient. There were no problems. That said, I can envision a more complex Socotra system where functionality might be
 deployed in independent components in pieces; where one flag to bring all component functionality live at once, would enable conceptually simple deployment;
 and where a flag in a database table would not be available to all the components. That would pose a deployment problem. We would probably
@@ -95,19 +94,19 @@ want to be aware of that future problem and address it at the proper time accord
 
 In contrast, here is another common deployment problem I am aware of at Socotra
 \begin{description}
-  \item[Problem] Wonderful new functionality X has been developed and insurance companies are dying to start using it. Unfortunately insurance companies
+  \item[Problem] New functionality X has been developed and insurance companies are dying to start using it. Unfortunately insurance companies
   cant readily use the new functionality because the new functionality requires that new fields or a new file be added to the product configuration. Even
-  though insurance companies have deployed new product configurations, all their existing policies are tied to the previous product revision. They have to wait for each
-  policy to be renewed, maybe a year, until they and their policyholders can all enjoy wonderful new functionality. It's very inconvenient for insurance
-  companies, their systems, and their policyholders to receive functionality in this manner.
+  though insurance companies can deployed the new product configurations, all their existing policies will be tied to the previous product revision. They have to wait for each
+  existing policy to be renewed, maybe a year, until their policyholders can all enjoy the new functionality. It's inconvenient for insurance
+  companies, their systems, and their policyholders to receive functionality in this one policy by one policy  manner.
 \end{description}
-This is a problem that is immanent once product versioning goes live. Today this problem  is more salient than any other deployment problem Socotra
-has and as engineers we should have immanent problems clear in our minds. Again, I am going to leave the solution to this problem to the reader,
+This is a problem that we anticipate having once product versioning goes live. Today this problem seems more imanent than any other deployment problem Socotra
+has and as engineers we should have immanent problems clear in our minds. I am going to leave the possible importance of this problem and its solution to the future
 but we might observe that practical engineering, perhaps not elegance and certainly not Launch Darkly, will be involved in the solution. We might also observe
-that, exactly like feature flags, the deployment of configuration zip files is a type of soft deployment, which complements and adds additional
-flexibility to physical deployments mechanisms.
+that, exactly like feature flags, the deployment of configuration zip files is a type of soft deployment. We have an additional, existing soft deployment
+capabilities which may not have been identified as such when we started the feature flag ``problem'' discussion.
 
-I will leave the exercise there. There is more to say. There are tenant level flags and request level flags. But that belabors the point to make
+I will leave the exercise there. There are probably more deployment problems that could be discussed. But that belabors the point to make
 which is that
 one should get into the habit of turning over a problem statement in ones mind, formulating it from various angles and reducing it to
 essentials. In your career as an Engineer it is important that you be successful, and one of the keys skills that will guide you towards doing what should

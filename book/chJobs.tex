@@ -1,14 +1,21 @@
-\motto{}
+\motto{I call it "The Question."
+Obviously it should be applied
+as much to one's own thinking as to
+others'. It consists of asking in your
+own mind, on hearing any scientific
+explanation or theory put forward, "But
+sir, what experiment could disprove
+your hypothesis?"}
 \chapter{Scheduled Jobs}
-\label{intro} % Always give a unique label
+\label{intro:jobs} % Always give a unique label
 
 \abstract{}
 
 \section{Grace and Lapse}
 \label{sec:jobs:1}
-In addition to cancellations that can happen through the API, it's also possible to policies to be canceled automatically by
+In addition to cancellations that can happen through the API, it's also possible for policies to be canceled automatically by
 the system. This automated cancellation happens when a policy has outstanding invoices which have not been paid. The system
-scheduled grace job flags outstanding invoices and the scheduled lapse job after some time will eventually cancel the policies
+scheduled grace job flags outstanding invoices and the scheduled lapse job, after some time, will eventually cancel the policies
 associated with those flagged invoices. Below is a simplified model of the process, which details the essential points of
 understanding for the jobs.
 \import{chJobs/}{AutoGraceLapseInvoiceCtx0-sa.tex}
@@ -16,5 +23,17 @@ understanding for the jobs.
 
 \section{Document Consolidation}
 \label{sec:jobs:2}
+During a modification's transition into the Accepted state, documents associated with that modification are generated.
+The documents are generated from templates written in Liquid code and the templates output either a text or HTML formatted
+string. If desired the system
+can take this string output and convert it into a pdf document. The final form of the document is then stored in Amazon S3.
+
+In addition to generating documents some customers would like to consolidate a subset of the existing documents as well, and this has
+let to the development of the document consolidation plugin and associated consolidation routines. The main consideration in
+developing the consolidation routines has been to avoid generating the consolidated documents synchronously with the accept transition.
+Document generation has historically been a large part of the accept transition's service time so there is some trepedation around adding
+more to what already exists. There is also reason to believe that some customers may have consolidation tasks that are one or two orders of
+magnitude larger than the usual size of the document generation tasks that currently run semi-synchronously. These two considerations have
+let to a asyncronous consolidate implementation which is discussed below.
 \import{chJobs/}{DocConsolidateCtx0-sa.tex}
 \import{chJobs/}{DocConsolidateMch0-sa.tex}

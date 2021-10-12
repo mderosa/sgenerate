@@ -944,17 +944,29 @@
 \@pvspace{8.0pt}%
 \@x{ {\CONSTANTS} maxPc}%
 \@x{ {\VARIABLES} pc ,\, docNo ,\, dbDocs ,\, dbQ}%
-\@pvspace{8.0pt}%
 \begin{lcom}{2.5}%
 \begin{cpar}{0}{T}{F}{5.0}{0}{}%
- This is an expansion of the current document generation process. It assumes
- that
+ This specification details a future vision of document generation where
+ single as well
 \end{cpar}%
 \begin{cpar}{1}{F}{F}{0}{0}{}%
-single as well as composite documents are generated asyncronously.
+ as composite documents are generated asyncronously. The \ensuremath{pc}
+ variable is a \mbox{'}program counter\mbox{'}
+ representing the progresion of time or execution steps. The
+ \ensuremath{docNo} variable creates uuid
+ for documents. The \ensuremath{dbDocs} variable holds data which represent
+ records in the \ensuremath{policy\_document
+ } table. And the \ensuremath{dbQ} variable holds data which represent records
+ in the \ensuremath{policy\_document\_queue
+} table.
 \end{cpar}%
 \end{lcom}%
 \@x{}\midbar\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ Invariants
+}%
+\@xx{}%
 \@pvspace{8.0pt}%
 \begin{lcom}{2.5}%
 \begin{cpar}{0}{T}{F}{5.0}{0}{}%
@@ -1002,7 +1014,11 @@ have a \ensuremath{process\_status} in \ensuremath{\{Success,\, Error\}
  \@x{\@s{16.4} \.{\land} Len ( dbQ ) \.{=} Cardinality ( \{ d \.{\in} dbDocs
  \.{:} d . processStatus \.{=}\@w{InProcess} \} )}%
 \@x{}\midbar\@xx{}%
-\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Helper functions
+}%
+\@xx{}%
 \@x{ endDocGen \.{\defeq} pc \.{\geq} maxPc}%
 \@pvspace{8.0pt}%
 \@x{ componentDocsProcessing ( head ) \.{\defeq}}%
@@ -1021,7 +1037,11 @@ have a \ensuremath{process\_status} in \ensuremath{\{Success,\, Error\}
  head . componentDocs \.{\land} d . processStatus \.{=}\@w{Error} \}}%
 \@x{\@s{16.4} \.{\IN} Cardinality ( ps ) \.{>} 0}%
 \@x{}\midbar\@xx{}%
-\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Transition functions
+}%
+\@xx{}%
 \begin{lcom}{2.5}%
 \begin{cpar}{0}{T}{F}{5.0}{0}{}%
  Initiate processing to create a single document. A document generation
@@ -1238,6 +1258,11 @@ incrementing its process count by one.
 \@x{\@s{79.22} \.{\THEN} unqueueSingleNotOk ( head )}%
 \@x{\@s{79.22} \.{\ELSE} unqueueMultipleNotOk ( head )}%
 \@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ The condition for termination, all records in the queue have been processed
+}%
+\@xx{}%
 \@x{ term \.{\defeq}}%
 \@x{\@s{16.4} \.{\land} endDocGen}%
 \@x{\@s{16.4} \.{\land} Len ( dbQ ) \.{=} 0}%
@@ -1265,7 +1290,12 @@ incrementing its process count by one.
 \setboolean{shading}{false}
 \begin{lcom}{0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-\ensuremath{\.{\,\backslash\,}}* \ensuremath{Modification} History
+\ensuremath{\.{\,\backslash\,}}* Modification History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Tue}
+ \ensuremath{Oct} 12 09:29:39 \ensuremath{PDT} 2021 by \ensuremath{marco
+}%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
@@ -1273,8 +1303,8 @@ incrementing its process count by one.
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Created \ensuremath{Fri} \ensuremath{Sep} 17
- 18:40:13 \ensuremath{PDT} 2021 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* \ensuremath{Created} \ensuremath{Fri}
+ \ensuremath{Sep} 17 18:40:13 \ensuremath{PDT} 2021 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \end{lcom}%

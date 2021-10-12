@@ -1,6 +1,6 @@
 \motto{Seek not to have things happen as you choose them, but rather choose them to happen as they do.}
 \chapter{Cancellation and Reinstatement}
-\label{intro} % Always give a unique label
+\label{intro:02} % Always give a unique label
 % use \chaptermark{}
 % to alter or adjust the chapter heading in the running head
 
@@ -28,19 +28,20 @@ describes the structural elements of cancellation and reinstatement data items.
 \import{ch02/}{CancellationCtx1-sa.tex}
 
 \section{State Machine}
-
+\label{sec:02:2}
 With some understanding of the data in our two new modifications, we below, lay out actions on our policy in the usual
 state centric way. 
 
 \import{ch02/}{CancellationMch1-sa.tex}
 
 \section{Interaction with other Modifications}
+\label{sec:02:3}
 The development of quotes for Endorsement and Renewals and the development of Cancellation and Reinstatements functionality
-partially overlapped and so it turns out that the two functionalities interact in a less than perfectly way.
+partially overlapped and so it turns out that the two functionalities interact in a less than perfectly integrated way.
 
 Before we can discuss potential interactions of the two functionalities, I will quickly review the essentials of quotes. The
 purpose of quotes is to price a potential modification given a policy in some state. And the way that given policy state is described
-colloquially is as ``a policy where the last applied modifications is x'', or slightly more technically ``a policy with basis x''. The
+colloquially is as ``a policy where the last applied modifications is x'', or using the terminology in the code as ``a policy with basis x''. The
 framework realization of both of these informal descriptions is a field in both the endorsement and
 renewal tables called quoted\_policy\_basis which holds a policy modification locator. The quote code would then, conceptually, have
 mechanism to allow a quoted endorsement or renewal to progress to the accepted state only when
@@ -50,10 +51,9 @@ to conceptualize and growing complexity may force uniformity and explicitness in
 
 The challenge for cancellation and reinstatements is then to prevent situations where a quote is made, some arbitrary cancellation
 reinstatement sequence changes the policy and then the quote becomes accepted and issued. There are three mechanisms that
-prevent this occurrence that have been added to the cancellation / reinstatment state machine. First whenever a policy is
+prevent this occurrence that have been added to the cancellation / reinstatement state machine. First whenever a policy is
 changed by cancellation or reinstatement we invalidate all policy quotes. By definition if the policy has changed and the quote
 could not anticipate that change then the basis of the quote must be then be invalid. Second, if a policy has any outstanding
 cancellations then no renewals can be created. This prevents any renewals from effecting the policy until all cancellation
-renewal sequences are completed. Lastly endorsement quotes are not permitted when a reinstatement is in the accepted state. This
-quotes from being made on policies that are about to change.
-
+reinstatement sequences are completed. Lastly endorsement quotes are not permitted when a reinstatement is in the accepted state. This
+prevents quotes from being made on policies that are about to change.

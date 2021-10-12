@@ -976,13 +976,15 @@ made up of multiple single documents.
 \@pvspace{8.0pt}%
 \begin{lcom}{2.5}%
 \begin{cpar}{0}{T}{F}{5.0}{0}{}%
- The document requests that end up creating documents in large object storage
- are
+ A document request can create either a single document or a consolidated
+ document in
 \end{cpar}%
 \begin{cpar}{1}{F}{F}{0}{0}{}%
- similiar. The difference for the specification is that a consolidation
- request supplies
- a list of component document locators.
+ large object storage. A single document create request will have an empty
+ \ensuremath{componentDocs
+ } set. A consolidated document request will supply a list of existing
+ document locators
+ that reference single documents.
 \end{cpar}%
 \end{lcom}%
 \@x{ DocRequest \.{\defeq} [}%
@@ -999,8 +1001,9 @@ made up of multiple single documents.
 }%
 \end{cpar}%
 \begin{cpar}{1}{F}{F}{0}{0}{}%
-table in the database. The below record includes just the fields needed by the
- processing specification.
+ table in the database. The record, here, includes just the fields needed by
+ this
+ document processing specification.
 \end{cpar}%
 \end{lcom}%
 \@x{ Record \.{\defeq} [}%
@@ -1013,7 +1016,12 @@ table in the database. The below record includes just the fields needed by the
 \setboolean{shading}{false}
 \begin{lcom}{0}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
-\ensuremath{\.{\,\backslash\,}}* \ensuremath{Modification} History
+\ensuremath{\.{\,\backslash\,}}* Modification History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Tue}
+ \ensuremath{Oct} 12 09:21:02 \ensuremath{PDT} 2021 by \ensuremath{marco
+}%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
  \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
@@ -1021,8 +1029,8 @@ table in the database. The below record includes just the fields needed by the
 }%
 \end{cpar}%
 \begin{cpar}{0}{F}{F}{0}{0}{}%
- \ensuremath{\.{\,\backslash\,}}* Created \ensuremath{Fri} \ensuremath{Sep} 17
- 18:39:27 \ensuremath{PDT} 2021 by \ensuremath{ASUS
+ \ensuremath{\.{\,\backslash\,}}* \ensuremath{Created} \ensuremath{Fri}
+ \ensuremath{Sep} 17 18:39:27 \ensuremath{PDT} 2021 by \ensuremath{ASUS
 }%
 \end{cpar}%
 \end{lcom}%

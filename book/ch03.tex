@@ -14,21 +14,17 @@ closer to the specific realization of those abstractions in the framework.
 \label{sec:03:1}
 \import{ch03/}{TheSimplifiedSchema.tex}
 
-\section{The Basic State Model}
-\label{sec:03:2}
-\import{ch03/}{TheBasicStateModel.tex}
-
 \section{Policies}
-\label{sec:03:3}
+\label{sec:03:2}
 Now that we have talked a bit about policies and modifications, below is a data structure overview of the same. The mathematical notation my not be
-that familiar to you and if so dont be too put off. As with all mathematical notation in this book, there are comments to go with the notation
+that familiar to you and if so don't be too put off. As with all mathematical notation in this book, there are comments to go with the notation
 and the comments cover all of the important points. If you are interested you should be able to go from the comments to the notation and that
-might be useful where you feel there are ambiguities. The mathematics is always correct and exists specifically to remove any abiguity.
+might be useful where you feel there are ambiguities. The mathematics is always correct and exists specifically to remove any ambiguity.
 
 \import{ch03/}{Policy-sa.tex}
 
 \section{Charges}
-\label{sec:03:4}
+\label{sec:03:3}
 There are currently five types of charges in the Socotra framework premiums (represented as PerilCharacteristics), taxes,
 commissions, fees, and holdbacks. All these charges are represented by the same basic structure, a closed-open
 interval, the data fields $[start\_timestamp, end\_timestamp)$, and a currency amount. It is
@@ -121,12 +117,16 @@ the comments.
 \import{ch03/}{ProrationMch2-sa.tex}
 
 \section{Observables}
-\label{sec:03:6}
+\label{sec:03:4}
 
 \import{ch03/}{CancellationCalculations-sa.tex}
 
-\section{Characteristics}
+\section{Modifications - The State Model}
 \label{sec:03:5}
+\import{ch03/}{TheBasicStateModel.tex}
+
+\section{Characteristics}
+\label{sec:03:6}
 
 Characteristics are containers that record a set of attribute values
 (ex: number\_of\_drivers = 2, make\_of\_car = Honda, resale\_value=10000)

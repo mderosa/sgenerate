@@ -2,8 +2,10 @@
 *.aux
 *.idx
 *.log
-*.pdf
 *.thm
 *.toc
 *.out
 __pycache__/
+book/ch02/*.pdf
+book/ch03/*.pdf
+book/figure-eps-converted-to.pdf

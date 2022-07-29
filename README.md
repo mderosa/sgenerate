@@ -1,14 +1,15 @@
 # Sgenerate
-A book on how an application dealing with insurance contracts might be conceptualized. This was put 
-together as side project, contributed to a former employer. The inspiration was the paper, 
-Composing Contracts, _An Adventure in Financial Engineering (SP Jones)_.
+A book on how an application dealing with insurance contracts might be conceptualized. The book was put 
+together as side project and contributed to a former employer. The inspiration was the paper, 
+_Composing Contracts, An Adventure in Financial Engineering (SP Jones)_.
 
 # Building the book
 ```
 pipenv shell
 make doc
 ```
-This build the book in the location repo:/book/book.pdf, where it can be found in this repository
+The above commands build the book in the location _repo:/book/book.pdf_. The latest version of the book is
+also maintained at that location in this repository.
 
 # Common tasks
 ## Adding a specification files
